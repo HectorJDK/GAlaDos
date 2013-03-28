@@ -6,6 +6,7 @@
 	#include <stdlib.h>
 	#include <string.h>  /* strcpy */
 	#include "uthash.h"
+	#include "tablasVarProc.h"
 	#define YYERROR_VERBOSE 1
 	
 //----------------------------------------------------------------------------------------
@@ -42,146 +43,9 @@ char tempFunciones[25];
 unsigned short tempTipos;
 char tempVariable[25];
 
-
-
-//Estructura Variables uthash-------------------------------------------------------
-typedef struct directorio {
-        char nombre[25];              /* key */
-        int tipo;
-        unsigned long direccion;
-        UT_hash_handle hh;         /* makes this structure hashable */
-} directorio;
-
-//Estructura Procedimientos uthash-------------------------------------------------------
-typedef struct directorioProcedimientos {
-        char nombre[25];
-        directorio *variablesLocales;
-        UT_hash_handle hh;
-}directorioProcedimientos;
-
-//Estructura Objetos uthash-------------------------------------------------------
-typedef struct directorioObjetos {
-        char nombre[25];
-        directorio *variablesGlobales;
-        directorioProcedimientos *procedimientos;
-        UT_hash_handle hh;
-}directorioObjetos;
-
 //Declaracion e inicializacion de la estructura objetos
 directorioObjetos *objetos = NULL;
 
-
-void add_variablesLocales(char *objeto, char *funcion, char *nombre, unsigned short tipo, unsigned long direccion) {
-        directorioObjetos *existeO;
-        directorioProcedimientos *existeP;
-        directorio *temp;
-
-        HASH_FIND_STR(objetos, objeto, existeO);  /* existe el objeto? */
-        if (existeO) {
-        	    HASH_FIND_STR(existeO->procedimientos, funcion, existeP);  /* existe el procedimiento? */
-       			if (existeP) {
-	                HASH_FIND_STR(existeP->variablesLocales, nombre, temp);
-	                if (temp==NULL) {
-	                        temp = (directorio*)malloc(sizeof(directorio));
-	                        strcpy(temp->nombre, nombre);
-	                        temp->tipo = tipo;
-	                        temp->direccion = direccion;
-	                        HASH_ADD_STR(existeP->variablesLocales, nombre, temp);  /* id: name of key field */
-	                } else {
-	                        printf("Error, la llave se repite");
-	                }
-	            } else {
-               		printf("Error Funcion no se encuentra");
-        		}
-        } else {
-            printf("Error Objeto no se encuentra");
-        }
-}
-
-void add_variablesGlobales(char *objeto, char *nombre, unsigned short tipo, unsigned long direccion) {
-        directorioObjetos *existe;
-        directorio *temp;
-
-        HASH_FIND_STR(objetos, objeto, existe);  /* id already in the hash? */
-        if (existe) {
-                HASH_FIND_STR(existe->variablesGlobales, nombre, temp);
-                if (temp==NULL) {
-                        temp = (directorio*)malloc(sizeof(directorio));
-                        strcpy(temp->nombre, nombre);
-                        temp->tipo = tipo;
-                        temp->direccion = direccion;
-                        HASH_ADD_STR(existe->variablesGlobales, nombre, temp);  /* id: name of key field */
-                } else {
-                        printf("Error, la llave se repite");
-                }
-        } else {
-                printf("Error Objeto no se encuentra");
-        }
-}
-
-
-
-void agregarFuncion(char *objeto, char *nombre) {
-        directorioProcedimientos *temp;
-        directorioObjetos *existe;  
-
-        HASH_FIND_STR(objetos, objeto, existe);  /* id already in the hash? */
-        if (existe) {
-                HASH_FIND_STR(existe->procedimientos, nombre, temp);
-                if (temp==NULL) {
-                        temp = (directorioProcedimientos*)malloc(sizeof(directorioProcedimientos));
-                        strcpy(temp->nombre, nombre);                      
-                        temp->variablesLocales = NULL;
-                        HASH_ADD_STR(existe->procedimientos, nombre, temp);  /* id: name of key field */
-                } else {
-                        printf("Error, la llave se repite");
-                }
-        } else {
-                printf("Error Funcion no se encuentra");
-        }
-}
-
-void agregarObjeto(char *nombre){
-        directorioObjetos *temp;
-
-        HASH_FIND_STR(objetos, nombre, temp);  /* id already in the hash? */
-        if (temp==NULL) {
-                temp = (directorioObjetos*)malloc(sizeof(directorioObjetos));
-                strcpy(temp->nombre, nombre);
-                temp->variablesGlobales = NULL;
-                temp->procedimientos = NULL;
-          HASH_ADD_STR(objetos, nombre, temp);  /* id: name of key field */
-        } else {
-                printf("Error, la llave se repite");
-        }       
-
-}
-
-void imprimirObjetos() {
-			
-			directorioObjetos *o;
-	        directorioProcedimientos *s;
-	        directorio *p;
-
-	        //Imprimir tabla de objetos
-	        for(o = objetos; o != NULL; o=(directorioObjetos*)(o->hh.next)){
-		        printf("Nombre del objeto: %s \n", o->nombre);
-		        //Imprimir variables globales (main)
-		        for(p=o->variablesGlobales; p!= NULL; p=(struct directorio*)(p->hh.next)) {
-		                printf("Sus variables globales son \n");
-		                printf("Nombre de la variable: %s , tipo: %i , direccion: %lu \n", p->nombre, p->tipo, p->direccion);
-		        }
-		        //Imprimir procedimientos del objeto y sus tablas de variables
-		        printf("Sus procedimientos son: \n");
-		        for(s=o->procedimientos; s!= NULL; s=(directorioProcedimientos*)(s->hh.next)) {
-		                printf("Nombre del procedimiento: %s \n", s->nombre);
-		                printf("Sus variables son \n");
-		                for(p=s->variablesLocales; p!= NULL; p=(struct directorio*)(p->hh.next)) {
-		                        printf("Nombre de la variable: %s , tipo: %i , direccion: %lu \n", p->nombre, p->tipo, p->direccion);
-		                }
-		        }		        
-	    	}
-	}
 //----------------------------------------------------------------------------
 
 int main()
@@ -190,7 +54,7 @@ int main()
 	yyparse();
 	
 	//Desplegar la tabla de objetos	
-	imprimirObjetos();
+	imprimirObjetos(objetos);
 
 	return 0;
 }
@@ -266,9 +130,9 @@ int main()
 programa:
 	{
 	//Agregar main a tabla de objetos	
-	agregarObjeto("main");	
+	objetos = agregarObjeto(objetos, "main");	
 	}
-	variables_globales declara_objetos declara_funciones implementa_funciones EJECUTARPROGRAMA 
+	declara_objetos variables_globales declara_funciones implementa_funciones EJECUTARPROGRAMA 
 	{
 		//Actualizar la posicion a ejecutarPrograma
 		ejecutar = 1;
@@ -300,13 +164,13 @@ bloque_variables_rep:
 			//Checar la bandera de posicion
 			if(variablesGlobales == 1){
 				//Agregar a tabla de variables globales					
-				 add_variablesGlobales("main" ,nombreV, tempTipos, 15);
+				 objetos = agregarVariablesGlobales(objetos, "main" ,nombreV, tempTipos, 15);
 				 tempTipos=-1;
 			} else 
 			if(funcionesI == 1){	
-					//Agregar a tabla de variables locales de la funcion
-					add_variablesLocales("main", tempFunciones, nombreV, tempTipos,1);	
-	 				tempTipos=-1;
+				//Agregar a tabla de variables locales de la funcion
+				objetos = agregarVariablesLocales(objetos, "main", tempFunciones, nombreV, tempTipos,1);	
+ 				tempTipos=-1;
 			}								
 	} bloque_variables_rep
 	;
@@ -504,7 +368,7 @@ declaracion_prototipos:
 	{
 		//Agregar la funcion al objeto main y guardar el nombre en temporal
 		if(funcionesD == 1){				
-			agregarFuncion("main" ,$2);
+			objetos = agregarFuncion(objetos, "main" ,$2);
 			strncpy(tempFunciones, $2, strlen($2));						
 		}
 	}
@@ -531,7 +395,7 @@ parametros_rep:
 	DOSPUNTOS tipo 
 	{		
 		//Agregar el parametro a la tabla de variables locales de la funcion	
-		add_variablesLocales("main", tempFunciones, tempVariable, tempTipos,1);	
+		objetos = agregarVariablesLocales(objetos, "main", tempFunciones, tempVariable, tempTipos,1);	
 	} 
 	parametros_rep1
 	;

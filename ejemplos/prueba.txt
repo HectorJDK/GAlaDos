@@ -1,12 +1,3 @@
-Variables_Globales [
-			entero unox;
-			decimal dosx;
-			texto tresx;	
-			booleano cuatrox;
-			matrizDecimal cincox [1];
-			matrizEntera seisx [2][2];
-			crearObjeto sietex;
-			] 
 Declara_Objetos [
 	Clase x {
 		Atributos_Globales[
@@ -55,6 +46,15 @@ Declara_Objetos [
 	}
 	
 ]
+Variables_Globales [
+			entero unox;
+			decimal dosx;
+			texto tresx;	
+			booleano cuatrox;
+			matrizDecimal cincox [1];
+			matrizEntera seisx [2][2];
+			crearObjeto sietex;
+			] 
 Declara_Funciones [
 	publica funcion1 (param2:decimal) regresa nada;
 	privada funcion2 (param3:booleano) regresa nada;
