@@ -4,17 +4,26 @@
 #include "tablasVarProc.h"
 #include "uthash.h"
 
+/*
+* Funcion para agregar las variables locales al directorio de funciones.
+*/
 directorioObjetos* agregarVariablesLocales(directorioObjetos *objetos, char *objeto, char *funcion, char *nombre, unsigned short tipo, unsigned long direccion) {
+        
+        //Variables auxiliares
         directorioObjetos *existeO;
         directorioProcedimientos *existeP;
         directorio *temp;
 
+        //Buscar el objeto en el directorio
         HASH_FIND_STR(objetos, objeto, existeO);  /* existe el objeto? */
         if (existeO) {
+                //Buscar la funcion en el directorio
         	    HASH_FIND_STR(existeO->procedimientos, funcion, existeP);  /* existe el procedimiento? */
        			if (existeP) {
+                    //Checar si la variable ya existe
 	                HASH_FIND_STR(existeP->variablesLocales, nombre, temp);
 	                if (temp==NULL) {
+                            //Agregar la nueva variable al directorio
 	                        temp = (directorio*)malloc(sizeof(directorio));
 	                        strcpy(temp->nombre, nombre);
 	                        temp->tipo = tipo;
@@ -32,14 +41,22 @@ directorioObjetos* agregarVariablesLocales(directorioObjetos *objetos, char *obj
         }
 }
 
+/*
+* Funcion para agregar las variables globales al directorio de objetos.
+*/
 directorioObjetos* agregarVariablesGlobales(directorioObjetos *objetos, char *objeto, char *nombre, unsigned short tipo, unsigned long direccion) {
+       
+        //Variables auxiliares
         directorioObjetos *existe;
         directorio *temp;
 
+        //Buscar el objeto en el directorio
         HASH_FIND_STR(objetos, objeto, existe);  /* id already in the hash? */
         if (existe) {
+                //Checar si la variable ya existe
                 HASH_FIND_STR(existe->variablesGlobales, nombre, temp);
                 if (temp==NULL) {
+                        //Agregar la nueva variable al directorio
                         temp = (directorio*)malloc(sizeof(directorio));
                         strcpy(temp->nombre, nombre);
                         temp->tipo = tipo;
@@ -54,15 +71,22 @@ directorioObjetos* agregarVariablesGlobales(directorioObjetos *objetos, char *ob
         }
 }
 
-
+/*
+* Funcion para agregar las funciones al directorio de objetos.
+*/
 directorioObjetos* agregarFuncion(directorioObjetos *objetos, char *objeto, char *nombre) {
+        
+        //Variables auxiliares
         directorioProcedimientos *temp;
         directorioObjetos *existe;  
 
+        //Buscar el objeto en el directorio
         HASH_FIND_STR(objetos, objeto, existe);  /* id already in the hash? */
         if (existe) {
+                //Checar si la funcion ya existe
                 HASH_FIND_STR(existe->procedimientos, nombre, temp);
                 if (temp==NULL) {
+                        //Agregar la nueva funcion al directorio
                         temp = (directorioProcedimientos*)malloc(sizeof(directorioProcedimientos));
                         strcpy(temp->nombre, nombre);                      
                         temp->variablesLocales = NULL;
@@ -76,11 +100,18 @@ directorioObjetos* agregarFuncion(directorioObjetos *objetos, char *objeto, char
         }
 }
 
+/*
+* Funcion para agregar objetos (main y clases) al directorio de objetos.
+*/
 directorioObjetos* agregarObjeto(directorioObjetos *objetos, char *nombre){
+        
+        //Variable auxiliar
         directorioObjetos *temp;
 
+        //Buscar el objeto en el directorio
         HASH_FIND_STR(objetos, nombre, temp);  /* id already in the hash? */
         if (temp==NULL) {
+                //Agregar el nuevo objeto al directorio
                 temp = (directorioObjetos*)malloc(sizeof(directorioObjetos));
                 strcpy(temp->nombre, nombre);
                 temp->variablesGlobales = NULL;
@@ -93,6 +124,11 @@ directorioObjetos* agregarObjeto(directorioObjetos *objetos, char *nombre){
 
 }
 
+
+/*
+* Funcion para desplegar los elementos del directorio de objetos asi como los 
+* elementos del directorio de funciones y variables que esten asociados
+*/
 void imprimirObjetos(directorioObjetos *objetos) {
 			
 			directorioObjetos *o;

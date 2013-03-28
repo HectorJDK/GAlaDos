@@ -32,10 +32,15 @@ int id=1;
 char *nombreV=NULL;
 char *tipoV=NULL;
 char *datoV="dato";
-
 char *nombreP=NULL;
-
 char *nombreO=NULL;
+
+//Contadores para direcciones de memoria
+int contadorIndiceCuadruplos = 0;
+int contadorBooleanos = 0;
+int contadorEntero = 0;
+int contadorDecimal = 0;
+int contadorTexto = 0;
 
 //Temporales para tablas de procedimientos y variables
 char tempObjetos[25];
@@ -220,7 +225,7 @@ declara_variables:
 
 declara_variables_atomica:
 	PUNTOYCOMA
-	|IGUAL expresion PUNTOYCOMA
+	|IGUAL serexpresion PUNTOYCOMA
 	;
 
 declara_variables_matriz:
@@ -265,6 +270,16 @@ dimensiones_rep:
 	| ACORCHETE exp CCORCHETE
 	;
 
+serexpresion: 
+	expresion expresion_and_or
+	;
+
+expresion_and_or:
+	/*empty*/
+	| AMPERSAND serexpresion
+	| BARRA serexpresion
+	;
+
 expresion:
 	exp expresion_condicional
 	;
@@ -281,8 +296,6 @@ op_booleanos:
 	| MENORQUE 
 	| MAYORIGUAL 
 	| MENORIGUAL 
-	| AMPERSAND 
-	| BARRA
 	;
 
 exp:
@@ -306,7 +319,7 @@ termino_multi_divide:
 	;
 
 factor:
-	APARENTESIS expresion CPARENTESIS 
+	APARENTESIS serexpresion CPARENTESIS 
 	| MAS factor_operando 
 	| MENOS factor_operando 
 	| factor_operando
@@ -486,13 +499,13 @@ asignacion:
 	;
 
 asignacion1:
-	dimensiones IGUAL expresion 
+	dimensiones IGUAL serexpresion 
 	| IGUAL asignacion2
 	| FLECHA IDENTIFICADOR asignacion3  IGUAL asignacion2;
 
 asignacion2:
 	asignacion_matriz 
-	| expresion
+	| serexpresion
 	;
 
 asignacion3:
@@ -536,7 +549,7 @@ escritura_concatena:
 
 
 llama_funcion:
-	IDENTIFICADOR llama_funcion_opcional APARENTESIS expresion CPARENTESIS
+	IDENTIFICADOR llama_funcion_opcional APARENTESIS serexpresion CPARENTESIS
 	| lectura
 	;
 
@@ -546,12 +559,12 @@ llama_funcion_opcional:
 	;
 
 regresa:
-	REGRESA expresion
+	REGRESA serexpresion
 	;
 
 
 condicional:
-	SI APARENTESIS expresion CPARENTESIS ALLAVE bloque CLLAVE condicional_ifelse
+	SI APARENTESIS serexpresion CPARENTESIS ALLAVE bloque CLLAVE condicional_ifelse
 	;
 
 condicional_ifelse:
@@ -560,10 +573,10 @@ condicional_ifelse:
 	;
 
 condicional_else:
-	ENTONCES APARENTESIS expresion CPARENTESIS ALLAVE bloque CLLAVE condicional_ifelse 
+	ENTONCES APARENTESIS serexpresion CPARENTESIS ALLAVE bloque CLLAVE condicional_ifelse 
 	| ALLAVE bloque CLLAVE
 	;
 
 ciclo:
-	MIENTRAS APARENTESIS expresion CPARENTESIS ALLAVE bloque CLLAVE
+	MIENTRAS APARENTESIS serexpresion CPARENTESIS ALLAVE bloque CLLAVE
 	;

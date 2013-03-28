@@ -65,7 +65,7 @@ Implementa_Funciones [
 	funcion1 () { 
 		Variables_Locales[
 			entero variable1;
-			matrizDecimal matriz [10];
+			matrizDecimal matriz1 [10];
 		]
 		variable1 = 5;
 		leerDelteclado (entero);
@@ -97,8 +97,8 @@ Implementa_Funciones [
 	}
 	funcion2 () { 
 		Variables_Locales[
-			entero variable1;
-			matrizDecimal matriz [10];
+			entero variable2;
+			matrizDecimal matriz2 [20];
 		]
 		variable1 = 5;
 		leerDelteclado (entero);
@@ -120,7 +120,7 @@ Implementa_Funciones [
 			leerDelteclado (entero);
 		}
 
-		mientras(variable1 & variable2){
+		mientras(variable1 | variable2){
 			leer = leerdelteclado(entero);
 			despliega (5<<variable1<<matriz[2]);
 			variable1 = 5;
