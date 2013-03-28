@@ -4,9 +4,9 @@
 #include "cuadruplos.h"
 #include "uthash.h"
 
-Clase
+
 /*
-* que implementa una estructura de pila en C
+* Clase que implementa una estructura de pila en C
 */
 
 /*
