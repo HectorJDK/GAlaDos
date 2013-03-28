@@ -62,6 +62,8 @@ int main()
     {
 
         listaCuadruplos = generaCuadruplo(listaCuadruplos, aux, aux2, operador, cuboSemantico[operando1][operando2][op], 0);
+        strcpy(((nodoOperando*)aux->dato)->nombre, "chingate");
+        listaCuadruplos = generaCuadruplo(listaCuadruplos, aux, aux2, operador, cuboSemantico[operando1][operando2][op], 1);
         imprimeCuadruplos(listaCuadruplos);
     } else {
         printf("Operacion Invalida\n");

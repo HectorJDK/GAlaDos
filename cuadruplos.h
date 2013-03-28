@@ -40,10 +40,10 @@ typedef struct cuadruplos
 {
 	/*Key*/
 	int indice; 
-	nodo *operando1;
-	nodo *operando2;
+	nodoOperando *operando1;
+	nodoOperando *operando2;
 	int operador;
-	int resultado;
+	nodoOperando *resultado;
 	UT_hash_handle hh;
 } cuadruplos;
 
