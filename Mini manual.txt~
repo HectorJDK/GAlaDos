@@ -1,0 +1,110 @@
+Expresiones regulares 
+{MIN}* 	IDENTIFICADOR
+{NUM}*	CTEENTERA
+[{MIN}|{MAY}]* CTESTRING
+({NUM}+["."]{NUM}+) CTEFLOTANTE
+NUM	[0-9]
+MIN	[a-z]
+MAY [A-Z]
+WS	[ \t]
+
+Gramatica 
+programa:
+	PROGRAM IDENTIFICADOR PUNTOYCOMA listaVars bloque
+	;
+listaVars:
+	/*empty*/
+	| vars;
+
+vars:
+	VAR declara;
+
+declara:
+	listaId DOSPUNTOS tipo PUNTOYCOMA declaraP;
+
+declaraP:
+	| declara;
+
+listaId:
+	IDENTIFICADOR listaIdP;
+
+listaIdP:
+	| COMA listaId;
+
+tipo:
+	INT | FLOAT;
+
+bloque: 
+	ALLAVE listaEstatuto CLLAVE;
+
+listaEstatuto:
+	| estatuto listaEstatutoP
+	;
+
+listaEstatutoP:
+	listaEstatuto;
+
+estatuto:
+	asignacion
+	|
+	condicion
+	|
+	escritura;
+
+asignacion:
+	IDENTIFICADOR IGUAL expresion PUNTOYCOMA
+	;
+
+expresion:
+	exp expCondicional
+	;
+
+exp:
+	termino expP
+	;
+
+expP:
+	| MAS exp | MENOS exp;
+
+termino:
+	factor terminoP;
+
+terminoP:
+	| POR termino | DIV termino;
+
+factor:
+	APARENTESIS expresion CPARENTESIS | signo varcte
+	;
+
+signo:
+	| MAS | MENOS;
+
+varcte:
+	IDENTIFICADOR | CTEENTERA | CTEFLOTANTE;
+
+expCondicional:
+	| MENOR exp | MAYOR exp | DIFF exp;
+
+condicion: 
+	IF APARENTESIS expresion CPARENTESIS bloque else;
+
+else:
+	| ELSE bloque;
+
+escritura:
+	PRINT APARENTESIS elementos CPARENTESIS PUNTOYCOMA;
+
+elementos:
+	expresion elementosP | CTESTRING elementosP;
+
+elementosP:
+	| PUNTO elementos;
+
+Compilacion de los analizadores
+lex tokens.l
+bison -d grammar.y	
+Ejecución del archivo de prueba
+
+1.Escribir el comando ./parser < prueba.txt en terminal y ejecutarlo. (El 
+archivo prueba.txt tiene un ejemplo de un programa escrito en Daffy)
+2.Desplegara el mensaje de exito.

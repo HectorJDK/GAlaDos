@@ -1,0 +1,63 @@
+Clase x {
+		Atributos_Globales[
+			entero unox;
+			decimal dosx;
+			texto tresx;	
+			booleano cuatrox;
+			matrizDecimal cincox [1];
+			matrizEntera seisx [2][2];
+			crearObjeto sietex;
+		]
+		Declara_Funciones[
+		]
+		Implementa_Funciones[
+		]
+	}
+Clase y {
+		Atributos_Globales[
+			entero unoy;
+			decimal dosy;
+			texto tresy;	
+			booleano cuatroy;
+			matrizDecimal cincoy [1];
+			matrizEntera seisy [2][2];
+			crearObjeto sietey;
+		]
+		Declara_Funciones[
+		]
+		Implementa_Funciones[
+		]
+	}
+	Clase z {
+		Atributos_Globales[
+			entero unoz;
+			decimal dosz;
+			texto tresz;	
+			booleano cuatroz;
+			matrizDecimal cincoz [1];
+			matrizEntera seisz [2][2];
+			crearObjeto sietez;
+		]
+		Declara_Funciones[
+		]
+		Implementa_Funciones[
+		]
+	}
+
+
+	void add_variable(int variable_id, char *variable, char *tipo, char *dato) {
+    struct my_struct *s;
+
+    HASH_FIND_INT(tablaV, &variable_id, s);  /* id already in the hash? */
+    if (s==NULL) {
+      s = (struct my_struct*)malloc(sizeof(struct my_struct));
+      s->id = variable_id;
+      HASH_ADD_INT( tablaV, id, s );  /* id: name of key field */
+    }
+    printf("variable: %s",variable);
+    printf("tipo: %s",tipo);
+    printf("dato: %s",dato);
+    strcpy(s->variable, variable); 
+    strcpy(s->tipo, tipo);
+    strcpy(s->dato, dato);
+}"!!"
