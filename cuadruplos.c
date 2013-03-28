@@ -43,9 +43,13 @@ cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *oper1, nodo *oper
 		tempOper2->direccion = ((nodoOperando*)oper2->dato)->tipo;
 
 		//Genera el nodo resultado y lo asigna como temporal
-		tempResultado->temp = indice;
+		tempResultado->temp = 1;
 		tempResultado->tipo = temp;
-		strcpy(tempResultado->nombre, "temporal");		
+		//------------------------------------------------------
+		//Borrar tronara el programa solo para pruebas
+		sprintf(tempResultado->nombre, "temp_%d", indice);
+		//------------------------------------------------------
+		//strcpy(, strcat("temp", indice));		
 		//Sacar direccion del avail
 		//tempResultado.direccion = 1152;
 
@@ -70,18 +74,36 @@ cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *oper1, nodo *oper
 *imprimeCuadruplos
 *Imprime todos los datos en orden de la lista de cuadruplos que se da
 */	
-void imprimeCuadruplos(cuadruplos *listaCuadruplos) {
+void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode) {
 	cuadruplos *temporal;
 
-	for(temporal = listaCuadruplos; temporal != NULL; temporal=(cuadruplos*)(temporal->hh.next)) {
-		printf("---------------------------------------\n");
-		printf("Ya sabemos indice : %d\n", temporal->indice);
-		printf("Ya sabemos Nombre operador1 : %s\n", temporal->operando1->nombre);
-		printf("Ya sabemos Nombre operador2 : %s\n", temporal->operando2->nombre);
-		printf("Ya sabemos operador : %d\n", temporal->operador);
-		printf("Ya sabemos Resultado tipo : %d\n", temporal->resultado->tipo);
-		printf("Ya sabemos Resultado temp : %d\n", temporal->resultado->temp);
-		printf("Ya sabemos Resultado nombre : %s\n", temporal->resultado->nombre);
-		printf("---------------------------------------\n");
+	if(mode == 1){
+		for(temporal = listaCuadruplos; temporal != NULL; temporal=(cuadruplos*)(temporal->hh.next)) {
+			printf("---------------------------------------\n");
+			printf("Ya sabemos indice 				: %d\n", temporal->indice);
+
+			printf("Ya sabemos operador 			: %d\n", temporal->operador);
+
+			printf("Ya sabemos Nombre operando1 	: %s\n", temporal->operando1->nombre);
+			printf("Ya sabemos temp operando1		: %d\n", temporal->operando1->temp);
+			printf("Ya sabemos tipo operando1		: %d\n", temporal->operando1->tipo);
+			printf("Ya sabemos direccion operando1	: %d\n", temporal->operando1->direccion);
+
+			printf("Ya sabemos Nombre operando2 	: %s\n", temporal->operando2->nombre);
+			printf("Ya sabemos temp operando2		: %d\n", temporal->operando2->temp);
+			printf("Ya sabemos tipo operando2		: %d\n", temporal->operando2->tipo);
+			printf("Ya sabemos direccion operando2	: %d\n", temporal->operando2->direccion);
+
+			printf("Ya sabemos Nombre resultado 	: %s\n", temporal->resultado->nombre);
+			printf("Ya sabemos temp resultado		: %d\n", temporal->resultado->temp);
+			printf("Ya sabemos tipo resultado		: %d\n", temporal->resultado->tipo);
+			printf("Ya sabemos direccion resultado	: %d\n", temporal->resultado->direccion);
+
+			printf("---------------------------------------\n");
+		}
+	} else {
+		for(temporal = listaCuadruplos; temporal != NULL; temporal=(cuadruplos*)(temporal->hh.next)) {
+			printf("Cuadruplo: %d | %d %s %s %s \n", temporal->indice, temporal->operador, temporal->operando1->nombre, temporal->operando2->nombre, temporal->resultado->nombre);
+		}
 	}
 }

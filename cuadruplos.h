@@ -50,3 +50,4 @@ typedef struct cuadruplos
 
 //Firmas de los metodos
 cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *oper1, nodo *oper2, nodo *op, int temp, int indice);
+void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode);
