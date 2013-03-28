@@ -1,8 +1,0 @@
-bison -d gramatica.y
-mv gramatica.tab.h gramatica.h
-mv gramatica.tab.c gramatica.y.c
-flex tokens.l
-mv lex.yy.c tokens.lex.c
-gcc -g -c tokens.lex.c -o tokens.lex.o
-gcc -g -c gramatica.y.c -o gramatica.y.o
-gcc -g -o GAlaDos tokens.lex.o gramatica.y.o -lfl

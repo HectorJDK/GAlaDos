@@ -1,4 +1,6 @@
 %{
+	//Hector Jesus De La Garza Ponce
+	//Oziel Alonso Garza Lopez
 	extern char * yytext;
 	#include <stdio.h>
 	#include <stdlib.h>
