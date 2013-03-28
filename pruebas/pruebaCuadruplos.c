@@ -1,69 +1,72 @@
+#include "cuadruplos.h"
+#include "cuboSemantico.h"
+#include "uthash.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "cuadruplos.h"
-#include "uthash.h"
-
 
 //Pila generica
 pila *p;
+pila *op;
 nodo *aux;
 nodo *aux2;
 nodo *operador;
 
 cuadruplos *listaCuadruplos = NULL;
+static int cuboSemantico[4][4][14];
 
 int main()
 {   
+    inicializarSemantica(cuboSemantico);
+
     p = malloc(sizeof(pila));           
     p->tamanio = 0;                     
     p->primero = NULL;
 
+    op = malloc(sizeof(pila));           
+    op->tamanio = 0;                     
+    op->primero = NULL;
+
     nodoOperando prueba;
     prueba.temp = 0;
-    prueba.tipo = 2;
-    strcpy(prueba.nombre, "variables");
+    prueba.tipo = 1;
+    strcpy(prueba.nombre, "operando1");
     prueba.direccion = 1152;
 
     push(p,&prueba);
     
     nodoOperando prueba2;
     prueba2.temp = 0;
-    prueba2.tipo = 3;
-    strcpy(prueba2.nombre, "direccion");
+    prueba2.tipo = 0;
+    strcpy(prueba2.nombre, "operando2");
     prueba2.direccion = 1153;
 
     push(p,&prueba2);
 
+    nodoOperador prueba3;
+    prueba3.operador = 2;
 
-    aux = pop(p);
-    
-    nodoOperando resultado;
-
-    resultado = *(nodoOperando*)(aux->dato);
-    printf("Ya sabemos temp : %d\n", resultado.temp);
-    printf("Ya sabemos direccion : %d\n", resultado.direccion);
-
+    push(op, &prueba3);
 
     aux2 = pop(p);
-
-    resultado = *(nodoOperando*)(aux2->dato);
-    printf("Ya sabemos temp : %d\n", resultado.temp);
-    printf("Ya sabemos direccion : %d\n", resultado.direccion);
+    aux = pop(p);
+    operador = pop(op);
 
 
-    nodoOperador prueba3;
-    prueba3.operador = 1;
+    int operando1 = ((nodoOperando*)(aux->dato))->tipo;
+    int operando2 = ((nodoOperando*)(aux2->dato))->tipo;
+    int op = *(int*)(operador->dato);
+    printf("%i\n", cuboSemantico[operando1][operando2][op]);
 
-    push(p, &prueba3);
+    if (cuboSemantico[operando1][operando2][op] >= 0)
+    {
 
-    operador = pop(p);
-
-
-    listaCuadruplos = generaCuadruplo(listaCuadruplos, aux, aux2, operador, 1, 0);
-    listaCuadruplos = generaCuadruplo(listaCuadruplos, aux, aux2, operador, 1, 1);
-    imprimeCuadruplos(listaCuadruplos);
+        listaCuadruplos = generaCuadruplo(listaCuadruplos, aux, aux2, operador, cuboSemantico[operando1][operando2][op], 0);
+        imprimeCuadruplos(listaCuadruplos);
+    } else {
+        printf("Operacion Invalida\n");
+    }
+    
     free(p);
-
     return 0;
 }
