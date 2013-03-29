@@ -4,6 +4,9 @@
 #include "tablasVarProc.h"
 #include "uthash.h"
 
+//Hector Jesus De La Garza Ponce
+//Oziel Alonso Garza Lopez
+
 /*
 * Funcion para agregar las variables locales al directorio de funciones.
 */
@@ -28,7 +31,7 @@ directorioObjetos* agregarVariablesLocales(directorioObjetos *objetos, char *obj
 	                        strcpy(temp->nombre, nombre);
 	                        temp->tipo = tipo;
 	                        temp->direccion = direccion;
-	                        HASH_ADD_STR(existeP->variablesLocales, nombre, temp);  /* id: name of key field */
+	                        HASH_ADD_STR(existeP->variablesLocales, nombre, temp);  
 	                        return objetos;   
                     } else {
 	                        printf("Error, la llave se repite");
@@ -51,7 +54,7 @@ directorioObjetos* agregarVariablesGlobales(directorioObjetos *objetos, char *ob
         directorio *temp;
 
         //Buscar el objeto en el directorio
-        HASH_FIND_STR(objetos, objeto, existe);  /* id already in the hash? */
+        HASH_FIND_STR(objetos, objeto, existe); 
         if (existe) {
                 //Checar si la variable ya existe
                 HASH_FIND_STR(existe->variablesGlobales, nombre, temp);
@@ -61,7 +64,7 @@ directorioObjetos* agregarVariablesGlobales(directorioObjetos *objetos, char *ob
                         strcpy(temp->nombre, nombre);
                         temp->tipo = tipo;
                         temp->direccion = direccion;
-                        HASH_ADD_STR(existe->variablesGlobales, nombre, temp);  /* id: name of key field */
+                        HASH_ADD_STR(existe->variablesGlobales, nombre, temp);  
                         return objetos;   
                 } else {
                         printf("Error, la llave se repite");
@@ -81,7 +84,7 @@ directorioObjetos* agregarFuncion(directorioObjetos *objetos, char *objeto, char
         directorioObjetos *existe;  
 
         //Buscar el objeto en el directorio
-        HASH_FIND_STR(objetos, objeto, existe);  /* id already in the hash? */
+        HASH_FIND_STR(objetos, objeto, existe);  
         if (existe) {
                 //Checar si la funcion ya existe
                 HASH_FIND_STR(existe->procedimientos, nombre, temp);
@@ -90,7 +93,7 @@ directorioObjetos* agregarFuncion(directorioObjetos *objetos, char *objeto, char
                         temp = (directorioProcedimientos*)malloc(sizeof(directorioProcedimientos));
                         strcpy(temp->nombre, nombre);                      
                         temp->variablesLocales = NULL;
-                        HASH_ADD_STR(existe->procedimientos, nombre, temp);  /* id: name of key field */
+                        HASH_ADD_STR(existe->procedimientos, nombre, temp); 
                         return objetos;   
                 } else {
                         printf("Error, la llave se repite");
@@ -109,14 +112,14 @@ directorioObjetos* agregarObjeto(directorioObjetos *objetos, char *nombre){
         directorioObjetos *temp;
 
         //Buscar el objeto en el directorio
-        HASH_FIND_STR(objetos, nombre, temp);  /* id already in the hash? */
+        HASH_FIND_STR(objetos, nombre, temp);  
         if (temp==NULL) {
                 //Agregar el nuevo objeto al directorio
                 temp = (directorioObjetos*)malloc(sizeof(directorioObjetos));
                 strcpy(temp->nombre, nombre);
                 temp->variablesGlobales = NULL;
                 temp->procedimientos = NULL;
-                HASH_ADD_STR(objetos, nombre, temp);  /* id: name of key field */
+                HASH_ADD_STR(objetos, nombre, temp);  
                 return objetos;    
         } else {
                 printf("Error, la llave se repite");
