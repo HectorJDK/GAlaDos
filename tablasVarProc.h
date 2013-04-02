@@ -1,5 +1,8 @@
 #include "uthash.h"
 
+//Hector Jesus De La Garza Ponce
+//Oziel Alonso Garza Lopez
+
 //Estructura Variables uthash-------------------------------------------------------
 typedef struct directorio {
         char nombre[25];              /* key */

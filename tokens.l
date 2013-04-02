@@ -1,6 +1,8 @@
 %{
 #include <stdio.h>
 #include "gramatica.tab.h"
+//Hector Jesus De La Garza Ponce
+//Oziel Alonso Garza Lopez
 %}
 
 atributosGlobales		(?i:Atributos_Globales)

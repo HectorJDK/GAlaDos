@@ -5,7 +5,7 @@
 #include "uthash.h"
 
 /*
-* que implementa una estructura de pila en C
+* Clase que implementa una estructura de pila en C
 */
 
 /*
@@ -107,3 +107,73 @@ void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode) {
 		}
 	}
 }
+
+//Todo esto puede ir en una funcion
+//----------------------------------------------------------------------------------------------------------------------------------------------------
+cuadruplos* algoritmoCuadruplo (cuadruplos *listaCuadruplos, pila *p, pila *op, nodo *operador, nodo *oper1, nodo *oper2, int cuboSemantico[4][4][14], int *contadorIndice){
+    
+    int operando1Int;
+	int operando2Int;
+	int operadorInt;
+
+	cuadruplos *accederCuadruplo;
+
+    //Salimos de FACTOR
+    //Checamos que la pila de operadores no este vacia
+    if (pilaVacia(op) == 1) {
+        //Si no esta vacia ...
+
+        //Sacamos de la pila (momentariamente) para validar
+        operador = pop(op);
+        
+        int banderaMultiplicacionDivision;;
+        //Obtenemos el valor dentro del nodo que sacamos (este sera entero)
+        banderaMultiplicacionDivision = *(int*)operador->dato;
+        //Checamos que el siguiente no sea una multiplicacion o division
+        if (banderaMultiplicacionDivision == 2 || banderaMultiplicacionDivision == 3) {
+            //Si si entonces ...
+            oper2 = pop(p);
+            oper1 = pop(p);
+
+            //Variables para facilitar la lectura y manipulacion de datos
+            operando1Int = ((nodoOperando*)(oper1->dato))->tipo;
+            operando2Int = ((nodoOperando*)(oper2->dato))->tipo;
+            operadorInt = *(int*)(operador->dato);
+
+            //Sacamos de la pila operador2 y operador1
+            //Checamos que el cuadruplo sea posible de realizar
+            if (cuboSemantico[operando1Int][operando2Int][operadorInt] >= 0) {
+                //Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
+                listaCuadruplos = generaCuadruplo(listaCuadruplos, oper1, oper2, operador, cuboSemantico[operando1Int][operando2Int][operadorInt], *contadorIndice);
+
+                //Checamos si no hubo algun error en la generacion de los cuadruplos
+                if (listaCuadruplos != NULL) {
+                    //Buscamos el cuadruplo reciencreado para guardar su resultado en la tabla de operandos el cual lo pondra en 
+                    HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
+
+                    //Lo guardamos en operandos
+                    push(p, accederCuadruplo->resultado);
+
+                    //aumentamos en 1 el contador de cuadruplos
+                    //int aux = *contadorIndice+1;
+                    *contadorIndice = *contadorIndice+1;
+
+                	return listaCuadruplos;
+                } else {
+                    exit(1);
+                }
+                
+            } else {
+                //Si la operacion es invalida se debe desplegar el mensaje correspondiente y terminar
+                printf("Operacion Invalida\n");
+                exit(1);
+            }
+        } else {
+            //Si no era multiplicacion o division volver a meter a la pila de operadores
+            push(op, operador);
+            return listaCuadruplos;
+        }
+    }
+}
+    //----------------------------------------------------------------------------------------------------------------------------------------------------
+

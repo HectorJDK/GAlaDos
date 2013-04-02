@@ -1,3 +1,8 @@
+//Programa ejemplo del lenguaje GAlaDOs
+
+//Hector Jesus De La Garza Ponce
+//Oziel Alonso Garza Lopez
+
 Declara_Objetos [
 	Clase x {
 		Atributos_Globales[
