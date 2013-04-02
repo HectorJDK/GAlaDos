@@ -58,10 +58,9 @@ nodo* pop(pila *x){
 		x->tamanio = x->tamanio - 1;
 
 		return temporal;
-	} else {	
-		free(x->primero);
+	} else {
 		x->primero = NULL;
-		return NULL;		
+		return NULL;
 	}
 }
 

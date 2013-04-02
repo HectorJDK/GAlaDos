@@ -49,6 +49,6 @@ typedef struct cuadruplos
 
 
 //Firmas de los metodos
-cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *oper1, nodo *oper2, nodo *op, int temp, int indice);
+cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *operando1, nodo *operando2, nodo *operador, nodo *resultado, int indice);
 void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode);
-cuadruplos* algoritmoCuadruplo(cuadruplos *listaCuadruplos, pila *p, pila *op, nodo *operador, nodo *oper1, nodo *oper2, int cuboSemantico[4][4][14], int *contadorIndice);
+cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[4][4][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean);

@@ -12,15 +12,18 @@
 *GenerarCuadruplo 
 *Crea un cruadruplo y lo guarda en la lista de cuadruplos correspondiente, usa nodos en donde se tiene la informacion general
 */
-cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *oper1, nodo *oper2, nodo *op, int temp, int indice){
+cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *operando1, nodo *operando2, nodo *operador, nodo *resultado, int indice){
+	//Variable auxiliar que servira como needle para la busqueda e insercion en el hash
 	cuadruplos *existe;
-	nodoOperando *tempOper1;
-	nodoOperando *tempOper2;
+
+	//Variables auxiliares para poblar la estructura
+	nodoOperando *tempOperando1;
+	nodoOperando *tempOperando2;
 	nodoOperando *tempResultado;
 	
 	//Obtenemos una nueva direccion reservada para nuestro resultado, asi obtenemos independencia
-	tempOper1 = (nodoOperando*)malloc(sizeof(nodoOperando));
-	tempOper2 = (nodoOperando*)malloc(sizeof(nodoOperando));
+	tempOperando1 = (nodoOperando*)malloc(sizeof(nodoOperando));
+	tempOperando2 = (nodoOperando*)malloc(sizeof(nodoOperando));
 	tempResultado = (nodoOperando*)malloc(sizeof(nodoOperando));
 	
 
@@ -30,41 +33,35 @@ cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *oper1, nodo *oper
 		//Si no se ha agregado el cuadruplo se crea y se llena sus datos
 		existe = (cuadruplos*)malloc(sizeof(cuadruplos));
 
-		//Pasamos todos los datos de oper1
-		tempOper1->temp = ((nodoOperando*)oper1->dato)->temp;
-		tempOper1->tipo = ((nodoOperando*)oper1->dato)->tipo;
-		strcpy(tempOper1->nombre, ((nodoOperando*)oper1->dato)->nombre);
-		tempOper1->direccion = ((nodoOperando*)oper1->dato)->tipo;
+		//Pasamos todos los datos de operando1
+		tempOperando1->temp = ((nodoOperando*)operando1->dato)->temp;
+		tempOperando1->tipo = ((nodoOperando*)operando1->dato)->tipo;
+		strcpy(tempOperando1->nombre, ((nodoOperando*)operando1->dato)->nombre);
+		tempOperando1->direccion = ((nodoOperando*)operando1->dato)->tipo;
 
-		//Pasamos todos los datos de oper2
-		tempOper2->temp = ((nodoOperando*)oper2->dato)->temp;
-		tempOper2->tipo = ((nodoOperando*)oper2->dato)->tipo;
-		strcpy(tempOper2->nombre, ((nodoOperando*)oper2->dato)->nombre);
-		tempOper2->direccion = ((nodoOperando*)oper2->dato)->tipo;
+		//Pasamos todos los datos de operando2
+		tempOperando2->temp = ((nodoOperando*)operando2->dato)->temp;
+		tempOperando2->tipo = ((nodoOperando*)operando2->dato)->tipo;
+		strcpy(tempOperando2->nombre, ((nodoOperando*)operando2->dato)->nombre);
+		tempOperando2->direccion = ((nodoOperando*)operando2->dato)->tipo;
 
 		//Genera el nodo resultado y lo asigna como temporal
-		tempResultado->temp = 1;
-		tempResultado->tipo = temp;
-		//------------------------------------------------------
-		//Borrar tronara el programa solo para pruebas
-		sprintf(tempResultado->nombre, "temp_%d", indice);
-		//------------------------------------------------------
-		//strcpy(, strcat("temp", indice));		
-		//Sacar direccion del avail
-		//tempResultado.direccion = 1152;
+		tempResultado->temp = ((nodoOperando*)resultado->dato)->temp;
+		tempResultado->tipo = ((nodoOperando*)resultado->dato)->tipo;
+		strcpy(tempResultado->nombre, ((nodoOperando*)resultado->dato)->nombre);
+		tempResultado->direccion = ((nodoOperando*)resultado->dato)->tipo;
 
 		//Pasar todos los datos al recien creado cuadruplo
 		existe->indice = indice;
-		existe->operando1 = tempOper1;
-		existe->operando2 = tempOper2;
-		existe->operador = *(int*)(op->dato);
+		existe->operando1 = tempOperando1;
+		existe->operando2 = tempOperando2;
+		existe->operador = *(int*)(operador->dato);
 		existe->resultado = tempResultado;
 
 	//Agregamos el nuevo cuaruplo a la lista de hash y regresamos el nuevo apuntador
- 	HASH_ADD_INT(listaCuadruplos, indice, existe);  /* id: name of key field */
+	HASH_ADD_INT(listaCuadruplos, indice, existe);  /* id: name of key field */
 		return listaCuadruplos;
 	} else {	
-
 		printf("Error en la generacion y adicion de indices en el cuadruplo \n");
 		return NULL;
 	} 
@@ -108,72 +105,192 @@ void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode) {
 	}
 }
 
-//Todo esto puede ir en una funcion
-//----------------------------------------------------------------------------------------------------------------------------------------------------
-cuadruplos* algoritmoCuadruplo (cuadruplos *listaCuadruplos, pila *p, pila *op, nodo *operador, nodo *oper1, nodo *oper2, int cuboSemantico[4][4][14], int *contadorIndice){
-    
-    int operando1Int;
-	int operando2Int;
+//Generacion de cuadruplos para 
+cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[4][4][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean){
+	
+	//Variables auxiliares Enteras
+	int acceso;
+	int operando1Tipo;
+	int operando2Tipo;
+	int operando1Temp;
+	int operando2Temp;
 	int operadorInt;
 
+	//Variables auxiliares Apuntadores
+	nodo *operador;
+	nodo *operando1;
+	nodo *operando2;
 	cuadruplos *accederCuadruplo;
 
-    //Salimos de FACTOR
-    //Checamos que la pila de operadores no este vacia
-    if (pilaVacia(op) == 1) {
-        //Si no esta vacia ...
+	//Apuntador para el avail que se usara en el cuadruplo
+	nodo *resultadoAvail;
+	nodoOperando *nuevoAvail;
 
-        //Sacamos de la pila (momentariamente) para validar
-        operador = pop(op);
-        
-        int banderaMultiplicacionDivision;;
-        //Obtenemos el valor dentro del nodo que sacamos (este sera entero)
-        banderaMultiplicacionDivision = *(int*)operador->dato;
-        //Checamos que el siguiente no sea una multiplicacion o division
-        if (banderaMultiplicacionDivision == 2 || banderaMultiplicacionDivision == 3) {
-            //Si si entonces ...
-            oper2 = pop(p);
-            oper1 = pop(p);
+	//Salimos de FACTOR
+	//Checamos que la pila de operadores no este vacia
+	if (pilaVacia(operadores) == 1) {
+		//Si no esta vacia ...
+		//Sacamos de la pila (momentariamente) para validar
+		operador = pop(operadores);
+		
+		//Obtenemos el valor dentro del nodo que sacamos (este sera entero)
+		operadorInt = *(int*)(operador->dato);
 
-            //Variables para facilitar la lectura y manipulacion de datos
-            operando1Int = ((nodoOperando*)(oper1->dato))->tipo;
-            operando2Int = ((nodoOperando*)(oper2->dato))->tipo;
-            operadorInt = *(int*)(operador->dato);
+		//Inicializamos acceso con 0 para no entrar
+		acceso = 0;
 
-            //Sacamos de la pila operador2 y operador1
-            //Checamos que el cuadruplo sea posible de realizar
-            if (cuboSemantico[operando1Int][operando2Int][operadorInt] >= 0) {
-                //Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
-                listaCuadruplos = generaCuadruplo(listaCuadruplos, oper1, oper2, operador, cuboSemantico[operando1Int][operando2Int][operadorInt], *contadorIndice);
+		switch(prioridad){
+			//Prioridad: Multiplicacion o Division
+			case 1:
+				if (operadorInt == 2 || operadorInt == 3)
+					acceso = 1;
+				break;
 
-                //Checamos si no hubo algun error en la generacion de los cuadruplos
-                if (listaCuadruplos != NULL) {
-                    //Buscamos el cuadruplo reciencreado para guardar su resultado en la tabla de operandos el cual lo pondra en 
-                    HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
+			//Prioridad: Suma o Resta
+			case 2:
+				if (operadorInt == 0 || operadorInt == 1)
+					acceso = 1;
+				break;
 
-                    //Lo guardamos en operandos
-                    push(p, accederCuadruplo->resultado);
+			//Prioridad: Operadores Relacionales
+			case 3:
+				if (operadorInt == 4 || operadorInt == 5 || operadorInt == 6 || operadorInt == 7 || operadorInt == 8 || operadorInt == 9)
+					acceso = 1;
+				break;
 
-                    //aumentamos en 1 el contador de cuadruplos
-                    //int aux = *contadorIndice+1;
-                    *contadorIndice = *contadorIndice+1;
+			//Prioridad: And Or
+			case 4:
+				if (operadorInt == 10 || operadorInt == 11)
+					acceso = 1;
+				break;
+		}	
 
-                	return listaCuadruplos;
-                } else {
-                    exit(1);
-                }
-                
-            } else {
-                //Si la operacion es invalida se debe desplegar el mensaje correspondiente y terminar
-                printf("Operacion Invalida\n");
-                exit(1);
-            }
-        } else {
-            //Si no era multiplicacion o division volver a meter a la pila de operadores
-            push(op, operador);
-            return listaCuadruplos;
-        }
-    }
+		//Checamos que el siguiente no sea una multiplicacion o division
+		if (acceso == 1) {
+			//Si si entonces ...
+			//Sacamos los operandos de pila operandos
+			operando2 = pop(operandos);
+			operando1 = pop(operandos);
+
+			//Variables para facilitar la lectura y manipulacion de datos
+			operando1Tipo = ((nodoOperando*)(operando1->dato))->tipo;
+			operando2Tipo = ((nodoOperando*)(operando2->dato))->tipo;
+			operando1Temp = ((nodoOperando*)(operando1->dato))->temp;
+			operando2Temp = ((nodoOperando*)(operando2->dato))->temp;
+			
+			//Sacamos de la pila operador2 y operador1
+			//Checamos que el cuadruplo sea posible de realizar
+			if (cuboSemantico[operando1Tipo][operando2Tipo][operadorInt] >= 0) {
+				//Verificamos que se tenga un avail disponible para guardar el resultado
+				switch(cuboSemantico[operando1Tipo][operando2Tipo][operadorInt]){
+					case 0:
+						resultadoAvail = pop(availEntero);
+						break;
+
+					case 1:
+						resultadoAvail = pop(availDecimal);
+						break;
+
+					case 2:
+						resultadoAvail = pop(availTexto);
+						break;
+
+					case 3:
+						resultadoAvail = pop(availBoolean);
+						break;
+				}
+
+				//Checamos si hay avail disponible para la variable, si no hay error en memoria
+				if (resultadoAvail == NULL) {
+					printf("Error no hay memoria disponible\n");
+					exit(1);
+				}
+
+				//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
+				listaCuadruplos = generaCuadruplo(listaCuadruplos, operando1, operando2, operador, resultadoAvail, *contadorIndice);
+
+				//Checamos si no hubo algun error en la generacion de los cuadruplos
+				if (listaCuadruplos != NULL) {
+					//Buscamos el cuadruplo reciencreado para guardar su resultado en la tabla de operandos el cual lo pondra en 
+					HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
+
+					//Lo guardamos en operandos
+					push(operandos, accederCuadruplo->resultado);
+
+					//Si alguno de los operandos correspondia a un temporal ENTONCES lo regresamos al avail correspondiente
+					//checamos que el operando1 sea temp
+					if (operando1Temp == 1) {
+						//Reinsercion del nodo en la memoria porque con el pop se habia liberado de memoria
+						nuevoAvail = (nodoOperando*)malloc(sizeof(nodoOperando));
+						nuevoAvail->temp = ((nodoOperando*)operando1->dato)->temp;
+						nuevoAvail->tipo = ((nodoOperando*)operando1->dato)->tipo;
+						strcpy(nuevoAvail->nombre, ((nodoOperando*)operando1->dato)->nombre);
+						nuevoAvail->direccion = ((nodoOperando*)operando1->dato)->tipo;
+
+						switch(operando1Tipo){
+							case 0:
+								push(availEntero, nuevoAvail);
+								break;
+
+							case 1:
+								push(availDecimal, nuevoAvail);
+								break;
+
+							case 2:
+								push(availTexto, nuevoAvail);
+								break;
+
+							case 3:
+								push(availBoolean, nuevoAvail);
+								break;
+						}
+					} 
+
+					//checamos que el operando2 sea temp
+					if (operando2Temp == 1) {
+						//Reinsercion del nodo en la memoria porque con el pop se habia liberado de memoria
+						nuevoAvail = (nodoOperando*)malloc(sizeof(nodoOperando));
+						nuevoAvail->temp = ((nodoOperando*)operando1->dato)->temp;
+						nuevoAvail->tipo = ((nodoOperando*)operando1->dato)->tipo;
+						strcpy(nuevoAvail->nombre, ((nodoOperando*)operando1->dato)->nombre);
+						nuevoAvail->direccion = ((nodoOperando*)operando1->dato)->tipo;
+
+						switch(operando2Tipo){
+							case 0:
+								push(availEntero, nuevoAvail);
+								break;
+							case 1:
+								push(availDecimal, nuevoAvail);
+								break;
+							case 2:
+								push(availTexto, nuevoAvail);
+								break;
+							case 3:
+								push(availBoolean, nuevoAvail);
+								break;
+						}
+					}
+
+					//aumentamos en 1 el contador de cuadruplos
+					//int aux = *contadorIndice+1;
+					*contadorIndice = *contadorIndice+1;
+
+					return listaCuadruplos;
+				} else {
+					exit(1);
+				}
+
+			} else {
+				//Si la operacion es invalida se debe desplegar el mensaje correspondiente y terminar
+				printf("Operacion Invalida\n");
+				exit(1);
+			}
+		} else {
+			//Si no era multiplicacion o division volver a meter a la pila de operadores
+			push(operadores, operador);
+			return listaCuadruplos;
+		}
+	} else {
+		return listaCuadruplos;
+	}
 }
-    //----------------------------------------------------------------------------------------------------------------------------------------------------
-
