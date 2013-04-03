@@ -1,6 +1,7 @@
 #include "uthash.h"
 #include "pilas.h"
-
+#ifndef CUADRUPLOS_H
+#define CUADRUPLOS_H
 /*
 Hector Jesus De La Garza Ponce 	619971
 Oziel Alonzo Garza Lopez 		805074
@@ -46,7 +47,7 @@ typedef struct cuadruplos
 	nodoOperando *resultado;
 	UT_hash_handle hh;
 } cuadruplos;
-
+#endif
 
 //Firmas de los metodos
 cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *operando1, nodo *operando2, nodo *operador, nodo *resultado, int indice);

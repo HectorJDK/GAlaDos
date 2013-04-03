@@ -1,3 +1,5 @@
+#ifndef PILAS_H
+#define PILAS_H
 //Encabezado pilaChar.h
 //La estructura almacena un dato tipo char
 //Estructuras para los nodos y la pila
@@ -18,3 +20,4 @@ typedef struct pila
 void push(pila *x, void* dato);
 nodo* pop(pila *x);
 int pilaVacia(pila *x);
+#endif

@@ -3,7 +3,7 @@
 #include <string.h>
 #include "cuadruplos.h"
 #include "uthash.h"
-
+#include "codigosOperaciones.h"
 /*
 * Clase que implementa una estructura de pila en C
 */
