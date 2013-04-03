@@ -37,19 +37,19 @@ cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *operando1, nodo *
 		tempOperando1->temp = ((nodoOperando*)operando1->dato)->temp;
 		tempOperando1->tipo = ((nodoOperando*)operando1->dato)->tipo;
 		strcpy(tempOperando1->nombre, ((nodoOperando*)operando1->dato)->nombre);
-		tempOperando1->direccion = ((nodoOperando*)operando1->dato)->tipo;
+		tempOperando1->direccion = ((nodoOperando*)operando1->dato)->direccion;
 
 		//Pasamos todos los datos de operando2
 		tempOperando2->temp = ((nodoOperando*)operando2->dato)->temp;
 		tempOperando2->tipo = ((nodoOperando*)operando2->dato)->tipo;
 		strcpy(tempOperando2->nombre, ((nodoOperando*)operando2->dato)->nombre);
-		tempOperando2->direccion = ((nodoOperando*)operando2->dato)->tipo;
+		tempOperando2->direccion = ((nodoOperando*)operando2->dato)->direccion;
 
 		//Genera el nodo resultado y lo asigna como temporal
 		tempResultado->temp = ((nodoOperando*)resultado->dato)->temp;
 		tempResultado->tipo = ((nodoOperando*)resultado->dato)->tipo;
 		strcpy(tempResultado->nombre, ((nodoOperando*)resultado->dato)->nombre);
-		tempResultado->direccion = ((nodoOperando*)resultado->dato)->tipo;
+		tempResultado->direccion = ((nodoOperando*)resultado->dato)->direccion;
 
 		//Pasar todos los datos al recien creado cuadruplo
 		existe->indice = indice;
@@ -142,25 +142,25 @@ cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCua
 		switch(prioridad){
 			//Prioridad: Multiplicacion o Division
 			case 1:
-				if (operadorInt == 2 || operadorInt == 3)
+				if (operadorInt == OP_MULTIPLICACION || operadorInt == OP_DIVISION)
 					acceso = 1;
 				break;
 
 			//Prioridad: Suma o Resta
 			case 2:
-				if (operadorInt == 0 || operadorInt == 1)
+				if (operadorInt == OP_SUMA || operadorInt == OP_RESTA)
 					acceso = 1;
 				break;
 
 			//Prioridad: Operadores Relacionales
 			case 3:
-				if (operadorInt == 4 || operadorInt == 5 || operadorInt == 6 || operadorInt == 7 || operadorInt == 8 || operadorInt == 9)
+				if (operadorInt == OP_MAYORQUE || operadorInt == OP_MENORQUE || operadorInt == OP_MAYORIGUAL || operadorInt == OP_MENORIGUAL || operadorInt == OP_IGUAL || operadorInt == OP_DIFERENTE)
 					acceso = 1;
 				break;
 
 			//Prioridad: And Or
 			case 4:
-				if (operadorInt == 10 || operadorInt == 11)
+				if (operadorInt == OP_AND || operadorInt == OP_OR)
 					acceso = 1;
 				break;
 		}	
@@ -180,7 +180,7 @@ cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCua
 			
 			//Sacamos de la pila operador2 y operador1
 			//Checamos que el cuadruplo sea posible de realizar
-			if (cuboSemantico[operando1Tipo][operando2Tipo][operadorInt] >= 0) {
+			if (cuboSemantico[operando1Tipo][operando2Tipo][operadorInt] != OP_ERROR) {
 				//Verificamos que se tenga un avail disponible para guardar el resultado
 				switch(cuboSemantico[operando1Tipo][operando2Tipo][operadorInt]){
 					case 0:
@@ -225,7 +225,7 @@ cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCua
 						nuevoAvail->temp = ((nodoOperando*)operando1->dato)->temp;
 						nuevoAvail->tipo = ((nodoOperando*)operando1->dato)->tipo;
 						strcpy(nuevoAvail->nombre, ((nodoOperando*)operando1->dato)->nombre);
-						nuevoAvail->direccion = ((nodoOperando*)operando1->dato)->tipo;
+						nuevoAvail->direccion = ((nodoOperando*)operando1->dato)->direccion;
 
 						switch(operando1Tipo){
 							case 0:
@@ -253,7 +253,7 @@ cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCua
 						nuevoAvail->temp = ((nodoOperando*)operando1->dato)->temp;
 						nuevoAvail->tipo = ((nodoOperando*)operando1->dato)->tipo;
 						strcpy(nuevoAvail->nombre, ((nodoOperando*)operando1->dato)->nombre);
-						nuevoAvail->direccion = ((nodoOperando*)operando1->dato)->tipo;
+						nuevoAvail->direccion = ((nodoOperando*)operando1->dato)->direccion;
 
 						switch(operando2Tipo){
 							case 0:

@@ -6,12 +6,12 @@
 #include "codigosOperaciones.h"
 
 //Definiciones de operadores
-#define ENTERO 			0
-#define DECIMAL 		1 
-#define TEXTO 			2
-#define BOOLEANO 		3
+#define TIPO_ENTERO			0
+#define TIPO_DECIMAL 		1 
+#define TIPO_TEXTO 			2
+#define TIPO_BOOLEANO 		3
 
-#define ERROR 			-1
+#define OP_ERROR 			-1
 
 void inicializarSemantica();
 void inicializarAvail();

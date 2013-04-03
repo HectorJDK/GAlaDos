@@ -7,6 +7,7 @@
 	#include <string.h>  /* strcpy */
 	#include "uthash.h"
 	#include "tablasVarProc.h"
+	#include "codigosOperaciones.h"
 	#define YYERROR_VERBOSE 1
 	
 //----------------------------------------------------------------------------------------

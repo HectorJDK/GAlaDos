@@ -1,6 +1,7 @@
 #include "cuadruplos.h"
-#include "cuboSemantico.h"
+#include "utilerias.h"
 #include "uthash.h"
+#include "codigosOperaciones.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -44,55 +45,6 @@ cuadruplos *listaCuadruplos = NULL;
 static int cuboSemantico[4][4][14];
 
 //Esto va en nuestro main
-void inicializarAvail(){
-	//Inicializacion del ciclo (for)
-	int repeticion= 0;
-
-	//Inicializacion de los nodos con sus tipos de nodos
-	nodoOperando *datoEntero;
-	nodoOperando *datoDecimal;
-	nodoOperando *datoTexto;
-	nodoOperando *datoBooleano;
-
-	//Creacion de los nodos con todos sus datos 
-	for(repeticion = 0; repeticion < 1000; repeticion++) {
-
-		//Creacion de los nodos enteros
-		datoEntero = (nodoOperando*)malloc(sizeof(nodoOperando));
-		datoEntero->temp = 1;
-		datoEntero->tipo = 0;
-		sprintf(datoEntero->nombre, "tempInt_%d", memoriaEnteroTemp - repeticion);
-		datoEntero->direccion = memoriaEnteroTemp + repeticion;
-
-		//Creacion de los nodos Decimal
-		datoDecimal = (nodoOperando*)malloc(sizeof(nodoOperando));
-		datoDecimal->temp = 1;
-		datoDecimal->tipo = 1;
-		sprintf(datoDecimal->nombre, "tempDec_%d", memoriaDecimalTemp - repeticion);
-		datoDecimal->direccion = memoriaDecimalTemp + repeticion;
-		
-		//Creacion de los nodos Texto
-		datoTexto = (nodoOperando*)malloc(sizeof(nodoOperando));
-		datoTexto->temp = 1;
-		datoTexto->tipo = 2;
-		sprintf(datoTexto->nombre, "tempText_%d", memoriaTextoTemp - repeticion);
-		datoTexto->direccion = memoriaTextoTemp + repeticion;
-
-		//Creacion de los nodos Booleano
-		datoBooleano = (nodoOperando*)malloc(sizeof(nodoOperando));
-		datoBooleano->temp = 1;
-		datoBooleano->tipo = 3;
-		sprintf(datoBooleano->nombre, "tempBool_%d", memoriaBooleanoTemp - repeticion);
-		datoBooleano->direccion = memoriaBooleanoTemp + repeticion;
-
-		//Metemos en las pilas
-		push(availEntero, datoEntero);
-		push(availDecimal, datoDecimal);
-		push(availTexto, datoTexto);
-		push(availBoolean, datoBooleano);
-	}    
-}
-
 void  generarMultiplicacionDivision(){
 	listaCuadruplos = verificacionGeneracionCuadruplo(1 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
 }
@@ -140,7 +92,7 @@ int main()
 	availBoolean->primero = NULL;
 	
 	//Inicializacion de las utilidades
-	inicializarAvail();
+	inicializarAvail(availEntero, availDecimal, availTexto, availBoolean, &memoriaEnteroTemp, &memoriaDecimalTemp, &memoriaTextoTemp, &memoriaBooleanoTemp);
 	inicializarSemantica(cuboSemantico);
 	
 
@@ -260,7 +212,7 @@ int main()
 	operando = (nodoOperando*)malloc(sizeof(nodoOperando));
 	operando->temp = 0;
 	operando->tipo = 1;
-	strcpy(operando->nombre, "X");
+	strcpy(operando->nombre, "Z");
 	operando->direccion = memoriaDecimalLocal;
 	memoriaDecimalLocal++;
 
@@ -269,7 +221,7 @@ int main()
 	//Accion 5 de la generacion de codigo intermedio
 	generarMultiplicacionDivision();
 
-	generarSumaResta();
+	//generarSumaResta();
 
 	//----------------------------------------------------------------------------------------------------------------------------------------------------
 	imprimeCuadruplos(listaCuadruplos, 0);
