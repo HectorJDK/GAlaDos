@@ -227,6 +227,8 @@ cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCua
 						strcpy(nuevoAvail->nombre, ((nodoOperando*)operando1->dato)->nombre);
 						nuevoAvail->direccion = ((nodoOperando*)operando1->dato)->direccion;
 
+						printf("Metemos en avail a %s\n", ((nodoOperando*)operando1->dato)->nombre);
+
 						switch(operando1Tipo){
 							case 0:
 								push(availEntero, nuevoAvail);
@@ -250,10 +252,10 @@ cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCua
 					if (operando2Temp == 1) {
 						//Reinsercion del nodo en la memoria porque con el pop se habia liberado de memoria
 						nuevoAvail = (nodoOperando*)malloc(sizeof(nodoOperando));
-						nuevoAvail->temp = ((nodoOperando*)operando1->dato)->temp;
-						nuevoAvail->tipo = ((nodoOperando*)operando1->dato)->tipo;
-						strcpy(nuevoAvail->nombre, ((nodoOperando*)operando1->dato)->nombre);
-						nuevoAvail->direccion = ((nodoOperando*)operando1->dato)->direccion;
+						nuevoAvail->temp = ((nodoOperando*)operando2->dato)->temp;
+						nuevoAvail->tipo = ((nodoOperando*)operando2->dato)->tipo;
+						strcpy(nuevoAvail->nombre, ((nodoOperando*)operando2->dato)->nombre);
+						nuevoAvail->direccion = ((nodoOperando*)operando2->dato)->direccion;
 
 						switch(operando2Tipo){
 							case 0:

@@ -358,4 +358,4 @@ void inicializarAvail(pila *availEntero, pila *availDecimal, pila *availTexto, p
 		push(availTexto, datoTexto);
 		push(availBoolean, datoBooleano);
 	}    
-}}
+}

@@ -99,7 +99,7 @@ int main()
 	//Asumimos que los enteros empiezan en 1000
 	//Aqui empieza la simulacion del algoritmo
 	//Algoritmo para cuadruplo:
-	// A * I * B;
+	// A * (I * B) * Ẍ * Z;
 	// A es entero
 	// I es decimal
 
@@ -133,7 +133,14 @@ int main()
 	//Encontramos el operador lo metemos en la pila
 	//Accion 3
 	operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-	operador->operador = 3;
+	operador->operador = OP_MULTIPLICACION;
+
+	push(operadores, operador);
+
+	//Nos metemos en el fondo falso OP_APARENTESIS
+	//****************************
+	operador = (nodoOperador*)malloc(sizeof(nodoOperador));
+	operador->operador = OP_APARENTESIS;
 
 	push(operadores, operador);
 
@@ -176,6 +183,22 @@ int main()
 
 	//Prueba en falso checarsi hay alguna operacion de suma pendiente
 	generarSumaResta();
+
+	//Encontramos el cierre del parentesis OP_CPARENTESIS
+	//Sacamos el ultimo operador
+	pop(operadores);
+	//operador = pop(operadores);
+
+	//****************************
+
+	//Accion 5 de la generacion de codigo intermedio
+	generarMultiplicacionDivision();
+
+	//Prueba en falso checarsi hay alguna operacion de suma pendiente
+	generarSumaResta();
+
+	//Encontramos el cierre del parentesis OP_CPARENTESIS
+	//Sacamos el ultimo operador
 
 	//Encontramos el operador lo metemos en la pila
 	//Accion 3
