@@ -1,0 +1,22 @@
+//Programa ejemplo del lenguaje GAlaDOs
+
+//Hector Jesus De La Garza Ponce
+//Oziel Alonso Garza Lopez
+
+Declara_Objetos [	
+	
+]
+Variables_Globales [ ] 
+Declara_Funciones [ ]
+Implementa_Funciones [ ]
+
+ejecutarPrograma {
+	Variables_Locales [
+		decimal uno;
+		decimal dos;
+		decimal tres;	
+	]
+
+	uno = uno*dos*tres;
+}
+

@@ -18,44 +18,123 @@ void yyerror( const char *str )
 	fprintf( stderr, "error: %s\n", str );
 }
 
+//Apuntadores para la busqueda en los hashes
 
-//Variables globales para la semantica-------------------------------------------------------
 
 //Banderas
 int error = 0;
-int ejecutar = 0;
-int variablesGlobales=0; //En seccion de variables globales	
-int funcionesD=0;		//En seccion de declaracion de funciones
-int funcionesI=0;		//En seccion de implementacion de funciones
 
-//Globales
-int id=1;
-char *nombreV=NULL;
-char *tipoV=NULL;
-char *datoV="dato";
-char *nombreP=NULL;
-char *nombreO=NULL;
+//Secciones
+int seccVariablesGlobales=0; //En seccion de variables globales	
+int seccVariablesLocales=0; //En seccion de variables globales	
+int seccFuncionesDeclaracion=0;		//En seccion de declaracion de funciones
+int seccFuncionesImplementacion=0;		//En seccion de implementacion de funciones
+int seccDeclaraObjetos=0; //En seccion de declara_Objetos	
 
-//Contadores para direcciones de memoria
-int contadorIndiceCuadruplos = 0;
-int contadorBooleanos = 0;
-int contadorEntero = 0;
-int contadorDecimal = 0;
-int contadorTexto = 0;
+//variables para control de acciones de generacion codigo
+int generaAsignacion = 0;
 
-//Temporales para tablas de procedimientos y variables
-char tempObjetos[25];
-char tempFunciones[25];
-unsigned short tempTipos;
-char tempVariable[25];
+//Variables para la creacion de variables en la tabla
+char nombreVariable[25];
+unsigned short tipoVariable;
+char nompreProcedimiento[25];
+char nombreObjeto[25];
+int direccionVariable;
+
+//Pilas Operandos
+pila *operandos;    	//Variables
+pila *operadores;   	//Signos
+
+//Pilas Avail
+pila *availEntero;		//int = 0
+pila *availDecimal;		//int = 1
+pila *availTexto;		//int = 2
+pila *availBoolean;		//int = 3
+
+//Contador de cuadruplos
+int contadorIndice = 0;
+
+//Variables para control
+nodoOperando *operando;
+nodoOperador *operador;
+
+//Variables para control de memoria
+int cantidadVariablesTemp = 1000;
+int cantidadVariableLocal = 1000;
+int cantidadVariableGlobal = 1000;
+
+//Direcciones base para memoria
+int baseMemoriaTemp = 10000;
+int baseMemoriaLocal = 5000;
+int baseMemoriaGlobal = 1000;
+
+//Usado para calculo de direcciones
+int cursorEntero = 1;
+int cursorDecimal = 2;
+int cursorTexto = 3;
+int cursorBooleano = 4;
+
+//Division de la memoria
+//Por el momento solo son 1000 direcciones por cada tipo
+//****************************
+//Temporales
+//De la 10,000 hasta la 13,999
+int memoriaEnteroTemp = baseMemoriaTemp + (cantidadVariablesTemp * 0);
+int memoriaDecimalTemp = baseMemoriaTemp + (cantidadVariablesTemp * 1);
+int memoriaTextoTemp = baseMemoriaTemp + (cantidadVariablesTemp * 2);
+int memoriaBooleanoTemp = baseMemoriaTemp + (cantidadVariablesTemp * 3);
+
+//Locales
+//De la 5,000 hasta la 8,999
+int memoriaEnteroLocal = baseMemoriaLocal + (cantidadVariablesLocal * 0);
+int memoriaDecimalLocal = baseMemoriaLocal + (cantidadVariablesLocal * 1);
+int memoriaTextoLocal =	baseMemoriaLocal + (cantidadVariablesLocal * 2);
+int memoriaBooleanoLocal = baseMemoriaLocal + (cantidadVariablesLocal * 3);
+//****************************
+
+//Locales
+//De la 1,000 hasta la 4,999
+int memoriaEnteroGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 0);
+int memoriaDecimalGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 1);
+int memoriaTextoGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 2);
+int memoriaBooleanoGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 3);
+//****************************
+
+
+//cuboSemantico
+static int cuboSemantico[4][4][14];
+
+//Lista de cuadruplos
+cuadruplos *listaCuadruplos = NULL;
 
 //Declaracion e inicializacion de la estructura objetos
 directorioObjetos *objetos = NULL;
 
+
+
 //----------------------------------------------------------------------------
+
+void  generarMultiplicacionDivision(){
+	listaCuadruplos = verificacionGeneracionCuadruplo(1 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+}
+
+void  generarSumaResta(){
+	listaCuadruplos = verificacionGeneracionCuadruplo(2 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+}
+
+void  generarRelacional(){
+	listaCuadruplos = verificacionGeneracionCuadruplo(3, listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+}
+
+void  generarAndOr(){
+	listaCuadruplos = verificacionGeneracionCuadruplo(4, listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+}
+
 
 int main()
 {
+
+
 	//Realizar escaneo de gramatica
 	yyparse();
 	
@@ -135,14 +214,44 @@ int main()
 
 programa:
 	{
-	//Agregar main a tabla de objetos	
-	objetos = agregarObjeto(objetos, "main");	
+		//Inicializacion de estructuras
+
+		//Agregar main a tabla de objetos, siempre habra que haber un main	
+		objetos = agregarObjeto(objetos, ":main:");	
+
+		//Creacion de las pilas en memoria
+		operandos = malloc(sizeof(pila));
+		operandos->tamanio = 0;
+		operandos->primero = NULL;
+
+		operadores = malloc(sizeof(pila));
+		operadores->tamanio = 0;
+		operadores->primero = NULL;
+
+		//Creacion de las pilas de Avail en Memoria
+		availEntero = malloc(sizeof(pila));
+		availEntero->tamanio = 0;
+		availEntero->primero = NULL;
+
+		availDecimal = malloc(sizeof(pila));
+		availDecimal->tamanio = 0;
+		availDecimal->primero = NULL;
+
+		availTexto = malloc(sizeof(pila));
+		availTexto->tamanio = 0;
+		availTexto->primero = NULL;
+
+		availBoolean = malloc(sizeof(pila));
+		availBoolean->tamanio = 0;
+		availBoolean->primero = NULL;
+
+		//Inicializacion del Avial
+		inicializarAvail(availEntero, availDecimal, availTexto, availBoolean, &memoriaEnteroTemp, &memoriaDecimalTemp, &memoriaTextoTemp, &memoriaBooleanoTemp);
+
+		//Inicializacion del CuboSemantico
+		inicializarSemantica(cuboSemantico);
 	}
-	declara_objetos variables_globales declara_funciones implementa_funciones EJECUTARPROGRAMA 
-	{
-		//Actualizar la posicion a ejecutarPrograma
-		ejecutar = 1;
-	} ALLAVE variables_locales bloque CLLAVE
+	declara_objetos variables_globales declara_funciones implementa_funciones EJECUTARPROGRAMA ALLAVE variables_locales bloque CLLAVE
 	{	
 		//Desplegar mensaje de terminacion de compilacion
 		printf("programa correctamente escrito\n");		
@@ -152,11 +261,13 @@ programa:
 variables_globales:
 	VARIABLES_GLOBALES
 	{
-		variablesGlobales=1;			
+		//Prendemos la bandera de variablesGLobales
+		seccVariablesGlobales=1;
 	} 
 	bloque_variables
 	{
-		variablesGlobales=0;		
+		//Al salir del bloque apagamos la bandera de variables globales
+		seccVariablesGlobales=0;		
 	};
 
 bloque_variables:
@@ -166,61 +277,145 @@ bloque_variables:
 bloque_variables_rep:
 	/* empty */
 	| declara_variables 
-	{		
-			//Checar la bandera de posicion
-			if(variablesGlobales == 1){
+	{	
+
+		if(seccDeclaraObjetos == 0){
+			//Estamos en el main
+
+			//Checar la bandera de variables
+			if(seccVariablesGlobales == 1){
 				//Agregar a tabla de variables globales					
-				 objetos = agregarVariablesGlobales(objetos, "main" ,nombreV, tempTipos, 15);
-				 tempTipos=-1;
+				objetos = agregarVariablesGlobales(objetos, ":main:" , nombreVariable, tipoVariable, direccionVariable);
+				tipoVariable = -1;
 			} else 
-			if(funcionesI == 1){	
+			if(funcionesImplementacion == 1){	
 				//Agregar a tabla de variables locales de la funcion
-				objetos = agregarVariablesLocales(objetos, "main", tempFunciones, nombreV, tempTipos,1);	
- 				tempTipos=-1;
-			}								
+				objetos = agregarVariablesLocales(objetos, ":main:", nompreProcedimiento, nombreVariable, tipoVariable, direccionVariable);	
+				tipoVariable = -1;
+			}
+		} else {
+			//estamos en objetos pensar como se dearrollara
+		}								
 	} bloque_variables_rep
 	;
 
 declara_variables:
 	ENTERO IDENTIFICADOR declara_variables_atomica
 	{				
-		nombreV = $2;
-		tempTipos=$1;		
+		tipoVariable = $1;
+		nombreVariable = $2;
+
+		//checamos en que seccion estamos para asignar la direccion correcta
+		if (seccVariablesGlobales == 1) {
+			//nos encontramos en globales asi que checamos si tenemos aun espacio en las variables globales para la variable
+			if (memoriaEnteroGlobal < (baseMemoriaGlobal + cantidadVariablesGlobal * cursorEntero)) {
+				direccionVariable = memoriaEnteroGlobal;
+				memoriaEnteroGlobal++;
+			} else {
+				printf("Error: memoria insuficiente de tipo global-entero");
+			}
+		} else {
+			//nos encontramos en locales asi que checamos si tenemos aun espacio en las variables globales para la variable
+			if (memoriaEnteroLocal < (baseMemoriaLocal + cantidadVariablesLocal * cursorEntero)) {
+				direccionVariable = memoriaEnteroLocal;
+				memoriaEnteroLocal++;
+			} else {
+				printf("Error: memoria insuficiente de tipo local-entero");
+			}
+		}
 	}
 	|
 	DECIMAL IDENTIFICADOR declara_variables_atomica
 	{		
-		nombreV = $2;
-		tempTipos=$1;		
+		tipoVariable = $1;
+		nombreVariable = $2;
+
+		//checamos en que seccion estamos para asignar la direccion correcta
+		if (seccVariablesGlobales == 1) {
+			//nos encontramos en globales asi que checamos si tenemos aun espacio en las variables globales para la variable
+			if (memoriaEnteroGlobal < (baseMemoriaGlobal + cantidadVariablesGlobal * cursorDecimal)) {
+				direccionVariable = memoriaDecimalGlobal;
+				memoriaDecimalGlobal++;
+			} else {
+				printf("Error: memoria insuficiente de tipo global-entero");
+			}
+		} else {
+			//nos encontramos en locales asi que checamos si tenemos aun espacio en las variables globales para la variable
+			if (memoriaDecimalLocal < (baseMemoriaLocal + cantidadVariablesLocal * cursorDecimal)) {
+				direccionVariable = memoriaDecimalLocal;
+				memoriaDecimalLocal++;
+			} else {
+				printf("Error: memoria insuficiente de tipo local-entero");
+			}
+		}
+
 	}
 	|
 	TEXTO IDENTIFICADOR declara_variables_atomica
 	{		
-		nombreV = $2;
-		tempTipos=$1;		
+		tipoVariable = $1;
+		nombreVariable = $2;
+
+		//checamos en que seccion estamos para asignar la direccion correcta
+		if (seccVariablesGlobales == 1) {
+			//nos encontramos en globales asi que checamos si tenemos aun espacio en las variables globales para la variable
+			if (memoriaTextoGlobal < (baseMemoriaGlobal + cantidadVariablesGlobal * cursorTexto)) {
+				direccionVariable = memoriaTextoGlobal;
+				memoriaTextoGlobal++;
+			} else {
+				printf("Error: memoria insuficiente de tipo global-entero");
+			}
+		} else {
+			//nos encontramos en locales asi que checamos si tenemos aun espacio en las variables globales para la variable
+			if (memoriaTextoLocal < (baseMemoriaLocal + cantidadVariablesLocal * cursorTexto)) {
+				direccionVariable = memoriaTextoLocal;
+				memoriaTextoLocal++;
+			} else {
+				printf("Error: memoria insuficiente de tipo local-entero");
+			}
+		}
+
 	}
 	|
 	BOOLEANO IDENTIFICADOR declara_variables_atomica
 	{		
-		nombreV = $2;
-		tempTipos=$1;		
+		tipoVariable = $1;
+		nombreVariable = $2;
+
+		//checamos en que seccion estamos para asignar la direccion correcta
+		if (seccVariablesGlobales == 1) {
+			//nos encontramos en globales asi que checamos si tenemos aun espacio en las variables globales para la variable
+			if (memoriaBooleanoGlobal < (baseMemoriaGlobal + cantidadVariablesGlobal * cursorBooleano)) {
+				direccionVariable = memoriaBooleanoGlobal;
+				memoriaBooleanoGlobal++;
+			} else {
+				printf("Error: memoria insuficiente de tipo global-entero");
+			}
+		} else {
+			//nos encontramos en locales asi que checamos si tenemos aun espacio en las variables globales para la variable
+			if (memoriaBooleanoLocal < (baseMemoriaLocal + cantidadVariablesLocal * cursorBooleano)) {
+				direccionVariable = memoriaBooleanoLocal;
+				memoriaBooleanoLocal++;
+			} else {
+				printf("Error: memoria insuficiente de tipo local-entero");
+			}
+		}
+
 	}
 	|
 	MATRIZDECIMAL IDENTIFICADOR dimensiones declara_variables_matriz
 	{		
-		nombreV = $2;
-		tempTipos=$1;		
+		//Pendiente
 	}
 	|
 	MATRIZENTERA IDENTIFICADOR dimensiones declara_variables_matriz
 	{		
-		nombreV = $2;
-		tempTipos=$1;		
+		//Pendiente
 	}
 	|
 	CREAROBJETO IDENTIFICADOR declara_variables_objeto
 	{		
-		nombreV = $2;	
+		//Pendiente
 	}
 	;	
 
@@ -336,7 +531,7 @@ var_cte:
 	| CTEDECIMAL 
 	| CTEBOOLEANO 
 	| CTETEXTO 
-	| IDENTIFICADOR
+	| IDENTIFICADOR0
 	;
 
 declara_objetos:
@@ -363,12 +558,12 @@ declara_funciones:
 	DECLARA_FUNCIONES 
 	{	
 		//Cambiar la posicion a declaracion de funciones
-		funcionesD = 1;
+		funcionesDeclaracion = 1;
 	} 
 	ACORCHETE declara_funciones_rep CCORCHETE
 	{
 		//Termina la posicion de declaracion de funciones
-		funcionesD=0;
+		funcionesDeclaracion=0;
 	}
 	;
 
@@ -381,9 +576,9 @@ declaracion_prototipos:
 	permiso IDENTIFICADOR 
 	{
 		//Agregar la funcion al objeto main y guardar el nombre en temporal
-		if(funcionesD == 1){				
-			objetos = agregarFuncion(objetos, "main" ,$2);
-			strncpy(tempFunciones, $2, strlen($2));						
+		if(funcionesDeclaracion == 1){				
+			objetos = agregarFuncion(objetos, ":main:" ,$2);
+			strncpy(nompreProcedimiento, $2, strlen($2));						
 		}
 	}
 	APARENTESIS parametros CPARENTESIS REGRESA declaracion_prototipos_regresa PUNTOYCOMA
@@ -403,13 +598,13 @@ parametros_rep:
 	IDENTIFICADOR 
 	{
 		//Actualizar el temporal con el nombre del parametro
-		strncpy(tempVariable, $1, strlen($1));		
+		strncpy(nombreVariable, $1, strlen($1));		
 		
 	}
 	DOSPUNTOS tipo 
 	{		
 		//Agregar el parametro a la tabla de variables locales de la funcion	
-		objetos = agregarVariablesLocales(objetos, "main", tempFunciones, tempVariable, tempTipos,1);	
+		objetos = agregarVariablesLocales(objetos, ":main:", nompreProcedimiento, nombreVariable, tipoVariable,1);	
 	} 
 	parametros_rep1
 	;
@@ -417,28 +612,28 @@ parametros_rep:
 tipo:	
 	ENTERO
 	{
-		tempTipos=$1;		
+		tipoVariable=$1;		
 	}
 	| DECIMAL 
 	{
 		
-		tempTipos=$1;
+		tipoVariable=$1;
 	}
 	| BOOLEANO 
 	{
-		tempTipos=$1;
+		tipoVariable=$1;
 	}
 	| TEXTO 
 	{
-		tempTipos=$1;
+		tipoVariable=$1;
 	}
 	| MATRIZENTERA 
 	{
-		tempTipos=$1;
+		tipoVariable=$1;
 	}
 	| MATRIZDECIMAL
 	{
-		tempTipos=$1;
+		tipoVariable=$1;
 	}
 	;
 
@@ -455,11 +650,11 @@ implementa_funciones:
 	IMPLEMENTA_FUNCIONES
 	{
 		//Cambiar la posicion a implementacion de funciones
-		funcionesI=1;
+		funcionesImplementacion=1;
 	} ACORCHETE implementa_funciones_rep CCORCHETE
 	{
 		//Termina la posicion de implementacion de funciones
-		funcionesI = 0;
+		funcionesImplementacion = 0;
 	}
 	;
 
@@ -472,7 +667,7 @@ funciones:
 	IDENTIFICADOR 
 	{
 		//Actualizar el temporal con el nombre de la funcion
-		strncpy(tempFunciones, $1, strlen($1));
+		strncpy(nompreProcedimiento, $1, strlen($1));
 	} 
 	APARENTESIS parametros CPARENTESIS ALLAVE variables_locales bloque CLLAVE
 	;
