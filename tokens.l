@@ -21,7 +21,7 @@ entonces				(?i:entonces)
 es						(?i:es)
 falso					(?i:falso)
 hijoDe					(?i:hijoDe)
-identificador 			([a-zA-Z][_a-zA-Z0-9]*)
+identificador 			[a-zA-Z]+
 implementaFunciones		(?i:Implementa_Funciones)
 leerDelTeclado			(?i:leerDelTeclado)
 matrizDecimal			(?i:matrizDecimal)
@@ -39,7 +39,6 @@ variablesGlobales		(?i:Variables_Globales)
 variablesLocales		(?i:Variables_Locales)
 verdadero				(?i:verdadero)
 comentario				("//".*[^\n])
-blanks					([ \t\n\r]+)
 
 %x IN_COMMENT
 %%
@@ -138,9 +137,10 @@ blanks					([ \t\n\r]+)
 	{identificador}				{
 								yylval.sval = yytext;
 								strncpy(yylval.sval, yytext, strlen(yytext));
+								printf("%s\n", yylval.sval);
 								return IDENTIFICADOR;
-							}
-	{blanks} 					{/* Ignore whitespace */}
+								}
+	[ \t\n\r]+
 	{comentario}     			{/* eat up one-line comments */}
 
 	}

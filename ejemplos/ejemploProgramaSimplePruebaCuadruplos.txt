@@ -6,7 +6,11 @@
 Declara_Objetos [	
 	
 ]
-Variables_Globales [ ] 
+Variables_Globales [
+	entero uno;
+	entero dos;
+	entero tres; 
+	] 
 Declara_Funciones [ ]
 Implementa_Funciones [ ]
 
@@ -17,6 +21,6 @@ ejecutarPrograma {
 		decimal tres;	
 	]
 
-	uno = uno*dos*tres;
+	regresa uno * dos * tres;
 }
 

@@ -8,6 +8,9 @@
 	#include "uthash.h"
 	#include "tablasVarProc.h"
 	#include "codigosOperaciones.h"
+	#include "cuadruplos.h"
+	#include "pilas.h"
+	#include "utilerias.h"
 	#define YYERROR_VERBOSE 1
 	
 //----------------------------------------------------------------------------------------
@@ -18,8 +21,8 @@ void yyerror( const char *str )
 	fprintf( stderr, "error: %s\n", str );
 }
 
-//Apuntadores para la busqueda en los hashes
-
+//Globales miscelaneas de Control
+int tamanioIdentificadores = 25;
 
 //Banderas
 int error = 0;
@@ -27,7 +30,6 @@ int error = 0;
 //Varialbes para el manejo de las secciones
 int seccVariablesGlobales = 0;
 int seccVariablesLocales = 0;
-int seccFuncionesDeclaracion = 0;
 int seccFuncionesImplementacion = 0;
 int seccObjeto = 0;
 int seccMain = 0;
@@ -55,11 +57,12 @@ int contadorIndice = 0;
 //Variables para control
 nodoOperando *operando;
 nodoOperador *operador;
+directorio *variable;
 
 //Variables para control de memoria
 int cantidadVariablesTemp = 1000;
-int cantidadVariableLocal = 1000;
-int cantidadVariableGlobal = 1000;
+int cantidadVariablesLocal = 1000;
+int cantidadVariablesGlobal = 1000;
 
 //Direcciones base para memoria
 int baseMemoriaTemp = 10000;
@@ -77,25 +80,25 @@ int cursorBooleano = 4;
 //****************************
 //Temporales
 //De la 10,000 hasta la 13,999
-int memoriaEnteroTemp = baseMemoriaTemp + (cantidadVariablesTemp * 0);
-int memoriaDecimalTemp = baseMemoriaTemp + (cantidadVariablesTemp * 1);
-int memoriaTextoTemp = baseMemoriaTemp + (cantidadVariablesTemp * 2);
-int memoriaBooleanoTemp = baseMemoriaTemp + (cantidadVariablesTemp * 3);
+int memoriaEnteroTemp;
+int memoriaDecimalTemp;
+int memoriaTextoTemp;
+int memoriaBooleanoTemp;
 
 //Locales
 //De la 5,000 hasta la 8,999
-int memoriaEnteroLocal = baseMemoriaLocal + (cantidadVariablesLocal * 0);
-int memoriaDecimalLocal = baseMemoriaLocal + (cantidadVariablesLocal * 1);
-int memoriaTextoLocal =	baseMemoriaLocal + (cantidadVariablesLocal * 2);
-int memoriaBooleanoLocal = baseMemoriaLocal + (cantidadVariablesLocal * 3);
+int memoriaEnteroLocal;
+int memoriaDecimalLocal;
+int memoriaTextoLocal;
+int memoriaBooleanoLocal;
 //****************************
 
 //Locales
 //De la 1,000 hasta la 4,999
-int memoriaEnteroGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 0);
-int memoriaDecimalGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 1);
-int memoriaTextoGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 2);
-int memoriaBooleanoGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 3);
+int memoriaEnteroGlobal;
+int memoriaDecimalGlobal;
+int memoriaTextoGlobal;
+int memoriaBooleanoGlobal;
 //****************************
 
 
@@ -219,6 +222,21 @@ void asignarMemoriaVariable(){
 		}
 	}
 }
+	
+void calcularMemoriaVirtual(){
+	memoriaEnteroTemp = baseMemoriaTemp + (cantidadVariablesTemp * 0);
+	memoriaDecimalTemp = baseMemoriaTemp + (cantidadVariablesTemp * 1);
+	memoriaTextoTemp = baseMemoriaTemp + (cantidadVariablesTemp * 2);
+	memoriaBooleanoTemp = baseMemoriaTemp + (cantidadVariablesTemp * 3);
+	memoriaEnteroLocal = baseMemoriaLocal + (cantidadVariablesLocal * 0);
+	memoriaDecimalLocal = baseMemoriaLocal + (cantidadVariablesLocal * 1);
+	memoriaTextoLocal =	baseMemoriaLocal + (cantidadVariablesLocal * 2);
+	memoriaBooleanoLocal = baseMemoriaLocal + (cantidadVariablesLocal * 3);
+	memoriaEnteroGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 0);
+	memoriaDecimalGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 1);
+	memoriaTextoGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 2);
+	memoriaBooleanoGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 3);
+}
 
 int main()
 {
@@ -227,9 +245,7 @@ int main()
 	//Realizar escaneo de gramatica
 	yyparse();
 	
-	//Desplegar la tabla de objetos	
-	imprimirObjetos(objetos);
-
+	//Desplegar la tabla de objetos
 	return 0;
 }
 
@@ -305,6 +321,10 @@ programa:
 	{
 		//Accion numero 1
 		//Inicializacion de estructuras
+
+		//Calculamos la memoria a usar
+		calcularMemoriaVirtual();
+
 		//Creacion de las pilas en memoria
 		operandos = malloc(sizeof(pila));
 		operandos->tamanio = 0;
@@ -351,12 +371,15 @@ programa:
 	}
 		variables_globales declara_funciones implementa_funciones EJECUTARPROGRAMA
 	{
-		strncpy(nombreProcedimiento, $7, strlen($7));
+		strncpy(nombreProcedimiento, "ejecutarProgama", tamanioIdentificadores);
+		objetos = agregarFuncion(objetos, ":main:" ,nombreProcedimiento);
+
 	} 
 	ALLAVE variables_locales bloque CLLAVE
 	{	
 		//Desplegar mensaje de terminacion de compilacion
 		printf("programa correctamente escrito\n");
+		imprimirObjetos(objetos);
 	}
 	;
 
@@ -415,28 +438,28 @@ declara_variables:
 	ENTERO IDENTIFICADOR PUNTOYCOMA
 	{				
 		tipoVariable = $1;
-		strncpy(nombreVariable, $2, strlen($2));
+		strncpy(nombreVariable, $2, tamanioIdentificadores);
 		asignarMemoriaVariable();
 	}
 	|
 	DECIMAL IDENTIFICADOR PUNTOYCOMA
 	{		
 		tipoVariable = $1;
-		strncpy(nombreVariable, $2, strlen($2));
+		strncpy(nombreVariable, $2, tamanioIdentificadores);
 		asignarMemoriaVariable();
 	}
 	|
 	TEXTO IDENTIFICADOR PUNTOYCOMA
 	{		
 		tipoVariable = $1;
-		strncpy(nombreVariable, $2, strlen($2));
+		strncpy(nombreVariable, $2, tamanioIdentificadores);
 		asignarMemoriaVariable();
 	}
 	|
 	BOOLEANO IDENTIFICADOR PUNTOYCOMA
 	{		
 		tipoVariable = $1;
-		strncpy(nombreVariable, $2, strlen($2));
+		strncpy(nombreVariable, $2, tamanioIdentificadores);
 		asignarMemoriaVariable();
 	}
 	|
@@ -527,19 +550,40 @@ op_booleanos:
 	;
 
 exp:
-	termino exp_suma_resta
+	termino
+	{
+		generarSumaResta();	
+	} exp_suma_resta
 	;
 
 exp_suma_resta:
 	/*Empty*/
-	| MAS exp 
-	| MENOS exp
+	| MAS 
+	{
+		//Creamos el nodo operandor que se le hara push en la pila operadores
+		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
+		operador->operador = OP_SUMA;
+		
+		//Metemos la multiplicacion en la pila de operadores
+		push(operadores, operador);
+	}
+	exp 
+	| MENOS 
+	{
+		//Creamos el nodo operandor que se le hara push en la pila operadores
+		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
+		operador->operador = OP_RESTA;
+		
+		//Metemos la multiplicacion en la pila de operadores
+		push(operadores, operador);
+	}
+	exp
 	;
 
 termino:
 	factor
 	{
-
+		generarMultiplicacionDivision();
 	} 
 	termino_multi_divide
 	;
@@ -548,19 +592,42 @@ termino_multi_divide:
 	/*Empty*/
 	| POR
 	{
-
+		//Creamos el nodo operandor que se le hara push en la pila operadores
+		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
+		operador->operador = OP_MULTIPLICACION;
+		
+		//Metemos la multiplicacion en la pila de operadores
+		push(operadores, operador);
 	} 
 	termino 
 	| 
 	ENTRE
 	{
-
+		//Creamos el nodo operandor que se le hara push en la pila operadores
+		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
+		operador->operador = OP_DIVISION;
+		
+		//Metemos la division en la pila de operadores
+		push(operadores, operador);
 	} 
 	termino
 	;
 
 factor:
-	APARENTESIS serexpresion CPARENTESIS 
+	APARENTESIS
+	{
+		//Creacion del nodo para meterlo en la pila
+		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
+		operador->operador = OP_APARENTESIS;
+
+		//Si encontramos un parentesis debemos meterlo como fondo falso
+		push(operadores, operador);
+	} 
+	serexpresion CPARENTESIS
+	{
+		//Encontramos el cirre del parentesis lo sacamos de la pila
+		pop(operadores);	
+	} 
 	| MAS factor_operando 
 	| MENOS factor_operando 
 	| factor_operando
@@ -577,14 +644,31 @@ var_cte:
 	| CTEBOOLEANO 
 	| CTETEXTO 
 	| IDENTIFICADOR
-	{
-		
+	{	
+		printf("Nombre de variable: %s", $1);
+		//Obtenemos el nombre de la variable que desamos usar
+		strncpy(nombreVariable, $1, tamanioIdentificadores);
 		if(seccMain == 1){
 			//Estamos en MAIN y la unica forma de hacer estatutos es dentro de funciones
-			buscarVariablesLocales(objetos, ":main:", );
+			//Obtenemos los valores de las variables si no existen exit
+			//variable = buscarVariablesLocales(objetos, ":main:", nombreProcedimiento,  nombreVariable);
+			variable = buscarVariablesLocales(objetos, ":main:", nombreProcedimiento,  nombreVariable);
+		
+			//crearemos un nodoOperando para agregarlo a la pila
+			operando = (nodoOperando*)malloc(sizeof(nodoOperando));
+			operando->temp = 0;
+			operando->tipo = variable->tipo; 
+			strcpy(operando->nombre, variable->nombre);
+			operando->direccion = variable->direccion;
+
+			push(operandos,operando);
+
+		} else if (seccObjeto == 1) {
+			//Estamos en la funcion de un objeto
+			//Pendiente
 		}
-	
-}	;
+	}	
+	;
 
 declara_objetos:
 	DECLARA_OBJETOS ACORCHETE declara_objetos_rep CCORCHETE;
@@ -607,16 +691,7 @@ atributos_globales:
 	;
 
 declara_funciones:
-	DECLARA_FUNCIONES 
-	{	
-		//Cambiar la posicion a declaracion de funciones
-		funcionesDeclaracion = 1;
-	} 
-	ACORCHETE declara_funciones_rep CCORCHETE
-	{
-		//Termina la posicion de declaracion de funciones
-		funcionesDeclaracion=0;
-	}
+	DECLARA_FUNCIONES ACORCHETE declara_funciones_rep CCORCHETE
 	;
 
 declara_funciones_rep:
@@ -627,10 +702,14 @@ declara_funciones_rep:
 declaracion_prototipos:
 	permiso IDENTIFICADOR 
 	{
-		//Agregar la funcion al objeto main y guardar el nombre en temporal
-		if(funcionesDeclaracion == 1){				
-			objetos = agregarFuncion(objetos, ":main:" ,$2);
-			strncpy(nombreProcedimiento, $2, strlen($2));
+		//Checamos en que parte estamos
+		if(seccMain == 1){
+			//Estamos en MAIN
+			strncpy(nombreProcedimiento, $2, tamanioIdentificadores);
+			objetos = agregarFuncion(objetos, ":main:" ,nombreProcedimiento);
+		} else if (seccObjeto == 1) {
+			//Estams en objeto
+
 		}
 	}
 	APARENTESIS parametros CPARENTESIS REGRESA declaracion_prototipos_regresa PUNTOYCOMA
@@ -650,7 +729,7 @@ parametros_rep:
 	IDENTIFICADOR 
 	{
 		//Actualizar el temporal con el nombre del parametro
-		strncpy(nombreVariable, $1, strlen($1));
+		strncpy(nombreVariable, $1, tamanioIdentificadores);
 		
 	}
 	DOSPUNTOS tipo 
@@ -699,15 +778,7 @@ declaracion_prototipos_regresa:
 	;
 
 implementa_funciones:
-	IMPLEMENTA_FUNCIONES
-	{
-		//Cambiar la posicion a implementacion de funciones
-		funcionesImplementacion=1;
-	} ACORCHETE implementa_funciones_rep CCORCHETE
-	{
-		//Termina la posicion de implementacion de funciones
-		funcionesImplementacion = 0;
-	}
+	IMPLEMENTA_FUNCIONES ACORCHETE implementa_funciones_rep CCORCHETE
 	;
 
 implementa_funciones_rep:
@@ -719,13 +790,22 @@ funciones:
 	IDENTIFICADOR 
 	{
 		//Actualizar el temporal con el nombre de la funcion
-		strncpy(nombreProcedimiento, $1, strlen($1));
+		strncpy(nombreProcedimiento, $1, tamanioIdentificadores);
 	} 
 	APARENTESIS parametros CPARENTESIS ALLAVE variables_locales bloque CLLAVE
 	;
 
 variables_locales:
-	VARIABLES_LOCALES bloque_variables
+	VARIABLES_LOCALES 
+	{
+		//Prendemos la bandera de variablesGLobales
+		seccVariablesLocales=1;	
+	}
+	bloque_variables
+	{
+		//Al salir del bloque apagamos la bandera de variables globales
+		seccVariablesLocales=0;
+	}
 	;
 
 bloque:

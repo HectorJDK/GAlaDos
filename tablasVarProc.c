@@ -34,13 +34,16 @@ directorioObjetos* agregarVariablesLocales(directorioObjetos *objetos, char *obj
 							HASH_ADD_STR(existeProcedimiento->variablesLocales, nombre, temp);  
 							return objetos;   
 					} else {
-							printf("Error, la llave se repite");
+							printf("Error, la llave se repite \n");
+							exit(1);
 					}
 				} else {
-					printf("Error Funcion no se encuentra");
+					printf("Error Funcion no se encuentra\n");
+					exit(1);
 				}
 		} else {
-			printf("Error Objeto no se encuentra");
+			printf("Error Objeto no se encuentra\n");
+			exit(1);
 		}
 }
 
@@ -63,17 +66,17 @@ directorio* buscarVariablesLocales(directorioObjetos *objetos, char *objeto, cha
 					//Checar si la variable ya existe
 					HASH_FIND_STR(existeProcedimiento->variablesLocales, nombre, temp);
 					if (temp == NULL) {
-						printf("Error la variable no ha sido declarada");
+						printf("Error la variable: %s no ha sido declarada\n", nombre);
 						exit(1);
 					} else {
 							return temp;
 					}
 				} else {
-					printf("Error Funcion no declarada");
+					printf("Error Funcion: %s no declarada\n", funcion);
 					exit(1);
 				}
 		} else {
-			printf("Error Clase no declarada");
+			printf("Error Clase: %s no declarada\n", objeto);
 			exit(1);
 		}
 }
