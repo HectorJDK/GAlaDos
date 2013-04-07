@@ -1,0 +1,311 @@
+programa:
+	declara_objetos variables_globales declara_funciones implementa_funciones EJECUTARPROGRAMA ALLAVE variables_locales bloque CLLAVE
+	;
+
+variables_globales:
+	VARIABLES_GLOBALES bloque_variables
+	;
+
+bloque_variables:
+	ACORCHETE bloque_variables_rep CCORCHETE
+	;
+
+bloque_variables_rep:
+	/* empty */
+	| declara_variables bloque_variables_rep
+	;
+
+declara_variables:
+	ENTERO IDENTIFICADOR PUNTOYCOMA
+	|
+	DECIMAL IDENTIFICADOR PUNTOYCOMA
+	|
+	TEXTO IDENTIFICADOR PUNTOYCOMA
+	|
+	BOOLEANO IDENTIFICADOR PUNTOYCOMA
+	|
+	MATRIZDECIMAL IDENTIFICADOR dimensiones PUNTOYCOMA
+	|
+	MATRIZENTERA IDENTIFICADOR dimensiones PUNTOYCOMA
+	|
+	CREAROBJETO IDENTIFICADOR ES IDENTIFICADOR PUNTOYCOMA
+	;
+
+
+asignacion_matriz:
+	ALLAVE asignacion_matriz_rep CLLAVE
+	;
+
+asignacion_matriz_rep:
+	/*Empty*/
+	| asignacion_matriz_valor PUNTOYCOMA asignacion_matriz_rep;
+
+asignacion_matriz_valor:
+	CTEENTERA asignacion_matriz_valor1 
+	| CTEDECIMAL asignacion_matriz_valor1
+	;
+
+asignacion_matriz_valor1:
+	/*Empty*/
+	| COMA asignacion_matriz_valor
+	;
+
+dimensiones:
+	ACORCHETE exp CCORCHETE dimensiones_rep
+	;
+
+dimensiones_rep:
+	/*empty*/
+	| ACORCHETE exp CCORCHETE
+	;
+
+serexpresion: 
+	expresion expresion_and_or
+	;
+
+expresion_and_or:
+	/*empty*/
+	| AMPERSAND serexpresion
+	| BARRA serexpresion
+	;
+
+expresion:
+	exp expresion_condicional
+	;
+
+expresion_condicional:
+	/*empty*/
+	| op_booleanos exp
+	;
+
+op_booleanos:
+	COMPARA 
+	| NEGACION 
+	| MAYORQUE 
+	| MENORQUE 
+	| MAYORIGUAL 
+	| MENORIGUAL 
+	;
+
+exp:
+	termino exp_suma_resta
+	;
+
+exp_suma_resta:
+	/*Empty*/
+	| MAS exp 
+	| MENOS exp
+	;
+
+termino:
+	factor termino_multi_divide
+	;
+
+termino_multi_divide:
+	/*Empty*/
+	| POR termino 
+	| ENTRE termino
+	;
+
+factor:
+	APARENTESIS serexpresion CPARENTESIS 
+	| MAS factor_operando 
+	| MENOS factor_operando 
+	| factor_operando
+	;
+
+factor_operando:
+	var_cte 
+	| llama_funcion
+	;
+
+var_cte:
+	CTEENTERA 
+	| CTEDECIMAL 
+	| CTEBOOLEANO 
+	| CTETEXTO 
+	| IDENTIFICADOR
+	;
+
+declara_objetos:
+	DECLARA_OBJETOS ACORCHETE declara_objetos_rep CCORCHETE;
+
+declara_objetos_rep:
+	/*Empty*/
+	| objeto declara_objetos_rep
+	;
+
+objeto:
+	CLASE IDENTIFICADOR objeto_herencia ALLAVE atributos_globales declara_funciones implementa_funciones CLLAVE;
+
+objeto_herencia:
+	/*Empty*/
+	| HIJODE IDENTIFICADOR
+	;
+
+atributos_globales:
+	ATRIBUTOS_GLOBALES bloque_variables
+	;
+
+declara_funciones:
+	DECLARA_FUNCIONES ACORCHETE declara_funciones_rep CCORCHETE
+	;
+
+declara_funciones_rep:
+	/*Empty*/
+	| declaracion_prototipos declara_funciones_rep
+	;
+
+declaracion_prototipos:
+	permiso IDENTIFICADOR APARENTESIS parametros CPARENTESIS REGRESA declaracion_prototipos_regresa PUNTOYCOMA
+	;
+
+permiso:
+	PRIVADA 
+	| PUBLICA
+	;
+
+parametros:
+	/*Empty*/
+	| parametros_rep
+	;
+
+parametros_rep:
+	IDENTIFICADOR DOSPUNTOS tipo parametros_rep1
+	;
+
+tipo:	
+	ENTERO
+	| DECIMAL 
+	| BOOLEANO 
+	| TEXTO 
+	| MATRIZENTERA 
+	| MATRIZDECIMAL
+	;
+
+parametros_rep1:
+	| COMA parametros_rep
+	;
+
+declaracion_prototipos_regresa:
+	tipo 
+	| NADA
+	;
+
+implementa_funciones:
+	IMPLEMENTA_FUNCIONES ACORCHETE implementa_funciones_rep CCORCHETE
+	;
+
+implementa_funciones_rep:
+	/*Empty*/
+	| funciones implementa_funciones_rep
+	;
+
+funciones:
+	IDENTIFICADOR APARENTESIS parametros CPARENTESIS ALLAVE variables_locales bloque CLLAVE
+	;
+
+variables_locales:
+	VARIABLES_LOCALES bloque_variables
+	;
+
+bloque:
+	/*Empty*/
+	| estatuto bloque
+	;
+
+estatuto:
+	asignacion PUNTOYCOMA
+	| escritura PUNTOYCOMA
+	| llama_funcion PUNTOYCOMA
+	| regresa PUNTOYCOMA
+	| condicional
+	| ciclo
+	;
+
+asignacion:
+	IDENTIFICADOR asignacion1
+	;
+
+asignacion1:
+	dimensiones IGUAL serexpresion 
+	| IGUAL asignacion2
+	| FLECHA IDENTIFICADOR asignacion3  IGUAL asignacion2;
+
+asignacion2:
+	asignacion_matriz 
+	| serexpresion
+	;
+
+asignacion3:
+	/*Empty*/
+	| dimensiones
+	;
+
+lectura:
+	LEERDELTECLADO APARENTESIS lectura1 CPARENTESIS
+	;
+	
+lectura1:
+	ENTERO | DECIMAL | BOOLEANO | TEXTO
+	;
+	
+escritura:
+	DESPLIEGA APARENTESIS escritura_valores CPARENTESIS 
+	;
+
+escritura_valores:
+	valores escritura_concatena 
+	| IDENTIFICADOR escritura_valores1
+	;
+
+valores:
+	 CTEENTERA 
+	 | CTEDECIMAL 
+	 | CTETEXTO
+	 ;
+
+escritura_valores1:
+	/*Empty*/
+	| CONCATENA escritura_valores 
+	| dimensiones escritura_concatena
+	;
+
+escritura_concatena:
+	/*Emty*/
+	| CONCATENA escritura_valores
+	;
+
+
+llama_funcion:
+	IDENTIFICADOR llama_funcion_opcional APARENTESIS serexpresion CPARENTESIS
+	| lectura
+	;
+
+llama_funcion_opcional:
+	/*Empty*/
+	| FLECHA IDENTIFICADOR
+	;
+
+regresa:
+	REGRESA serexpresion
+	;
+
+
+condicional:
+	SI APARENTESIS serexpresion CPARENTESIS ALLAVE bloque CLLAVE condicional_ifelse
+	;
+
+condicional_ifelse:
+	/*Empty*/
+	| SINO condicional_else
+	;
+
+condicional_else:
+	ENTONCES APARENTESIS serexpresion CPARENTESIS ALLAVE bloque CLLAVE condicional_ifelse 
+	| ALLAVE bloque CLLAVE
+	;
+
+ciclo:
+	MIENTRAS APARENTESIS serexpresion CPARENTESIS ALLAVE bloque CLLAVE
+	;

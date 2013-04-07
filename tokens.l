@@ -46,7 +46,10 @@ blanks					([ \t\n\r]+)
 
 <INITIAL>{
 	"/*"						BEGIN(IN_COMMENT);
-	["][^"]*["]					{return CTETEXTO;}
+	["][^"]*["]					{
+								yylval.sval = yytext;
+								strncpy(yylval.sval, yytext, strlen(yytext));
+								return CTETEXTO;}
 	"->" 						{return FLECHA;}
 	"<<"						{return CONCATENA;}
 	"="							{return IGUAL;}
@@ -78,26 +81,36 @@ blanks					([ \t\n\r]+)
 								return BOOLEANO;
 								}
 	{clase} 					{return CLASE;}
-	{crearObjeto}				{return CREAROBJETO;}
-	{cteDecimal}				{return CTEDECIMAL;}
-	{cteEntera}					{return CTEENTERA;}
+	{crearObjeto}				{return CREAROBJETO;}	
+	{cteEntera}					{
+								yylval.sval = yytext;
+								strncpy(yylval.sval, yytext, strlen(yytext));
+								return CTEENTERA;}
+	{cteDecimal}				{
+								yylval.sval = yytext;
+								strncpy(yylval.sval, yytext, strlen(yytext));
+								return CTEDECIMAL;}
+	{falso}						{
+								yylval.sval = yytext;
+								strncpy(yylval.sval, yytext, strlen(yytext));
+								return CTEBOOLEANO;}
+	{verdadero}					{
+								yylval.sval = yytext;
+								strncpy(yylval.sval, yytext, strlen(yytext));
+								return CTEBOOLEANO;}
 	{decimal} 					{
 								yylval.ival = 1;
-								return DECIMAL;
-								}
+								return DECIMAL;}
 	{declaraFunciones}			{return DECLARA_FUNCIONES;}
 	{declaraObjetos}			{return DECLARA_OBJETOS;}
 	{despliega}					{return DESPLIEGA;}
 	{ejecutarPrograma} 			{return EJECUTARPROGRAMA; }
 	{entero}					{
 								yylval.ival = 0;																								
-								return ENTERO;
-								}
+								return ENTERO;}
 	{entonces} 					{return ENTONCES;}
 	{es} 						{return ES;}
-	{falso}						{return CTEBOOLEANO;}
 	{hijoDe} 					{return HIJODE;}
-	
 	{implementaFunciones}		{return IMPLEMENTA_FUNCIONES;}
 	{leerDelTeclado}			{return LEERDELTECLADO;}
 	{matrizDecimal} 			{
@@ -121,7 +134,6 @@ blanks					([ \t\n\r]+)
 								}
 	{variablesGlobales}			{return VARIABLES_GLOBALES;}
 	{variablesLocales}			{return VARIABLES_LOCALES;}
-	{verdadero}					{return CTEBOOLEANO;}
 
 	{identificador}				{
 								yylval.sval = yytext;

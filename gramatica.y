@@ -24,32 +24,30 @@ void yyerror( const char *str )
 //Banderas
 int error = 0;
 
-//Secciones
-int seccVariablesGlobales=0; //En seccion de variables globales	
-int seccVariablesLocales=0; //En seccion de variables globales	
-int seccFuncionesDeclaracion=0;		//En seccion de declaracion de funciones
-int seccFuncionesImplementacion=0;		//En seccion de implementacion de funciones
-int seccDeclaraObjetos=0; //En seccion de declara_Objetos	
-
-//variables para control de acciones de generacion codigo
-int generaAsignacion = 0;
+//Varialbes para el manejo de las secciones
+int seccVariablesGlobales = 0;
+int seccVariablesLocales = 0;
+int seccFuncionesDeclaracion = 0;
+int seccFuncionesImplementacion = 0;
+int seccObjeto = 0;
+int seccMain = 0;
 
 //Variables para la creacion de variables en la tabla
 char nombreVariable[25];
 unsigned short tipoVariable;
-char nompreProcedimiento[25];
+char nombreProcedimiento[25];
 char nombreObjeto[25];
 int direccionVariable;
 
 //Pilas Operandos
-pila *operandos;    	//Variables
-pila *operadores;   	//Signos
+pila *operandos;
+pila *operadores;
 
 //Pilas Avail
-pila *availEntero;		//int = 0
-pila *availDecimal;		//int = 1
-pila *availTexto;		//int = 2
-pila *availBoolean;		//int = 3
+pila *availEntero;
+pila *availDecimal;
+pila *availTexto;
+pila *availBoolean;
 
 //Contador de cuadruplos
 int contadorIndice = 0;
@@ -130,6 +128,97 @@ void  generarAndOr(){
 	listaCuadruplos = verificacionGeneracionCuadruplo(4, listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
 }
 
+void asignarMemoriaVariable(){
+	//Checamos en que seccion nos encontramos al momento de crear una variable
+	if (seccVariablesGlobales == 1) {
+			//Estamos en las variables Globales
+			//Determinar que tipo de variable tomaremos el dato
+		switch(tipoVariable){
+			case 0:
+				if (memoriaEnteroGlobal < (baseMemoriaGlobal + cantidadVariablesGlobal * cursorEntero)) {
+					direccionVariable = memoriaEnteroGlobal;
+					memoriaEnteroGlobal++;
+				} else{
+					printf("Error: memoria insuficiente de tipo global-entero\n");
+					exit(1);
+				}	
+			break;
+
+			case 1:
+				if (memoriaDecimalGlobal < (baseMemoriaGlobal + cantidadVariablesGlobal * cursorDecimal)) {
+					direccionVariable = memoriaDecimalGlobal;
+					memoriaDecimalGlobal++;
+				} else{
+					printf("Error: memoria insuficiente de tipo global-decimal\n");
+					exit(1);
+				}
+			break;
+
+			case 2:
+				if (memoriaTextoGlobal < (baseMemoriaGlobal + cantidadVariablesGlobal * cursorTexto)) {
+					direccionVariable = memoriaTextoGlobal;
+					memoriaTextoGlobal++;
+				} else{
+					printf("Error: memoria insuficiente de tipo global-Texto\n");
+					exit(1);
+				}
+			break;
+
+			case 3:
+				if (memoriaBooleanoGlobal < (baseMemoriaGlobal + cantidadVariablesGlobal * cursorBooleano)) {
+					direccionVariable = memoriaBooleanoGlobal;
+					memoriaBooleanoGlobal++;
+				} else{
+					printf("Error: memoria insuficiente de tipo global-Booleano\n");
+					exit(1);
+				}
+			break;
+		}
+
+	} else if (seccVariablesLocales == 1) {
+		switch(tipoVariable){
+			case 0:
+				if (memoriaEnteroLocal < (baseMemoriaLocal + cantidadVariablesLocal * cursorEntero)) {
+					direccionVariable = memoriaEnteroLocal;
+					memoriaEnteroLocal++;
+				} else{
+					printf("Error: memoria insuficiente de tipo Local-entero\n");
+					exit(1);
+				}
+			break;
+
+			case 1:
+				if (memoriaDecimalLocal < (baseMemoriaLocal + cantidadVariablesLocal * cursorDecimal)) {
+					direccionVariable = memoriaDecimalLocal;
+					memoriaDecimalLocal++;
+				} else{
+					printf("Error: memoria insuficiente de tipo Local-decimal\n");
+					exit(1);
+				}
+			break;
+
+			case 2:
+				if (memoriaTextoLocal < (baseMemoriaLocal + cantidadVariablesLocal * cursorTexto)) {
+					direccionVariable = memoriaTextoLocal;
+					memoriaTextoLocal++;
+				} else{
+					printf("Error: memoria insuficiente de tipo Local-Texto\n");
+					exit(1);
+				}
+			break;
+
+			case 3:
+				if (memoriaBooleanoLocal < (baseMemoriaLocal + cantidadVariablesLocal * cursorBooleano)) {
+					direccionVariable = memoriaBooleanoLocal;
+					memoriaBooleanoLocal++;
+				} else{
+					printf("Error: memoria insuficiente de tipo Local-Booleano\n");
+					exit(1);
+				}
+			break;
+		}
+	}
+}
 
 int main()
 {
@@ -214,11 +303,8 @@ int main()
 
 programa:
 	{
+		//Accion numero 1
 		//Inicializacion de estructuras
-
-		//Agregar main a tabla de objetos, siempre habra que haber un main	
-		objetos = agregarObjeto(objetos, ":main:");	
-
 		//Creacion de las pilas en memoria
 		operandos = malloc(sizeof(pila));
 		operandos->tamanio = 0;
@@ -251,10 +337,26 @@ programa:
 		//Inicializacion del CuboSemantico
 		inicializarSemantica(cuboSemantico);
 	}
-	declara_objetos variables_globales declara_funciones implementa_funciones EJECUTARPROGRAMA ALLAVE variables_locales bloque CLLAVE
+	declara_objetos 
+	{
+		//Accion numero 2
+		//Agregar main a tabla de objetos, siempre habra que haber un main	
+		objetos = agregarObjeto(objetos, ":main:");
+
+		//Prendemos la bandera de MAIN
+		seccMain = 1;
+
+		//Apagamos la bandera de Objeto
+		seccObjeto = 0;
+	}
+		variables_globales declara_funciones implementa_funciones EJECUTARPROGRAMA
+	{
+		strncpy(nombreProcedimiento, $7, strlen($7));
+	} 
+	ALLAVE variables_locales bloque CLLAVE
 	{	
 		//Desplegar mensaje de terminacion de compilacion
-		printf("programa correctamente escrito\n");		
+		printf("programa correctamente escrito\n");
 	}
 	;
 
@@ -267,7 +369,7 @@ variables_globales:
 	bloque_variables
 	{
 		//Al salir del bloque apagamos la bandera de variables globales
-		seccVariablesGlobales=0;		
+		seccVariablesGlobales=0;
 	};
 
 bloque_variables:
@@ -278,129 +380,64 @@ bloque_variables_rep:
 	/* empty */
 	| declara_variables 
 	{	
-
-		if(seccDeclaraObjetos == 0){
+		//Verificamos en que parte estamos
+		if(seccMain == 1){
 			//Estamos en el main
-
 			//Checar la bandera de variables
 			if(seccVariablesGlobales == 1){
 				//Agregar a tabla de variables globales					
 				objetos = agregarVariablesGlobales(objetos, ":main:" , nombreVariable, tipoVariable, direccionVariable);
 				tipoVariable = -1;
-			} else 
-			if(funcionesImplementacion == 1){	
+
+			} else if(seccVariablesLocales == 1){	
 				//Agregar a tabla de variables locales de la funcion
-				objetos = agregarVariablesLocales(objetos, ":main:", nompreProcedimiento, nombreVariable, tipoVariable, direccionVariable);	
+				objetos = agregarVariablesLocales(objetos, ":main:", nombreProcedimiento, nombreVariable, tipoVariable, direccionVariable);
 				tipoVariable = -1;
 			}
-		} else {
-			//estamos en objetos pensar como se dearrollara
+		} else if (seccObjeto == 1){
+			//Estamos en un objeto
+			if(seccVariablesGlobales == 1){
+				//Agregar a tabla de variables globales					
+				objetos = agregarVariablesGlobales(objetos, nombreObjeto, nombreVariable, tipoVariable, direccionVariable);
+				tipoVariable = -1;
+
+			} else if(seccVariablesLocales == 1){	
+				//Agregar a tabla de variables locales de la funcion
+				objetos = agregarVariablesLocales(objetos, nombreObjeto, nombreProcedimiento, nombreVariable, tipoVariable, direccionVariable);
+				tipoVariable = -1;
+			}
 		}								
-	} bloque_variables_rep
+	} 
+	bloque_variables_rep
 	;
 
 declara_variables:
-	ENTERO IDENTIFICADOR declara_variables_atomica
+	ENTERO IDENTIFICADOR PUNTOYCOMA
 	{				
 		tipoVariable = $1;
-		nombreVariable = $2;
-
-		//checamos en que seccion estamos para asignar la direccion correcta
-		if (seccVariablesGlobales == 1) {
-			//nos encontramos en globales asi que checamos si tenemos aun espacio en las variables globales para la variable
-			if (memoriaEnteroGlobal < (baseMemoriaGlobal + cantidadVariablesGlobal * cursorEntero)) {
-				direccionVariable = memoriaEnteroGlobal;
-				memoriaEnteroGlobal++;
-			} else {
-				printf("Error: memoria insuficiente de tipo global-entero");
-			}
-		} else {
-			//nos encontramos en locales asi que checamos si tenemos aun espacio en las variables globales para la variable
-			if (memoriaEnteroLocal < (baseMemoriaLocal + cantidadVariablesLocal * cursorEntero)) {
-				direccionVariable = memoriaEnteroLocal;
-				memoriaEnteroLocal++;
-			} else {
-				printf("Error: memoria insuficiente de tipo local-entero");
-			}
-		}
+		strncpy(nombreVariable, $2, strlen($2));
+		asignarMemoriaVariable();
 	}
 	|
-	DECIMAL IDENTIFICADOR declara_variables_atomica
+	DECIMAL IDENTIFICADOR PUNTOYCOMA
 	{		
 		tipoVariable = $1;
-		nombreVariable = $2;
-
-		//checamos en que seccion estamos para asignar la direccion correcta
-		if (seccVariablesGlobales == 1) {
-			//nos encontramos en globales asi que checamos si tenemos aun espacio en las variables globales para la variable
-			if (memoriaEnteroGlobal < (baseMemoriaGlobal + cantidadVariablesGlobal * cursorDecimal)) {
-				direccionVariable = memoriaDecimalGlobal;
-				memoriaDecimalGlobal++;
-			} else {
-				printf("Error: memoria insuficiente de tipo global-entero");
-			}
-		} else {
-			//nos encontramos en locales asi que checamos si tenemos aun espacio en las variables globales para la variable
-			if (memoriaDecimalLocal < (baseMemoriaLocal + cantidadVariablesLocal * cursorDecimal)) {
-				direccionVariable = memoriaDecimalLocal;
-				memoriaDecimalLocal++;
-			} else {
-				printf("Error: memoria insuficiente de tipo local-entero");
-			}
-		}
-
+		strncpy(nombreVariable, $2, strlen($2));
+		asignarMemoriaVariable();
 	}
 	|
-	TEXTO IDENTIFICADOR declara_variables_atomica
+	TEXTO IDENTIFICADOR PUNTOYCOMA
 	{		
 		tipoVariable = $1;
-		nombreVariable = $2;
-
-		//checamos en que seccion estamos para asignar la direccion correcta
-		if (seccVariablesGlobales == 1) {
-			//nos encontramos en globales asi que checamos si tenemos aun espacio en las variables globales para la variable
-			if (memoriaTextoGlobal < (baseMemoriaGlobal + cantidadVariablesGlobal * cursorTexto)) {
-				direccionVariable = memoriaTextoGlobal;
-				memoriaTextoGlobal++;
-			} else {
-				printf("Error: memoria insuficiente de tipo global-entero");
-			}
-		} else {
-			//nos encontramos en locales asi que checamos si tenemos aun espacio en las variables globales para la variable
-			if (memoriaTextoLocal < (baseMemoriaLocal + cantidadVariablesLocal * cursorTexto)) {
-				direccionVariable = memoriaTextoLocal;
-				memoriaTextoLocal++;
-			} else {
-				printf("Error: memoria insuficiente de tipo local-entero");
-			}
-		}
-
+		strncpy(nombreVariable, $2, strlen($2));
+		asignarMemoriaVariable();
 	}
 	|
-	BOOLEANO IDENTIFICADOR declara_variables_atomica
+	BOOLEANO IDENTIFICADOR PUNTOYCOMA
 	{		
 		tipoVariable = $1;
-		nombreVariable = $2;
-
-		//checamos en que seccion estamos para asignar la direccion correcta
-		if (seccVariablesGlobales == 1) {
-			//nos encontramos en globales asi que checamos si tenemos aun espacio en las variables globales para la variable
-			if (memoriaBooleanoGlobal < (baseMemoriaGlobal + cantidadVariablesGlobal * cursorBooleano)) {
-				direccionVariable = memoriaBooleanoGlobal;
-				memoriaBooleanoGlobal++;
-			} else {
-				printf("Error: memoria insuficiente de tipo global-entero");
-			}
-		} else {
-			//nos encontramos en locales asi que checamos si tenemos aun espacio en las variables globales para la variable
-			if (memoriaBooleanoLocal < (baseMemoriaLocal + cantidadVariablesLocal * cursorBooleano)) {
-				direccionVariable = memoriaBooleanoLocal;
-				memoriaBooleanoLocal++;
-			} else {
-				printf("Error: memoria insuficiente de tipo local-entero");
-			}
-		}
-
+		strncpy(nombreVariable, $2, strlen($2));
+		asignarMemoriaVariable();
 	}
 	|
 	MATRIZDECIMAL IDENTIFICADOR dimensiones declara_variables_matriz
@@ -417,11 +454,6 @@ declara_variables:
 	{		
 		//Pendiente
 	}
-	;	
-
-declara_variables_atomica:
-	PUNTOYCOMA
-	|IGUAL serexpresion PUNTOYCOMA
 	;
 
 declara_variables_matriz:
@@ -505,13 +537,26 @@ exp_suma_resta:
 	;
 
 termino:
-	factor termino_multi_divide
+	factor
+	{
+
+	} 
+	termino_multi_divide
 	;
 
 termino_multi_divide:
 	/*Empty*/
-	| POR termino 
-	| ENTRE termino
+	| POR
+	{
+
+	} 
+	termino 
+	| 
+	ENTRE
+	{
+
+	} 
+	termino
 	;
 
 factor:
@@ -531,8 +576,15 @@ var_cte:
 	| CTEDECIMAL 
 	| CTEBOOLEANO 
 	| CTETEXTO 
-	| IDENTIFICADOR0
-	;
+	| IDENTIFICADOR
+	{
+		
+		if(seccMain == 1){
+			//Estamos en MAIN y la unica forma de hacer estatutos es dentro de funciones
+			buscarVariablesLocales(objetos, ":main:", );
+		}
+	
+}	;
 
 declara_objetos:
 	DECLARA_OBJETOS ACORCHETE declara_objetos_rep CCORCHETE;
@@ -578,7 +630,7 @@ declaracion_prototipos:
 		//Agregar la funcion al objeto main y guardar el nombre en temporal
 		if(funcionesDeclaracion == 1){				
 			objetos = agregarFuncion(objetos, ":main:" ,$2);
-			strncpy(nompreProcedimiento, $2, strlen($2));						
+			strncpy(nombreProcedimiento, $2, strlen($2));
 		}
 	}
 	APARENTESIS parametros CPARENTESIS REGRESA declaracion_prototipos_regresa PUNTOYCOMA
@@ -598,13 +650,13 @@ parametros_rep:
 	IDENTIFICADOR 
 	{
 		//Actualizar el temporal con el nombre del parametro
-		strncpy(nombreVariable, $1, strlen($1));		
+		strncpy(nombreVariable, $1, strlen($1));
 		
 	}
 	DOSPUNTOS tipo 
 	{		
 		//Agregar el parametro a la tabla de variables locales de la funcion	
-		objetos = agregarVariablesLocales(objetos, ":main:", nompreProcedimiento, nombreVariable, tipoVariable,1);	
+		objetos = agregarVariablesLocales(objetos, ":main:", nombreProcedimiento, nombreVariable, tipoVariable,1);
 	} 
 	parametros_rep1
 	;
@@ -612,7 +664,7 @@ parametros_rep:
 tipo:	
 	ENTERO
 	{
-		tipoVariable=$1;		
+		tipoVariable=$1;
 	}
 	| DECIMAL 
 	{
@@ -667,7 +719,7 @@ funciones:
 	IDENTIFICADOR 
 	{
 		//Actualizar el temporal con el nombre de la funcion
-		strncpy(nompreProcedimiento, $1, strlen($1));
+		strncpy(nombreProcedimiento, $1, strlen($1));
 	} 
 	APARENTESIS parametros CPARENTESIS ALLAVE variables_locales bloque CLLAVE
 	;
