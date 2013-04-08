@@ -133,13 +133,20 @@ cuadruplos* generarCuadruploAsignacion(cuadruplos *listaCuadruplos, pila *operan
 	//Variables auxiliares Enteras
 	int operando1Tipo;
 	int operando2Tipo;
+	int operando1Temp;
+	int operadorInt;
+
 
 	//Variables auxiliares Apuntadores
+	nodo *operador;
 	nodo *operando1;
 	nodo *operando2;
 	nodo *resultado;
 	cuadruplos *accederCuadruplo;
 	
+	//Apuntador para el avail que se usara en el cuadruplo
+	nodoOperando *nuevoAvail;
+
 	//Esta funcion generara un triplo con los datos necesarios
 	//Tenemos todos los valores necesarios en las pilas
 	//Sacamos los operandos de pila operandos
@@ -147,11 +154,18 @@ cuadruplos* generarCuadruploAsignacion(cuadruplos *listaCuadruplos, pila *operan
 	resultado = pop(operandos);
 	operando2 = NULL;
 
+	//Sacamos de la pila (momentariamente) para validar
+	operador = pop(operadores);
+		
+	//Obtenemos el valor dentro del nodo que sacamos (este sera entero)
+	operadorInt = *(int*)(operador->dato);
+
 	//Sacando los tipos para ver su compatibilidad en el cubo semantico
 	operando1Tipo = ((nodoOperando*)(operando1->dato))->tipo;
 	operando2Tipo = ((nodoOperando*)(resultado->dato))->tipo;
+	operando1Temp = ((nodoOperando*)(operando1->dato))->temp;
 
-	if (cuboSemantico[operando1Tipo][operando2Tipo][OP_ASIGNACION] != OP_ERROR){
+	if (cuboSemantico[operando1Tipo][operando2Tipo][operadorInt] != OP_ERROR){
 		//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
 		listaCuadruplos = generaCuadruplo(listaCuadruplos, operando1, operando2, operador, resultado, *contadorIndice);
 
@@ -186,9 +200,8 @@ cuadruplos* generarCuadruploAsignacion(cuadruplos *listaCuadruplos, pila *operan
 					case 3:
 						push(availBoolean, nuevoAvail);
 						break;
-						}
-					} 
-			}
+				}
+			} 
 
 			//aumentamos en 1 el contador de cuadruplos
 			//int aux = *contadorIndice+1;
@@ -224,7 +237,7 @@ cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCua
 	cuadruplos *accederCuadruplo;
 
 	//Variables para la reinsercion
-	nodoOperando reinsertarOperador;
+	nodoOperador *reinsertarOperador;
 
 	//Apuntador para el avail que se usara en el cuadruplo
 	nodo *resultadoAvail;
@@ -270,8 +283,17 @@ cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCua
 
 			//Prioridad: Asignacion
 			case 5:
-				if (operadorInt == OP_ASIGNACION)
+				if (operadorInt == OP_ASIGNACION){
+
+					reinsertarOperador = (nodoOperador*)malloc(sizeof(nodoOperador));
+					reinsertarOperador->operador = operadorInt;
+
+					push(operadores, reinsertarOperador);
+
 					generarCuadruploAsignacion(listaCuadruplos, operandos, operadores, cuboSemantico, contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+					
+				}
+					
 				break;
 		}	
 

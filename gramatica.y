@@ -646,8 +646,7 @@ factor:
 	;
 
 factor_operando:
-	var_cte 
-	| llama_funcion
+	var_cte 	
 	;
 
 var_cte:
@@ -831,19 +830,34 @@ bloque:
 	;
 
 estatuto:
-	asignacion PUNTOYCOMA
+	decideEstatuto PUNTOYCOMA
 	| escritura PUNTOYCOMA
-	| llama_funcion PUNTOYCOMA
 	| regresa PUNTOYCOMA
 	| condicional
 	| ciclo
 	;
 
-asignacion:
-	IDENTIFICADOR 
+decideEstatuto:
+	IDENTIFICADOR subrutina
 	{
 		//Obtenemos el nombre de la variable que desamos usar
-		strncpy(nombreVariable, $1, tamanioIdentificadores);
+		strncpy(nombreVariable, $1, tamanioIdentificadores);	
+	} 
+	estatutoOAsignacion
+	;
+
+estatutoOAsignacion:
+	asignacion1 
+	|
+	llama_funcion_opcional APARENTESIS serexpresion CPARENTESIS
+	| 
+	lectura
+	;
+
+subrutina: /* empty */
+	{
+		//Obtenemos el nombre de la variable que desamos usar
+		strncpy(nombreVariable, nombreVariable, tamanioIdentificadores);
 		if(seccMain == 1){
 			//Estamos en MAIN y la unica forma de hacer estatutos es dentro de funciones
 			//Obtenemos los valores de las variables si no existen exit
@@ -869,8 +883,7 @@ asignacion:
 			//Estamos en la funcion de un objeto
 			//Pendiente
 		}
-	} asignacion1
-	;
+	}
 
 asignacion1:
 	dimensiones IGUAL serexpresion 
@@ -882,7 +895,8 @@ asignacion1:
 		
 		//Metemos la multiplicacion en la pila de operadores
 		push(operadores, operador);
-	} asignacion2
+	} 
+	asignacion2
 	{
 		//Funcion experimental solo funcionara con expresiones y id
 		generarAsignacion();
@@ -933,11 +947,6 @@ escritura_concatena:
 	| CONCATENA escritura_valores
 	;
 
-
-llama_funcion:
-	IDENTIFICADOR llama_funcion_opcional APARENTESIS serexpresion CPARENTESIS
-	| lectura
-	;
 
 llama_funcion_opcional:
 	/*Empty*/
