@@ -21,7 +21,7 @@ entonces				(?i:entonces)
 es						(?i:es)
 falso					(?i:falso)
 hijoDe					(?i:hijoDe)
-identificador 			[a-zA-Z]+
+identificador 			([a-zA-Z][_a-zA-Z0-9]*)
 implementaFunciones		(?i:Implementa_Funciones)
 leerDelTeclado			(?i:leerDelTeclado)
 matrizDecimal			(?i:matrizDecimal)
@@ -39,6 +39,7 @@ variablesGlobales		(?i:Variables_Globales)
 variablesLocales		(?i:Variables_Locales)
 verdadero				(?i:verdadero)
 comentario				("//".*[^\n])
+blanks					([ \t\n\r]+)
 
 %x IN_COMMENT
 %%
@@ -46,7 +47,7 @@ comentario				("//".*[^\n])
 <INITIAL>{
 	"/*"						BEGIN(IN_COMMENT);
 	["][^"]*["]					{
-								yylval.sval = yytext;
+								yylval.sval = malloc(strlen(yytext));
 								strncpy(yylval.sval, yytext, strlen(yytext));
 								return CTETEXTO;}
 	"->" 						{return FLECHA;}
@@ -75,36 +76,36 @@ comentario				("//".*[^\n])
 	"<="						{return MENORIGUAL;}
 
 	{atributosGlobales}			{return ATRIBUTOS_GLOBALES;}
-	{booleano}					{
+	{booleano}					{								
 								yylval.ival = 3;
 								return BOOLEANO;
 								}
 	{clase} 					{return CLASE;}
 	{crearObjeto}				{return CREAROBJETO;}	
 	{cteEntera}					{
-								yylval.sval = yytext;
+								yylval.sval = malloc(strlen(yytext));
 								strncpy(yylval.sval, yytext, strlen(yytext));
 								return CTEENTERA;}
 	{cteDecimal}				{
-								yylval.sval = yytext;
+								yylval.sval = malloc(strlen(yytext));
 								strncpy(yylval.sval, yytext, strlen(yytext));
 								return CTEDECIMAL;}
 	{falso}						{
-								yylval.sval = yytext;
+								yylval.sval = malloc(strlen(yytext));
 								strncpy(yylval.sval, yytext, strlen(yytext));
 								return CTEBOOLEANO;}
 	{verdadero}					{
-								yylval.sval = yytext;
+								yylval.sval = malloc(strlen(yytext));
 								strncpy(yylval.sval, yytext, strlen(yytext));
 								return CTEBOOLEANO;}
-	{decimal} 					{
+	{decimal} 					{								
 								yylval.ival = 1;
 								return DECIMAL;}
 	{declaraFunciones}			{return DECLARA_FUNCIONES;}
 	{declaraObjetos}			{return DECLARA_OBJETOS;}
 	{despliega}					{return DESPLIEGA;}
 	{ejecutarPrograma} 			{return EJECUTARPROGRAMA; }
-	{entero}					{
+	{entero}					{								
 								yylval.ival = 0;																								
 								return ENTERO;}
 	{entonces} 					{return ENTONCES;}
@@ -112,11 +113,11 @@ comentario				("//".*[^\n])
 	{hijoDe} 					{return HIJODE;}
 	{implementaFunciones}		{return IMPLEMENTA_FUNCIONES;}
 	{leerDelTeclado}			{return LEERDELTECLADO;}
-	{matrizDecimal} 			{
+	{matrizDecimal} 			{								
 								yylval.ival = 5;
 								return MATRIZDECIMAL;
 								}
-	{matrizEntera} 				{
+	{matrizEntera} 				{								
 								yylval.ival = 4;
 								return MATRIZENTERA;
 								}
@@ -127,7 +128,7 @@ comentario				("//".*[^\n])
 	{regresa}	 				{return REGRESA;}
 	{sino}						{return SINO;}
 	{si} 						{return SI;}
-	{texto}						{
+	{texto}						{								
 								yylval.ival = 2;
 								return TEXTO;
 								}
@@ -135,14 +136,13 @@ comentario				("//".*[^\n])
 	{variablesLocales}			{return VARIABLES_LOCALES;}
 
 	{identificador}				{
-								yylval.sval = yytext;
+								yylval.sval = malloc(strlen(yytext));
 								strncpy(yylval.sval, yytext, strlen(yytext));
-								printf("%s\n", yylval.sval);
 								return IDENTIFICADOR;
-								}
-	[ \t\n\r]+
+							}
+	{blanks} 					{/* Ignore whitespace */}
 	{comentario}     			{/* eat up one-line comments */}
-
+	
 	}
 
 <IN_COMMENT>{

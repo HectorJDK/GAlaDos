@@ -1,26 +1,17 @@
-//Programa ejemplo del lenguaje GAlaDOs
-
-//Hector Jesus De La Garza Ponce
-//Oziel Alonso Garza Lopez
-
-Declara_Objetos [	
+	Declara_Objetos [	
 	
 ]
-Variables_Globales [
-	entero uno;
-	entero dos;
-	entero tres; 
-	] 
+Variables_Globales [entero uno1; entero dos1; entero tres1;] 
 Declara_Funciones [ ]
 Implementa_Funciones [ ]
 
 ejecutarPrograma {
 	Variables_Locales [
-		decimal uno;
+		decimal uno_x;
 		decimal dos;
 		decimal tres;	
 	]
 
-	regresa uno * dos * tres;
+	regresa uno_x * dos * tres;
 }
 

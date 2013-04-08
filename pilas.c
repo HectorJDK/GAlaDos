@@ -73,19 +73,3 @@ int pilaVacia(pila *x){
 		return 0;
 	} else return 1;
 }
-
-/*
-*Metodo imprimirPila
-*Imprime los nodos de la pila
-*/
-// void imprimirPilaChar(pila *x){
-	
-// 	nodo *aux;
-// 	aux = x->primero;
-// 	while (aux!=NULL){
-// 		printf("---------------\n");
-// 		printf("Dato: %s\n",aux->dato);
-// 		printf("---------------\n");					
-// 		aux=aux->siguiente;
-// 		} 		
-// }

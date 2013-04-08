@@ -101,7 +101,6 @@ int memoriaTextoGlobal;
 int memoriaBooleanoGlobal;
 //****************************
 
-
 //cuboSemantico
 static int cuboSemantico[4][4][14];
 
@@ -112,7 +111,8 @@ cuadruplos *listaCuadruplos = NULL;
 directorioObjetos *objetos = NULL;
 
 
-
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
 void  generarMultiplicacionDivision(){
@@ -238,13 +238,22 @@ void calcularMemoriaVirtual(){
 	memoriaBooleanoGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 3);
 }
 
+
+//----------------------------------------------------------------------------
+
+
+//----------------------------------MAIN--------------------------------------
+
 int main()
 {
 
-
-	//Realizar escaneo de gramatica
 	yyparse();
-	
+	//Imprimir tabla de variables y procedimientos
+	//imprimirObjetos(objetos); 
+	//Imprimir cuadruplos
+	//imprimeCuadruplos(listaCuadruplos, 0);
+	//Imprimir cuadruplos version verbose
+	//imprimeCuadruplos(listaCuadruplos, 1);								
 	//Desplegar la tabla de objetos
 	return 0;
 }
@@ -379,7 +388,6 @@ programa:
 	{	
 		//Desplegar mensaje de terminacion de compilacion
 		printf("programa correctamente escrito\n");
-		imprimirObjetos(objetos);
 	}
 	;
 
@@ -436,7 +444,7 @@ bloque_variables_rep:
 
 declara_variables:
 	ENTERO IDENTIFICADOR PUNTOYCOMA
-	{				
+	{						
 		tipoVariable = $1;
 		strncpy(nombreVariable, $2, tamanioIdentificadores);
 		asignarMemoriaVariable();
@@ -644,8 +652,7 @@ var_cte:
 	| CTEBOOLEANO 
 	| CTETEXTO 
 	| IDENTIFICADOR
-	{	
-		printf("Nombre de variable: %s", $1);
+	{			
 		//Obtenemos el nombre de la variable que desamos usar
 		strncpy(nombreVariable, $1, tamanioIdentificadores);
 		if(seccMain == 1){

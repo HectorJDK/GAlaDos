@@ -34,15 +34,15 @@ directorioObjetos* agregarVariablesLocales(directorioObjetos *objetos, char *obj
 							HASH_ADD_STR(existeProcedimiento->variablesLocales, nombre, temp);  
 							return objetos;   
 					} else {
-							printf("Error, la llave se repite \n");
+							printf("Error Variable %s ya esta delcarada \n", nombre);
 							exit(1);
 					}
 				} else {
-					printf("Error Funcion no se encuentra\n");
+					printf("Error Funcion %s no se encuentra declarada \n", funcion);
 					exit(1);
 				}
 		} else {
-			printf("Error Objeto no se encuentra\n");
+			printf("Error Clase %s no se encuentra declarada \n", objeto);
 			exit(1);
 		}
 }
@@ -66,8 +66,8 @@ directorio* buscarVariablesLocales(directorioObjetos *objetos, char *objeto, cha
 					//Checar si la variable ya existe
 					HASH_FIND_STR(existeProcedimiento->variablesLocales, nombre, temp);
 					if (temp == NULL) {
-						printf("Error la variable: %s no ha sido declarada\n", nombre);
-						exit(1);
+						//Primero buscamos en nuestra variables locales, si es null el resultado debemos buscar en globales
+						return NULL;
 					} else {
 							return temp;
 					}
@@ -104,10 +104,12 @@ directorioObjetos* agregarVariablesGlobales(directorioObjetos *objetos, char *ob
 						HASH_ADD_STR(existe->variablesGlobales, nombre, temp);  
 						return objetos;   
 				} else {
-						printf("Error, la llave se repite");
+						printf("Error Variable %s ya esta delcarada \n", nombre);
+						exit(1);
 				}
 		} else {
-				printf("Error Objeto no se encuentra");
+				printf("Error Clase %s no se encuentra declarada \n", objeto);
+				exit(1);
 		}
 }
 
@@ -127,14 +129,15 @@ directorio* buscarVariablesGlobales(directorioObjetos *objetos, char *objeto, ch
 				HASH_FIND_STR(existe->variablesGlobales, nombre, temp);
 				//Si ya existe manejar el error y terminar compilacion
 				if (temp == NULL) {
-					printf("Error la variable no ha sido declarada");
+					printf("Error Variable %s no esta delcarada \n", nombre);
 					exit(1);
 				} else {
 					//Si la variable existe regresar el directorio de la variable
 					return temp;
 				}
 		} else {
-				printf("Error Objeto no se encuentra");
+			printf("Error Clase %s no se encuentra declarada \n", objeto);
+			exit(1);
 		}
 }
 
@@ -160,10 +163,12 @@ directorioObjetos* agregarFuncion(directorioObjetos *objetos, char *objeto, char
 						HASH_ADD_STR(existe->procedimientos, nombre, temp); 
 						return objetos;   
 				} else {
-						printf("Error, la llave se repite");
+					printf("Error Funcion %s ya se encuentra declarada \n", nombre);
+					exit(1);
 				}
 		} else {
-				printf("Error Funcion no se encuentra");
+				printf("Error Clase %s no se encuentra declarada \n", objeto);
+				exit(1);
 		}
 }
 
@@ -183,15 +188,15 @@ directorioProcedimientos* buscarFuncion(directorioObjetos *objetos, char *objeto
 				HASH_FIND_STR(existe->procedimientos, nombre, temp);
 				if (temp == NULL) {
 					//La funcion no esta declarada en el objeto
-					printf("Funcion no declarada");
+					printf("Eror Funcion %s no declarada", nombre);
 					exit(1);
 				} else {
 					//Si existe regresamos el directorioProcedmientos
 					return temp;
 				}
 		} else {
-				printf("Error clase no existe");
-				exit(1);
+			printf("Error Clase %s no se encuentra declarada \n", objeto);
+			exit(1);
 		}
 }
 
@@ -213,8 +218,10 @@ directorioObjetos* agregarObjeto(directorioObjetos *objetos, char *nombre){
 				temp->procedimientos = NULL;
 				HASH_ADD_STR(objetos, nombre, temp);  
 				return objetos;    
-		} else {
-				printf("Error, la llave se repite");
+		} else {		
+			printf("Error Clase %s ya se encuentra declarada \n", nombre);
+			exit(1);
+
 		}       
 
 }
@@ -231,7 +238,7 @@ directorioObjetos* buscarObjeto(directorioObjetos *objetos, char *nombre){
 		HASH_FIND_STR(objetos, nombre, temp);  
 		if (temp==NULL) {
 			//Si no existe el objeto marcar error
-			printf("Clase no declarada");
+			printf("Error Clase %s no se encuentra declarada \n", nombre);
 			exit(1);
 		} else {
 			//Regresamos al apuntador al directorio del objeto

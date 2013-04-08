@@ -227,8 +227,6 @@ cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCua
 						strcpy(nuevoAvail->nombre, ((nodoOperando*)operando1->dato)->nombre);
 						nuevoAvail->direccion = ((nodoOperando*)operando1->dato)->direccion;
 
-						printf("Metemos en avail a %s\n", ((nodoOperando*)operando1->dato)->nombre);
-
 						switch(operando1Tipo){
 							case 0:
 								push(availEntero, nuevoAvail);
