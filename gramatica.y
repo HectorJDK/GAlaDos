@@ -131,6 +131,10 @@ void  generarAndOr(){
 	listaCuadruplos = verificacionGeneracionCuadruplo(4, listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
 }
 
+void  generarAsignacion(){
+	listaCuadruplos = verificacionGeneracionCuadruplo(5 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+}
+
 void asignarMemoriaVariable(){
 	//Checamos en que seccion nos encontramos al momento de crear una variable
 	if (seccVariablesGlobales == 1) {
@@ -251,7 +255,7 @@ int main()
 	//Imprimir tabla de variables y procedimientos
 	//imprimirObjetos(objetos); 
 	//Imprimir cuadruplos
-	//imprimeCuadruplos(listaCuadruplos, 0);
+	imprimeCuadruplos(listaCuadruplos, 0);
 	//Imprimir cuadruplos version verbose
 	//imprimeCuadruplos(listaCuadruplos, 1);								
 	//Desplegar la tabla de objetos
@@ -660,7 +664,13 @@ var_cte:
 			//Obtenemos los valores de las variables si no existen exit
 			//variable = buscarVariablesLocales(objetos, ":main:", nombreProcedimiento,  nombreVariable);
 			variable = buscarVariablesLocales(objetos, ":main:", nombreProcedimiento,  nombreVariable);
-		
+			
+			//La variable no se encontro
+			if (variable == NULL) {
+				//Si esta variable entonces la tomamos si no es asi marcaremos un error
+				variable = buscarVariablesGlobales(objetos, ":main:", nombreVariable);
+			}
+
 			//crearemos un nodoOperando para agregarlo a la pila
 			operando = (nodoOperando*)malloc(sizeof(nodoOperando));
 			operando->temp = 0;
@@ -830,12 +840,53 @@ estatuto:
 	;
 
 asignacion:
-	IDENTIFICADOR asignacion1
+	IDENTIFICADOR 
+	{
+		//Obtenemos el nombre de la variable que desamos usar
+		strncpy(nombreVariable, $1, tamanioIdentificadores);
+		if(seccMain == 1){
+			//Estamos en MAIN y la unica forma de hacer estatutos es dentro de funciones
+			//Obtenemos los valores de las variables si no existen exit
+			//variable = buscarVariablesLocales(objetos, ":main:", nombreProcedimiento,  nombreVariable);
+			variable = buscarVariablesLocales(objetos, ":main:", nombreProcedimiento,  nombreVariable);
+			
+			//La variable no se encontro
+			if (variable == NULL) {
+				//Si esta variable entonces la tomamos si no es asi marcaremos un error
+				variable = buscarVariablesGlobales(objetos, ":main:", nombreVariable);
+			}
+
+			//crearemos un nodoOperando para agregarlo a la pila
+			operando = (nodoOperando*)malloc(sizeof(nodoOperando));
+			operando->temp = 0;
+			operando->tipo = variable->tipo; 
+			strcpy(operando->nombre, variable->nombre);
+			operando->direccion = variable->direccion;
+
+			push(operandos,operando);
+
+		} else if (seccObjeto == 1) {
+			//Estamos en la funcion de un objeto
+			//Pendiente
+		}
+	} asignacion1
 	;
 
 asignacion1:
 	dimensiones IGUAL serexpresion 
-	| IGUAL asignacion2
+	| IGUAL
+	{
+		//Creamos el nodo operandor que se le hara push en la pila operadores
+		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
+		operador->operador = OP_ASIGNACION;
+		
+		//Metemos la multiplicacion en la pila de operadores
+		push(operadores, operador);
+	} asignacion2
+	{
+		//Funcion experimental solo funcionara con expresiones y id
+		generarAsignacion();
+	}
 	| FLECHA IDENTIFICADOR asignacion3  IGUAL asignacion2;
 
 asignacion2:

@@ -12,6 +12,6 @@ ejecutarPrograma {
 		decimal tres;	
 	]
 
-	regresa uno_x * dos * tres;
+	dos = uno_x * dos * tres;
 }
 
