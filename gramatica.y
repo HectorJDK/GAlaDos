@@ -61,6 +61,7 @@ int contadorIndice = 0;
 //Variables para control
 nodoOperando *operando;
 nodoOperador *operador;
+nodoOperador *salto;
 directorio *variable;
 
 //Variables para control de memoria
@@ -161,6 +162,14 @@ void  generarLectura(){
 
 void  generarEscritura(){
 	listaCuadruplos = verificacionGeneracionCuadruplo(8 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+}
+
+void gotoFalsoCiclo(){
+		listaCuadruplos = generarCuadruploGotoFalsoCiclo(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
+}
+
+void gotoCiclo(){
+		listaCuadruplos = generarCuadruploGotoCiclo(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
 }
 void asignarMemoriaVariable(){
 	//Checamos en que seccion nos encontramos al momento de crear una variable
@@ -1200,7 +1209,38 @@ escritura:
 
 escritura_valores:
 	valores escritura_concatena 
-	| IDENTIFICADOR escritura_valores1
+	| IDENTIFICADOR
+	{
+		//Obtenemos el nombre de la variable que desamos usar
+		strncpy(nombreVariable, $1, tamanioIdentificadores);
+
+
+		if(seccMain == 1){
+			//Estamos en MAIN y la unica forma de hacer estatutos es dentro de funciones
+			//Obtenemos los valores de las variables si no existen exit
+			//variable = buscarVariablesLocales(objetos, ":main:", nombreProcedimiento,  nombreVariable);
+			variable = buscarVariablesLocales(objetos, ":main:", nombreProcedimiento,  nombreVariable);
+			
+			//La variable no se encontro
+			if (variable == NULL) {
+				//Si esta variable entonces la tomamos si no es asi marcaremos un error
+				variable = buscarVariablesGlobales(objetos, ":main:", nombreVariable);
+			}
+
+			//crearemos un nodoOperando para agregarlo a la pila
+			operando = (nodoOperando*)malloc(sizeof(nodoOperando));
+			operando->temp = 0;
+			operando->tipo = variable->tipo; 
+			strcpy(operando->nombre, variable->nombre);
+			operando->direccion = variable->direccion;
+
+			push(operandos,operando);
+
+		} else if (seccObjeto == 1) {
+			//Estamos en la funcion de un objeto
+			//Pendiente
+		}	
+	} escritura_valores1
 	;
 
 valores:
@@ -1259,7 +1299,18 @@ valores:
 
 escritura_valores1:
 	/*Empty*/
-	| CONCATENA escritura_valores 
+	| CONCATENA
+	{
+		generarEscritura();
+
+		//Creamos el nodo operandor que se le hara push en la pila operadores
+		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
+		operador->operador = OP_ESCRITURA;
+		
+		//Metemos la multiplicacion en la pila de operadores
+		push(operadores, operador);
+
+	} escritura_valores 
 	| dimensiones escritura_concatena
 	;
 
@@ -1308,13 +1359,16 @@ condicional_else:
 ciclo:
 	MIENTRAS 
 	{
-		// salto = (nodoOperador*)malloc(sizeof(nodoOperador));
-		// salto->operador = contadorIndice;
-		// push(pilaSaltos, salto);
+		salto = (nodoOperador*)malloc(sizeof(nodoOperador));
+		salto->operador = contadorIndice;
+		push(pilaSaltos, salto);
 	}
 	APARENTESIS serexpresion 
 	{
-		//generarCiclo();
+		gotoFalsoCiclo();
 	} 
-	CPARENTESIS ALLAVE bloque CLLAVE
+	CPARENTESIS ALLAVE bloque CLLAVE 
+	{
+		gotoCiclo();
+	}
 	;

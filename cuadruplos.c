@@ -305,6 +305,127 @@ cuadruplos* generarCuadruploEscritura(cuadruplos *listaCuadruplos,  pila *operan
 	
 }
 
+
+cuadruplos* generarCuadruploGotoFalsoCiclo(cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice){
+	//Variables auxiliares Enteras
+	int operandoTipo;	
+
+	//Variables auxiliares Apuntadores
+	nodo *operador;
+	nodoOperador *operador1;
+	nodo *operando1;
+	nodo *operando2;
+	nodo *resultado;
+	nodoOperador *salto;
+
+	//Esta funcion generara un triplo con los datos necesarios
+	//Tenemos todos los valores necesarios en las pilas
+	//Sacamos los operandos de pila operandos
+	resultado = NULL;
+	operando1 = pop(operandos);
+	operando2 = NULL;
+
+	operador1 = (nodoOperador*)malloc(sizeof(nodoOperador));
+	operador1->operador = OP_GOTOFALSO;
+	push(pilaSaltos, operador);
+	operador = pop(pilaSaltos);
+
+	//Almacenar el tipo del operando para verificar que sea booleano
+	operandoTipo = ((nodoOperando*)(operando1->dato))->tipo;
+	
+	if (operandoTipo == 3) {	
+		//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
+		listaCuadruplos = generaCuadruplo(listaCuadruplos, operando1, operando2, operador, resultado, *contadorIndice);
+
+		//Checamos si no hubo algun error en la generacion de los cuadruplos
+		if (listaCuadruplos != NULL) {
+			//Meter en la pila de saltos
+			salto = (nodoOperador*)malloc(sizeof(nodoOperador));
+			salto->operador = *contadorIndice;
+			push(pilaSaltos, salto);
+
+			//aumentamos en 1 el contador de cuadruplos
+			//int aux = *contadorIndice+1;
+			*contadorIndice = *contadorIndice+1;
+			return listaCuadruplos;
+		} else {
+			printf("Error al crear el cuadruplo\n");
+			exit(1);
+		}
+	} else {
+		printf("No es posible hacer la evaluacion de un operando no booleano\n");
+		exit(1);
+	}
+	
+}
+
+cuadruplos* generarCuadruploGotoCiclo(cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice){
+	//Variables auxiliares Enteras
+	int operandoTipo;	
+	int direccionRetorno;
+
+	cuadruplos *accederCuadruplo;
+
+	//Variables auxiliares Apuntadores
+	nodo *operador;
+	nodoOperador *operador1;
+	nodo *operando1;
+	nodo *operando2;
+	nodo *resultado;
+	nodoOperando *resultado1;
+
+	nodo *falso;
+	nodo *retorno;
+
+	operando1 = NULL;
+	operando2 = NULL;
+
+	falso = pop(pilaSaltos);
+	retorno = pop(pilaSaltos);
+	
+	//Truco sucio para castear a nodo
+	operador1 = (nodoOperador*)malloc(sizeof(nodoOperador));
+	operador1->operador = OP_GOTO;
+	push(pilaSaltos, operador);
+	operador = pop(pilaSaltos);
+
+	//Truco sucio para castear a nodo
+	resultado1 = (nodoOperando*)malloc(sizeof(nodoOperando));
+	resultado1->direccion =  *(int*)(retorno->dato);
+	resultado1->tipo = -1;
+	resultado1->temp = -1;	
+	sprintf(resultado1->nombre, "%d", *(int*)(retorno->dato));
+	
+	push(pilaSaltos, resultado1);
+	resultado = pop(pilaSaltos);
+		
+	//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
+	listaCuadruplos = generaCuadruplo(listaCuadruplos, operando1, operando2, operador, resultado, *contadorIndice);
+
+	//Checamos si no hubo algun error en la generacion de los cuadruplos
+	if (listaCuadruplos != NULL) {
+		direccionRetorno = *(int*)(falso->dato);
+		//Buscamos el cuadruplo reciencreado para guardar su resultado en la tabla de operandos el cual lo pondra en 
+		HASH_FIND_INT(listaCuadruplos, &direccionRetorno, accederCuadruplo);
+
+		if (accederCuadruplo != NULL) {
+			sprintf(accederCuadruplo->resultado->nombre, "%d", direccionRetorno);
+			accederCuadruplo->resultado->direccion = direccionRetorno;
+			//aumentamos en 1 el contador de cuadruplos
+			//int aux = *contadorIndice+1;
+			*contadorIndice = *contadorIndice+1;
+			return listaCuadruplos;
+		} else {
+			printf("Error fatal: No se encuentra el cuadruplo %i\n", direccionRetorno);
+			exit(1);
+		}
+	} else {
+		printf("Error al crear el cuadruplo\n");
+		exit(1);
+	}	
+}
+
+
 //Generacion de cuadruplos para 
 cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[4][4][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean){
 	

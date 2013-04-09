@@ -14,13 +14,11 @@ ejecutarPrograma {
 	Variables_Locales [
 		decimal uno_x;
 		texto dos;
-		decimal tres;	
+		decimal tres;
+		booleano b;	
 	]
 
-	uno1 = "hola";
-	uno_x = tres;
-	LEERDELTECLADO(uno1);
-	LEERDELTECLADO(tres);
-
-	despliega("dos" << "tres" << "cuatro");
+	mientras (b){
+		uno_x = tres;
+	}
 }
