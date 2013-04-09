@@ -221,7 +221,7 @@ void inicializarSemantica(int cuboSemantico[4][4][14]){
 	cuboSemantico[TIPO_TEXTO][TIPO_TEXTO][OP_DIFERENTE] = TIPO_BOOLEANO;
 	cuboSemantico[TIPO_TEXTO][TIPO_TEXTO][OP_AND] = OP_ERROR;
 	cuboSemantico[TIPO_TEXTO][TIPO_TEXTO][OP_OR] = OP_ERROR;
-	cuboSemantico[TIPO_TEXTO][TIPO_TEXTO][OP_ASIGNACION] = OP_ERROR;
+	cuboSemantico[TIPO_TEXTO][TIPO_TEXTO][OP_ASIGNACION] = TIPO_TEXTO;
 	cuboSemantico[TIPO_TEXTO][TIPO_TEXTO][OP_CONCATENA] = TIPO_TEXTO;
 
 	//Operaciones Op1: TIPO_TEXTO, Op2:TIPO_BOOLEANO

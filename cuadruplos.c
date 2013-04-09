@@ -15,6 +15,7 @@
 cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *operando1, nodo *operando2, nodo *operador, nodo *resultado, int indice){
 	//Variable auxiliar que servira como needle para la busqueda e insercion en el hash
 	cuadruplos *existe;
+	cuadruplos *prueba;
 
 	//Variables auxiliares para poblar la estructura
 	nodoOperando *tempOperando1;
@@ -37,7 +38,7 @@ cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *operando1, nodo *
 			//Datos NULL
 			tempOperando1->temp = -1;
 			tempOperando1->tipo = -1;
-			strcpy(tempOperando1->nombre, "NULL");
+			strcpy(tempOperando1->nombre, "NuLl");
 			tempOperando1->direccion = -1;	
 		} else {
 			//Pasamos todos los datos de operando1
@@ -51,7 +52,7 @@ cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *operando1, nodo *
 			//Datos NULL
 			tempOperando2->temp = -1;
 			tempOperando2->tipo = -1;
-			strcpy(tempOperando2->nombre, "NULL");
+			strcpy(tempOperando2->nombre, "NuLl");
 			tempOperando2->direccion = -1;
 		} else {
 			//Pasamos todos los datos de operando2
@@ -65,7 +66,7 @@ cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *operando1, nodo *
 			//Genera el nodo resultado y lo asigna como temporal
 			tempResultado->temp = -1;
 			tempResultado->tipo = -1;
-			strcpy(tempResultado->nombre, "NULL");
+			strcpy(tempResultado->nombre, "NuLl");
 			tempResultado->direccion = -1;
 		} else {
 			//Genera el nodo resultado y lo asigna como temporal
@@ -132,7 +133,7 @@ void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode) {
 cuadruplos* generarCuadruploAsignacion(cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[4][4][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean){
 	//Variables auxiliares Enteras
 	int operando1Tipo;
-	int operando2Tipo;
+	int resultadoTipo;
 	int operando1Temp;
 	int operadorInt;
 
@@ -162,10 +163,10 @@ cuadruplos* generarCuadruploAsignacion(cuadruplos *listaCuadruplos, pila *operan
 
 	//Sacando los tipos para ver su compatibilidad en el cubo semantico
 	operando1Tipo = ((nodoOperando*)(operando1->dato))->tipo;
-	operando2Tipo = ((nodoOperando*)(resultado->dato))->tipo;
+	resultadoTipo = ((nodoOperando*)(resultado->dato))->tipo;
 	operando1Temp = ((nodoOperando*)(operando1->dato))->temp;
 
-	if (cuboSemantico[operando1Tipo][operando2Tipo][operadorInt] != OP_ERROR){
+	if (cuboSemantico[operando1Tipo][resultadoTipo][operadorInt] != OP_ERROR){
 		//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
 		listaCuadruplos = generaCuadruplo(listaCuadruplos, operando1, operando2, operador, resultado, *contadorIndice);
 
@@ -290,7 +291,8 @@ cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCua
 
 					push(operadores, reinsertarOperador);
 
-					generarCuadruploAsignacion(listaCuadruplos, operandos, operadores, cuboSemantico, contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+					listaCuadruplos = generarCuadruploAsignacion(listaCuadruplos, operandos, operadores, cuboSemantico, contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+					return listaCuadruplos;
 					
 				}
 					
@@ -431,3 +433,4 @@ cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCua
 		return listaCuadruplos;
 	}
 }
+

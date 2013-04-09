@@ -247,6 +247,8 @@ directorioObjetos* buscarObjeto(directorioObjetos *objetos, char *nombre){
 }
 
 
+
+
 /*
 * Funcion para desplegar los elementos del directorio de objetos asi como los 
 * elementos del directorio de funciones y variables que esten asociados

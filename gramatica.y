@@ -35,11 +35,12 @@ int seccObjeto = 0;
 int seccMain = 0;
 
 //Variables para la creacion de variables en la tabla
+int direccionVariable;
+char nombreObjeto[25];
 char nombreVariable[25];
 unsigned short tipoVariable;
 char nombreProcedimiento[25];
-char nombreObjeto[25];
-int direccionVariable;
+int direccionVariableConstante;
 
 //Pilas Operandos
 pila *operandos;
@@ -51,6 +52,9 @@ pila *availDecimal;
 pila *availTexto;
 pila *availBoolean;
 
+//Pila saltos 
+pila *pilaSaltos;
+
 //Contador de cuadruplos
 int contadorIndice = 0;
 
@@ -60,14 +64,17 @@ nodoOperador *operador;
 directorio *variable;
 
 //Variables para control de memoria
+int cantidadVariablesConstante = 1000;
 int cantidadVariablesTemp = 1000;
 int cantidadVariablesLocal = 1000;
 int cantidadVariablesGlobal = 1000;
 
 //Direcciones base para memoria
-int baseMemoriaTemp = 10000;
+int baseMemoriaConstante = 13000;
+int baseMemoriaTemp = 9000;
 int baseMemoriaLocal = 5000;
 int baseMemoriaGlobal = 1000;
+
 
 //Usado para calculo de direcciones
 int cursorEntero = 1;
@@ -78,8 +85,15 @@ int cursorBooleano = 4;
 //Division de la memoria
 //Por el momento solo son 1000 direcciones por cada tipo
 //****************************
+//Constantes
+//De la 13,000 hasta la 16,999
+int memoriaEnteroConstante;
+int memoriaDecimalConstante;
+int memoriaTextoConstante;
+int memoriaBooleanoConstante;
+
 //Temporales
-//De la 10,000 hasta la 13,999
+//De la 9,000 hasta la 12,999
 int memoriaEnteroTemp;
 int memoriaDecimalTemp;
 int memoriaTextoTemp;
@@ -110,6 +124,8 @@ cuadruplos *listaCuadruplos = NULL;
 //Declaracion e inicializacion de la estructura objetos
 directorioObjetos *objetos = NULL;
 
+//Declaracion para la tabla de constates
+directorio *constantes = NULL;
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
@@ -133,6 +149,10 @@ void  generarAndOr(){
 
 void  generarAsignacion(){
 	listaCuadruplos = verificacionGeneracionCuadruplo(5 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+}
+
+void  generarCiclo(){
+	listaCuadruplos = verificacionGeneracionCuadruplo(6 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
 }
 
 void asignarMemoriaVariable(){
@@ -226,22 +246,136 @@ void asignarMemoriaVariable(){
 		}
 	}
 }
-	
+
+void asignarMemoriaVariableConstante(int tipoConstate){
+	//Checamos en que seccion nos encontramos al momento de crear una variable
+			//Estamos en las variables Globales
+			//Determinar que tipo de variable tomaremos el dato
+	switch(tipoConstate){
+		case 0:
+		if (memoriaEnteroConstante < (baseMemoriaConstante + cantidadVariablesConstante * cursorEntero)) {
+			direccionVariableConstante = memoriaEnteroConstante;
+			memoriaEnteroConstante++;
+		} else{
+			printf("Error: memoria insuficiente de tipo Constante-entero\n");
+			exit(1);
+		}	
+		break;
+
+		case 1:
+			if (memoriaDecimalConstante < (baseMemoriaConstante + cantidadVariablesConstante * cursorDecimal)) {
+				direccionVariableConstante = memoriaDecimalConstante;
+				memoriaDecimalConstante++;
+			} else{
+				printf("Error: memoria insuficiente de tipo Constante-decimal\n");
+				exit(1);
+			}
+			break;
+
+		case 2:
+			if (memoriaTextoConstante < (baseMemoriaConstante + cantidadVariablesConstante * cursorTexto)) {
+				direccionVariableConstante = memoriaTextoConstante;
+				memoriaTextoConstante++;
+			} else{
+				printf("Error: memoria insuficiente de tipo Constante-Texto\n");
+				exit(1);
+			}
+			break;
+
+		case 3:
+			if (memoriaBooleanoConstante < (baseMemoriaConstante + cantidadVariablesConstante * cursorBooleano)) {
+				direccionVariableConstante = memoriaBooleanoConstante;
+				memoriaBooleanoConstante++;
+			} else{
+				printf("Error: memoria insuficiente de tipo Constante-Booleano\n");
+				exit(1);
+			}
+			break;
+	}
+}
+
 void calcularMemoriaVirtual(){
+	//Memoria Temporal
 	memoriaEnteroTemp = baseMemoriaTemp + (cantidadVariablesTemp * 0);
 	memoriaDecimalTemp = baseMemoriaTemp + (cantidadVariablesTemp * 1);
 	memoriaTextoTemp = baseMemoriaTemp + (cantidadVariablesTemp * 2);
 	memoriaBooleanoTemp = baseMemoriaTemp + (cantidadVariablesTemp * 3);
+
+	//Memoria Local
 	memoriaEnteroLocal = baseMemoriaLocal + (cantidadVariablesLocal * 0);
 	memoriaDecimalLocal = baseMemoriaLocal + (cantidadVariablesLocal * 1);
 	memoriaTextoLocal =	baseMemoriaLocal + (cantidadVariablesLocal * 2);
 	memoriaBooleanoLocal = baseMemoriaLocal + (cantidadVariablesLocal * 3);
+
+	//Memoria Global
 	memoriaEnteroGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 0);
 	memoriaDecimalGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 1);
 	memoriaTextoGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 2);
 	memoriaBooleanoGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 3);
+
+	//Memoria Constante
+	memoriaEnteroConstante = baseMemoriaConstante + (cantidadVariablesConstante * 0);
+	memoriaDecimalConstante = baseMemoriaConstante + (cantidadVariablesConstante * 1);
+	memoriaTextoConstante = baseMemoriaConstante + (cantidadVariablesConstante * 2);
+	memoriaBooleanoConstante = baseMemoriaConstante + (cantidadVariablesConstante * 3);
+
 }
 
+/*
+* Funcion para agregar objetos (main y clases) al directorio de objetos.
+*/
+directorio* agregarConstante(directorio *constantes, char *nombre, unsigned short tipo, int direccion){
+		
+		//Variable ausxiliar
+		directorio *temp;
+
+		//Buscar la constante en el directorio
+		HASH_FIND_STR(constantes, nombre, temp);  
+		if (temp==NULL) {
+				//Agregar la nueva constante al directorio
+				temp = (directorio*)malloc(sizeof(directorio));
+				strcpy(temp->nombre, nombre);
+				temp->direccion = direccion;
+				temp->tipo = tipo;
+				HASH_ADD_STR(constantes, nombre, temp);  
+				return constantes;    
+		}else {
+			//No hacer nada, porque ya esta grabada
+			return constantes;
+		}
+}
+
+/*
+* Funcion para agregar objetos (main y clases) al directorio de objetos.
+*/
+directorio* buscarConstante(directorio *constantes, char *nombre){
+		
+		//Variable auxiliar
+		directorio *temp;
+
+		//Buscar el objeto en el directorio
+		HASH_FIND_STR(constantes, nombre, temp);  
+		if (temp==NULL) {
+			//SI no existe solo regresamos NULL
+			return NULL;
+		} else {
+			//Regresamos al apuntador al directorio del objeto
+			return temp;
+		}       
+}
+
+
+void agregarTablaConstantes(char *nombre, int tipo){
+	directorio *temp;
+
+	//Buscar si anteriormente se ha insertado la constante en la tabla
+	temp = buscarConstante(constantes, nombre);
+
+	if (temp == NULL) {
+		asignarMemoriaVariableConstante(tipo);
+		constantes = agregarConstante(constantes, nombre, tipo, direccionVariableConstante);
+	}
+}
 
 //----------------------------------------------------------------------------
 
@@ -253,9 +387,9 @@ int main()
 
 	yyparse();
 	//Imprimir tabla de variables y procedimientos
-	//imprimirObjetos(objetos); 
+	//imprimirObjetos(objetos);
 	//Imprimir cuadruplos
-	imprimeCuadruplos(listaCuadruplos, 0);
+	// imprimeCuadruplos(listaCuadruplos, 0);
 	//Imprimir cuadruplos version verbose
 	//imprimeCuadruplos(listaCuadruplos, 1);								
 	//Desplegar la tabla de objetos
@@ -322,10 +456,10 @@ int main()
 %token MENORQUE
 %token MAYORIGUAL
 %token MENORIGUAL
-%token CTEENTERA
-%token CTETEXTO
-%token CTEBOOLEANO
-%token CTEDECIMAL
+%token <sval> CTEENTERA
+%token <sval> CTETEXTO
+%token <sval> CTEBOOLEANO
+%token <sval> CTEDECIMAL
 %token <sval> IDENTIFICADOR
 %start programa
 %%
@@ -363,6 +497,11 @@ programa:
 		availBoolean = malloc(sizeof(pila));
 		availBoolean->tamanio = 0;
 		availBoolean->primero = NULL;
+
+		//Inicializacion de pila de Saltos
+		pilaSaltos = malloc(sizeof(pila));
+		pilaSaltos->tamanio = 0;
+		pilaSaltos->primero = NULL;
 
 		//Inicializacion del Avial
 		inicializarAvail(availEntero, availDecimal, availTexto, availBoolean, &memoriaEnteroTemp, &memoriaDecimalTemp, &memoriaTextoTemp, &memoriaBooleanoTemp);
@@ -650,14 +789,80 @@ factor_operando:
 	;
 
 var_cte:
-	CTEENTERA 
-	| CTEDECIMAL 
-	| CTEBOOLEANO 
-	| CTETEXTO 
+	CTEENTERA
+	{
+		//Obtenemos el valor de la constante
+		strncpy(nombreVariable, $1, tamanioIdentificadores);
+		agregarTablaConstantes(nombreVariable, 0);
+
+		variable = buscarConstante(constantes, nombreVariable);
+
+		//crearemos un nodoOperando para agregarlo a la pila
+		operando = (nodoOperando*)malloc(sizeof(nodoOperando));
+		operando->temp = 0;
+		operando->tipo = variable->tipo; 
+		strcpy(operando->nombre, variable->nombre);
+		operando->direccion = variable->direccion;
+
+		push(operandos,operando);
+	} 
+
+	| CTEDECIMAL
+	{
+		//Obtenemos el valor de la constante
+		strncpy(nombreVariable, $1, tamanioIdentificadores);
+		agregarTablaConstantes(nombreVariable, 1);
+
+		variable = buscarConstante(constantes, nombreVariable);
+
+		//crearemos un nodoOperando para agregarlo a la pila
+		operando = (nodoOperando*)malloc(sizeof(nodoOperando));
+		operando->temp = 1;
+		operando->tipo = variable->tipo; 
+		strcpy(operando->nombre, variable->nombre);
+		operando->direccion = variable->direccion;
+
+		push(operandos,operando);
+	} 
+	| CTETEXTO
+	{
+		//Obtenemos el valor de la constante
+		strncpy(nombreVariable, $1, tamanioIdentificadores);
+		agregarTablaConstantes(nombreVariable, 2);
+		variable = buscarConstante(constantes, nombreVariable);
+
+		//crearemos un nodoOperando para agregarlo a la pila
+		operando = (nodoOperando*)malloc(sizeof(nodoOperando));
+		operando->temp = 2;
+		operando->tipo = variable->tipo; 
+		strcpy(operando->nombre, variable->nombre);
+		operando->direccion = variable->direccion;
+
+		push(operandos,operando);
+	} 
+	| CTEBOOLEANO
+	{
+		//Obtenemos el valor de la constante
+		strncpy(nombreVariable, $1, tamanioIdentificadores);
+		agregarTablaConstantes(nombreVariable, 3);
+
+		variable = buscarConstante(constantes, nombreVariable);
+
+		//crearemos un nodoOperando para agregarlo a la pila
+		operando = (nodoOperando*)malloc(sizeof(nodoOperando));
+		operando->temp = 3;
+		operando->tipo = variable->tipo; 
+		strcpy(operando->nombre, variable->nombre);
+		operando->direccion = variable->direccion;
+
+		push(operandos,operando);
+	} 
 	| IDENTIFICADOR
 	{			
 		//Obtenemos el nombre de la variable que desamos usar
 		strncpy(nombreVariable, $1, tamanioIdentificadores);
+
+
 		if(seccMain == 1){
 			//Estamos en MAIN y la unica forma de hacer estatutos es dentro de funciones
 			//Obtenemos los valores de las variables si no existen exit
@@ -838,26 +1043,10 @@ estatuto:
 	;
 
 decideEstatuto:
-	IDENTIFICADOR subrutina
-	{
+	IDENTIFICADOR {
 		//Obtenemos el nombre de la variable que desamos usar
-		strncpy(nombreVariable, $1, tamanioIdentificadores);	
-	} 
-	estatutoOAsignacion
-	;
+		strncpy(nombreVariable, $1, tamanioIdentificadores);
 
-estatutoOAsignacion:
-	asignacion1 
-	|
-	llama_funcion_opcional APARENTESIS serexpresion CPARENTESIS
-	| 
-	lectura
-	;
-
-subrutina: /* empty */
-	{
-		//Obtenemos el nombre de la variable que desamos usar
-		strncpy(nombreVariable, nombreVariable, tamanioIdentificadores);
 		if(seccMain == 1){
 			//Estamos en MAIN y la unica forma de hacer estatutos es dentro de funciones
 			//Obtenemos los valores de las variables si no existen exit
@@ -883,7 +1072,17 @@ subrutina: /* empty */
 			//Estamos en la funcion de un objeto
 			//Pendiente
 		}
-	}
+	}  
+	estatutoOAsignacion
+	;
+
+estatutoOAsignacion:
+	asignacion1 
+	|
+	llama_funcion_opcional APARENTESIS serexpresion CPARENTESIS
+	| 
+	lectura
+	;
 
 asignacion1:
 	dimensiones IGUAL serexpresion 
@@ -973,5 +1172,15 @@ condicional_else:
 	;
 
 ciclo:
-	MIENTRAS APARENTESIS serexpresion CPARENTESIS ALLAVE bloque CLLAVE
+	MIENTRAS 
+	{
+		// salto = (nodoOperador*)malloc(sizeof(nodoOperador));
+		// salto->operador = contadorIndice;
+		// push(pilaSaltos, salto);
+	}
+	APARENTESIS serexpresion 
+	{
+		//generarCiclo();
+	} 
+	CPARENTESIS ALLAVE bloque CLLAVE
 	;

@@ -8,12 +8,10 @@ Implementa_Funciones [ ]
 ejecutarPrograma {
 	Variables_Locales [
 		decimal uno_x;
-		decimal dos;
+		texto dos;
 		decimal tres;	
 	]
 
-	dos = uno_x * dos * tres;
-	uno_x = tres + dos * tres;
-	tres = dos + uno_x;
+	dos = "hola";
+	uno_x = tres;
 }
-
