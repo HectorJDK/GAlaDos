@@ -155,6 +155,10 @@ void  generarCiclo(){
 	listaCuadruplos = verificacionGeneracionCuadruplo(6 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
 }
 
+void  generarLectura(){
+	listaCuadruplos = verificacionGeneracionCuadruplo(7 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+}
+
 void asignarMemoriaVariable(){
 	//Checamos en que seccion nos encontramos al momento de crear una variable
 	if (seccVariablesGlobales == 1) {
@@ -1113,11 +1117,50 @@ asignacion3:
 	;
 
 lectura:
-	LEERDELTECLADO APARENTESIS lectura1 CPARENTESIS
-	;
-	
-lectura1:
-	ENTERO | DECIMAL | BOOLEANO | TEXTO
+	LEERDELTECLADO
+	{
+		//Creamos el nodo operandor que se le hara push en la pila operadores
+		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
+		operador->operador = OP_LECTURA;
+		
+		//Metemos la multiplicacion en la pila de operadores
+		push(operadores, operador);
+	}
+ 	APARENTESIS IDENTIFICADOR
+	{
+		//Obtenemos el nombre de la variable que desamos usar
+		strncpy(nombreVariable, $4, tamanioIdentificadores);
+
+		if(seccMain == 1){
+			//Estamos en MAIN y la unica forma de hacer estatutos es dentro de funciones
+			//Obtenemos los valores de las variables si no existen exit
+			//variable = buscarVariablesLocales(objetos, ":main:", nombreProcedimiento,  nombreVariable);
+			variable = buscarVariablesLocales(objetos, ":main:", nombreProcedimiento,  nombreVariable);
+			
+			//La variable no se encontro
+			if (variable == NULL) {
+				//Si esta variable entonces la tomamos si no es asi marcaremos un error
+				variable = buscarVariablesGlobales(objetos, ":main:", nombreVariable);
+			}
+
+			//crearemos un nodoOperando para agregarlo a la pila
+			operando = (nodoOperando*)malloc(sizeof(nodoOperando));
+			operando->temp = 0;
+			operando->tipo = variable->tipo; 
+			strcpy(operando->nombre, variable->nombre);
+			operando->direccion = variable->direccion;
+
+			push(operandos,operando);
+
+		} else if (seccObjeto == 1) {
+			//Estamos en la funcion de un objeto
+			//Pendiente
+		}
+	}
+	CPARENTESIS
+	{
+		generarLectura();
+	}
 	;
 	
 escritura:
