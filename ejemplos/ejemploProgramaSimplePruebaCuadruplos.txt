@@ -1,7 +1,12 @@
 	Declara_Objetos [	
 	
 ]
-Variables_Globales [entero uno1; entero dos1; entero tres1;] 
+Variables_Globales [
+	texto uno1;
+	entero dos1;
+	entero tres1;
+] 
+
 Declara_Funciones [ ]
 Implementa_Funciones [ ]
 
@@ -12,6 +17,8 @@ ejecutarPrograma {
 		decimal tres;	
 	]
 
-	dos = "hola";
+	uno1 = "hola";
 	uno_x = tres;
+	LEERDELTECLADO(uno1);
+	LEERDELTECLADO(tres);
 }

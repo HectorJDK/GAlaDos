@@ -391,9 +391,9 @@ int main()
 
 	yyparse();
 	//Imprimir tabla de variables y procedimientos
-	//imprimirObjetos(objetos);
+	imprimirObjetos(objetos);
 	//Imprimir cuadruplos
-	// imprimeCuadruplos(listaCuadruplos, 0);
+	imprimeCuadruplos(listaCuadruplos, 0);
 	//Imprimir cuadruplos version verbose
 	//imprimeCuadruplos(listaCuadruplos, 1);								
 	//Desplegar la tabla de objetos
@@ -1042,6 +1042,7 @@ estatuto:
 	decideEstatuto PUNTOYCOMA
 	| escritura PUNTOYCOMA
 	| regresa PUNTOYCOMA
+	| lectura PUNTOYCOMA
 	| condicional
 	| ciclo
 	;
@@ -1084,8 +1085,6 @@ estatutoOAsignacion:
 	asignacion1 
 	|
 	llama_funcion_opcional APARENTESIS serexpresion CPARENTESIS
-	| 
-	lectura
 	;
 
 asignacion1:

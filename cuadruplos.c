@@ -220,7 +220,7 @@ cuadruplos* generarCuadruploAsignacion(cuadruplos *listaCuadruplos, pila *operan
 	}
 }
 
-cuadruplos* generarCuadruploLectura(cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean){
+cuadruplos* generarCuadruploLectura(cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int *contadorIndice){
 	//Variables auxiliares Enteras
 	int operadorInt;
 
@@ -348,7 +348,7 @@ cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCua
 
 					push(operadores, reinsertarOperador);
 
-					listaCuadruplos = generarCuadruploLectura(listaCuadruplos, operandos, operadores, cuboSemantico, contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+					listaCuadruplos = generarCuadruploLectura(listaCuadruplos, operandos, operadores, contadorIndice);
 					return listaCuadruplos;
 				}
 				break;
