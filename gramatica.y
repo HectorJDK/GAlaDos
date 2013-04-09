@@ -159,6 +159,9 @@ void  generarLectura(){
 	listaCuadruplos = verificacionGeneracionCuadruplo(7 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
 }
 
+void  generarEscritura(){
+	listaCuadruplos = verificacionGeneracionCuadruplo(8 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+}
 void asignarMemoriaVariable(){
 	//Checamos en que seccion nos encontramos al momento de crear una variable
 	if (seccVariablesGlobales == 1) {
@@ -821,7 +824,7 @@ var_cte:
 
 		//crearemos un nodoOperando para agregarlo a la pila
 		operando = (nodoOperando*)malloc(sizeof(nodoOperando));
-		operando->temp = 1;
+		operando->temp = 0;
 		operando->tipo = variable->tipo; 
 		strcpy(operando->nombre, variable->nombre);
 		operando->direccion = variable->direccion;
@@ -837,7 +840,7 @@ var_cte:
 
 		//crearemos un nodoOperando para agregarlo a la pila
 		operando = (nodoOperando*)malloc(sizeof(nodoOperando));
-		operando->temp = 2;
+		operando->temp = 0;
 		operando->tipo = variable->tipo; 
 		strcpy(operando->nombre, variable->nombre);
 		operando->direccion = variable->direccion;
@@ -854,7 +857,7 @@ var_cte:
 
 		//crearemos un nodoOperando para agregarlo a la pila
 		operando = (nodoOperando*)malloc(sizeof(nodoOperando));
-		operando->temp = 3;
+		operando->temp = 0;
 		operando->tipo = variable->tipo; 
 		strcpy(operando->nombre, variable->nombre);
 		operando->direccion = variable->direccion;
@@ -1163,7 +1166,36 @@ lectura:
 	;
 	
 escritura:
-	DESPLIEGA APARENTESIS escritura_valores CPARENTESIS 
+	DESPLIEGA APARENTESIS 
+	{
+		//Creamos el nodo operandor que se le hara push en la pila operadores
+		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
+		operador->operador = OP_ESCRITURA;
+		
+		//Metemos la multiplicacion en la pila de operadores
+		push(operadores, operador);
+	}
+	escritura_valores CPARENTESIS 
+	{
+		generarEscritura();
+
+		//Creamos el nodo operandor que se le hara push en la pila operadores
+		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
+		operador->operador = OP_ESCRITURA;
+		
+		//Metemos la multiplicacion en la pila de operadores
+		push(operadores, operador);
+		
+		//crearemos un nodoOperando para agregarlo a la pila DUMMY
+		operando = (nodoOperando*)malloc(sizeof(nodoOperando));
+		operando->temp = -1;
+		operando->tipo = -1; 
+		strcpy(operando->nombre, "NuLl");
+		operando->direccion = -1;
+		push(operandos,operando);
+
+		generarEscritura();
+	}
 	;
 
 escritura_valores:
@@ -1173,8 +1205,56 @@ escritura_valores:
 
 valores:
 	 CTEENTERA 
+	 {
+	 //Obtenemos el valor de la constante
+		strncpy(nombreVariable, $1, tamanioIdentificadores);
+		agregarTablaConstantes(nombreVariable, 0);
+
+		variable = buscarConstante(constantes, nombreVariable);
+
+		//crearemos un nodoOperando para agregarlo a la pila
+		operando = (nodoOperando*)malloc(sizeof(nodoOperando));
+		operando->temp = 0;
+		operando->tipo = variable->tipo; 
+		strcpy(operando->nombre, variable->nombre);
+		operando->direccion = variable->direccion;
+
+		push(operandos,operando);
+	}
 	 | CTEDECIMAL 
+	 {
+	 //Obtenemos el valor de la constante
+		strncpy(nombreVariable, $1, tamanioIdentificadores);
+		agregarTablaConstantes(nombreVariable, 1);
+
+		variable = buscarConstante(constantes, nombreVariable);
+
+		//crearemos un nodoOperando para agregarlo a la pila
+		operando = (nodoOperando*)malloc(sizeof(nodoOperando));
+		operando->temp = 0;
+		operando->tipo = variable->tipo; 
+		strcpy(operando->nombre, variable->nombre);
+		operando->direccion = variable->direccion;
+
+		push(operandos,operando);
+	}
 	 | CTETEXTO
+	 {
+	 	//Obtenemos el valor de la constante
+		strncpy(nombreVariable, $1, tamanioIdentificadores);
+		agregarTablaConstantes(nombreVariable, 2);
+
+		variable = buscarConstante(constantes, nombreVariable);
+
+		//crearemos un nodoOperando para agregarlo a la pila
+		operando = (nodoOperando*)malloc(sizeof(nodoOperando));
+		operando->temp = 0;
+		operando->tipo = variable->tipo; 
+		strcpy(operando->nombre, variable->nombre);
+		operando->direccion = variable->direccion;
+
+		push(operandos,operando);
+	 }
 	 ;
 
 escritura_valores1:
@@ -1184,8 +1264,20 @@ escritura_valores1:
 	;
 
 escritura_concatena:
-	/*Emty*/
-	| CONCATENA escritura_valores
+	/*Empty*/
+	| CONCATENA 
+	{
+		generarEscritura();
+
+		//Creamos el nodo operandor que se le hara push en la pila operadores
+		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
+		operador->operador = OP_ESCRITURA;
+		
+		//Metemos la multiplicacion en la pila de operadores
+		push(operadores, operador);
+
+	}
+	escritura_valores
 	;
 
 

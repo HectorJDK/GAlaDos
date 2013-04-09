@@ -259,6 +259,52 @@ cuadruplos* generarCuadruploLectura(cuadruplos *listaCuadruplos, pila *operandos
 	
 }
 
+cuadruplos* generarCuadruploEscritura(cuadruplos *listaCuadruplos,  pila *operandos, pila *operadores,  int *contadorIndice){
+	//Variables auxiliares Enteras
+	int operadorInt;
+	int resultadoTipo;
+
+	//Variables auxiliares Apuntadores
+	nodo *operador;
+	nodo *operando1;
+	nodo *operando2;
+	nodo *resultado;
+
+	//Esta funcion generara un triplo con los datos necesarios
+	//Tenemos todos los valores necesarios en las pilas
+	//Sacamos los operandos de pila operandos
+	resultado = pop(operandos);
+	operando1 = NULL;
+	operando2 = NULL;
+
+	//Sacamos de la pila (momentariamente) para validar
+	operador = pop(operadores);
+		
+	//Obtenemos el valor dentro del nodo que sacamos (este sera entero)
+	operadorInt = *(int*)(operador->dato);
+	resultadoTipo = ((nodoOperando*)(resultado->dato))->tipo;
+	
+	if (resultadoTipo != 3) {	
+		//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
+		listaCuadruplos = generaCuadruplo(listaCuadruplos, operando1, operando2, operador, resultado, *contadorIndice);
+
+		//Checamos si no hubo algun error en la generacion de los cuadruplos
+		if (listaCuadruplos != NULL) {
+		//aumentamos en 1 el contador de cuadruplos
+		//int aux = *contadorIndice+1;
+			*contadorIndice = *contadorIndice+1;
+			return listaCuadruplos;
+		} else {
+			printf("Error al crear el cuadruplo\n");
+			exit(1);
+		}
+	} else {
+		printf("No es posible imprimir un booleano\n");
+		exit(1);
+	}
+	
+}
+
 //Generacion de cuadruplos para 
 cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[4][4][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean){
 	
@@ -349,6 +395,19 @@ cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCua
 					push(operadores, reinsertarOperador);
 
 					listaCuadruplos = generarCuadruploLectura(listaCuadruplos, operandos, operadores, contadorIndice);
+					return listaCuadruplos;
+				}
+				break;
+
+			case 8:		
+				if (operadorInt == OP_ESCRITURA){
+
+					reinsertarOperador = (nodoOperador*)malloc(sizeof(nodoOperador));
+					reinsertarOperador->operador = operadorInt;
+
+					push(operadores, reinsertarOperador);
+
+					listaCuadruplos = generarCuadruploEscritura(listaCuadruplos, operandos, operadores, contadorIndice);
 					return listaCuadruplos;
 				}
 				break;

@@ -20,6 +20,7 @@
 #define OP_CPARENTESIS		15
 #define OP_GOTOFALSO 		16
 #define OP_LECTURA	 		17
+#define OP_ESCRITURA  		18
 
 #define OP_ERROR			-1
 

@@ -21,4 +21,6 @@ ejecutarPrograma {
 	uno_x = tres;
 	LEERDELTECLADO(uno1);
 	LEERDELTECLADO(tres);
+
+	despliega("dos" << "tres" << "cuatro");
 }
