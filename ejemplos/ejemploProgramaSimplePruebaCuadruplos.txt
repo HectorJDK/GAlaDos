@@ -18,7 +18,15 @@ ejecutarPrograma {
 		booleano b;	
 	]
 
+	//b=verdadero;
+	//b = 4<3;
+	LEERDELTECLADO(uno_x);
 	mientras (b){
 		uno_x = tres;
+		uno_x = tres;
+		uno_x = tres;
+		uno_x = tres;
+		LEERDELTECLADO(uno_x);
 	}
+	uno_x = tres;
 }

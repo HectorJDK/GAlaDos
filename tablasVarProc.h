@@ -34,8 +34,10 @@ directorioObjetos* agregarVariablesLocales(directorioObjetos *objetos, char *obj
 directorio* buscarVariablesLocales(directorioObjetos *objetos, char *objeto, char *funcion, char *nombre);
 directorioObjetos* agregarVariablesGlobales(directorioObjetos *objetos, char *objeto, char *nombre, unsigned short tipo, unsigned long direccion);
 directorio* buscarVariablesGlobales(directorioObjetos *objetos, char *objeto, char *nombre);
-directorioObjetos* agregarFuncion(directorioObjetos *objetos, char *objeto, char *nombre); 
+directorioObjetos* agregarFuncion(directorioObjetos *objetos, char *objeto, char *nombre);
 directorioProcedimientos* buscarFuncion(directorioObjetos *objetos, char *objeto, char *nombre);
 directorioObjetos* agregarObjeto(directorioObjetos *objetos, char *nombre);
 directorioObjetos* buscarObjeto(directorioObjetos *objetos, char *nombre);
+directorio* agregarConstante(directorio *constantes, char *nombre, unsigned short tipo, int direccion);
+directorio* buscarConstante(directorio *constantes, char *nombre);
 void imprimirObjetos(directorioObjetos *objetos);

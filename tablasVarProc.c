@@ -246,6 +246,48 @@ directorioObjetos* buscarObjeto(directorioObjetos *objetos, char *nombre){
 		}       
 }
 
+/*
+* Funcion para agregar objetos (main y clases) al directorio de objetos.
+*/
+directorio* agregarConstante(directorio *constantes, char *nombre, unsigned short tipo, int direccion){
+		
+		//Variable ausxiliar
+		directorio *temp;
+
+		//Buscar la constante en el directorio
+		HASH_FIND_STR(constantes, nombre, temp);  
+		if (temp==NULL) {
+				//Agregar la nueva constante al directorio
+				temp = (directorio*)malloc(sizeof(directorio));
+				strcpy(temp->nombre, nombre);
+				temp->direccion = direccion;
+				temp->tipo = tipo;
+				HASH_ADD_STR(constantes, nombre, temp);  
+				return constantes;    
+		}else {
+			//No hacer nada, porque ya esta grabada
+			return constantes;
+		}
+}
+
+/*
+* Funcion para agregar objetos (main y clases) al directorio de objetos.
+*/
+directorio* buscarConstante(directorio *constantes, char *nombre){
+		
+		//Variable auxiliar
+		directorio *temp;
+
+		//Buscar el objeto en el directorio
+		HASH_FIND_STR(constantes, nombre, temp);  
+		if (temp==NULL) {
+			//SI no existe solo regresamos NULL
+			return NULL;
+		} else {
+			//Regresamos al apuntador al directorio del objeto
+			return temp;
+		}       
+}
 
 
 
@@ -278,3 +320,4 @@ void imprimirObjetos(directorioObjetos *objetos) {
 				}		        
 			}
 	}
+	

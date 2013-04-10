@@ -13,5 +13,5 @@
 
 #define OP_ERROR 			-1
 
-void inicializarSemantica();
-void inicializarAvail();
+void inicializarSemantica(int cuboSemantico[4][4][14]);
+void inicializarAvail(pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean,int *memoriaEnteroTemp, int *memoriaDecimalTemp, int *memoriaTextoTemp, int *memoriaBooleanoTemp);
