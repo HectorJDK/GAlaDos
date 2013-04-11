@@ -650,8 +650,33 @@ serexpresion:
 
 expresion_and_or:
 	/*empty*/
-	| AMPERSAND serexpresion
-	| BARRA serexpresion
+	| AMPERSAND 
+	{
+		//Creamos el nodo operandor que se le hara push en la pila operadores
+		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
+		operador->operador = OP_AND;
+		
+		//Metemos la multiplicacion en la pila de operadores
+		push(operadores, operador);
+	}
+	serexpresion 
+	{	//Generar cuadruplo logico
+		generarAndOr();
+	}
+	| BARRA 
+	{
+		//Creamos el nodo operandor que se le hara push en la pila operadores
+		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
+		operador->operador = OP_OR;
+		
+		//Metemos la multiplicacion en la pila de operadores
+		push(operadores, operador);
+	}
+	serexpresion 
+	{
+		//Generar cuadruplo logico
+		generarAndOr();
+	}
 	;
 
 expresion:

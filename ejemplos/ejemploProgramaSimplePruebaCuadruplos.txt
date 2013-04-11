@@ -5,6 +5,7 @@ Variables_Globales [
 	texto uno1;
 	entero dos1;
 	entero tres1;
+	booleano d;
 ] 
 
 Declara_Funciones [ ]
@@ -17,8 +18,13 @@ ejecutarPrograma {
 		decimal tres;
 		booleano b;	
 	]
+
 	
-	mientras (4 < 3){
+	d = b & verdadero | 1 < 2 & 3 > 4 | 5 < 6 & 7 > 8;
+	
+	b = falso | d;
+
+	mientras (4 < 3 & 5 > 4){
 		uno_x = tres;
 		uno_x = tres;
 		uno_x = tres;
