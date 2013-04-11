@@ -13,23 +13,26 @@ Implementa_Funciones [ ]
 
 ejecutarPrograma {
 	Variables_Locales [
-		decimal uno_x;
-		texto dos;
-		decimal tres;
-		booleano b;	
+		entero A;
+		entero B;
+		entero C;
+		entero D;
 	]
 
-	
-	d = b & verdadero | 1 < 2 & 3 > 4 | 5 < 6 & 7 > 8;
-	
-	b = falso | d;
-
-	mientras (4 < 3 & 5 > 4){
-		uno_x = tres;
-		uno_x = tres;
-		uno_x = tres;
-		uno_x = tres;
-		LEERDELTECLADO(uno_x);
+	mientras ( A + B * C < D) {
+		si ( A + B < C){
+			A = B + C;
+			mientras (A > B + C){
+				A = A - 1;
+			}
+		} sino {
+			mientras(B > C + D){
+				A = B + C * D;
+				B = A - D;
+			} 
+		}
 	}
-	uno_x = tres;
+	A = B * C;
+	C = 0;
+	
 }

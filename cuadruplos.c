@@ -125,7 +125,90 @@ void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode) {
 		}
 	} else {
 		for(temporal = listaCuadruplos; temporal != NULL; temporal=(cuadruplos*)(temporal->hh.next)) {
-			printf("Cuadruplo: %d | %d %s %s %s \n", temporal->indice, temporal->operador, temporal->operando1->nombre, temporal->operando2->nombre, temporal->resultado->nombre);
+			char operacion[10];
+
+			switch (temporal->operador){
+				case 0:
+					strcpy(operacion, "+");
+					break;
+
+				case 1:
+					strcpy(operacion, "-");
+					break;
+
+				case 2:
+					strcpy(operacion, "/");
+					break;
+
+				case 3:
+					strcpy(operacion, "*");
+					break;
+
+				case 4:
+					strcpy(operacion, ">");
+					break;
+
+				case 5:
+					strcpy(operacion, "<");
+					break;
+
+				case 6:
+					strcpy(operacion, ">=");
+					break;
+
+				case 7:
+					strcpy(operacion, "<=");
+					break;
+
+				case 8:
+					strcpy(operacion, "==");
+					break;
+
+				case 9:
+					strcpy(operacion, "¬¬");
+					break;
+
+				case 10:
+					strcpy(operacion, "&");
+					break;
+
+				case 11:
+					strcpy(operacion, "|");
+					break;
+
+				case 12:
+					strcpy(operacion, "=");
+					break;
+
+				case 13:
+					strcpy(operacion, "<<");
+					break;
+
+				case 14:
+					strcpy(operacion, "(");
+					break;
+
+				case 15:
+					strcpy(operacion, ")");
+					break;
+
+				case 16:
+					strcpy(operacion, "gotoF");
+					break;
+
+				case 17:
+					strcpy(operacion, "lectura");
+					break;
+
+				case 18:
+					strcpy(operacion, "print");
+					break;
+
+				case 19:
+					strcpy(operacion, "goto");
+					break;
+			}
+			printf("Cuadruplo: %d | %s %s %s %s \n", temporal->indice, operacion, temporal->operando1->nombre, temporal->operando2->nombre, temporal->resultado->nombre);
 		}
 	}
 }
@@ -347,6 +430,7 @@ cuadruplos* generarCuadruploGotoFalsoCiclo(cuadruplos *listaCuadruplos,  pila *o
 			//aumentamos en 1 el contador de cuadruplos
 			//int aux = *contadorIndice+1;
 			*contadorIndice = *contadorIndice+1;
+
 			return listaCuadruplos;
 		} else {
 			printf("Error al crear el cuadruplo\n");
@@ -414,7 +498,7 @@ cuadruplos* generarCuadruploGotoCiclo(cuadruplos *listaCuadruplos,  pila *operan
 
 			sprintf(accederCuadruplo->resultado->nombre, "%d", *contadorIndice);
 			accederCuadruplo->resultado->direccion = *contadorIndice;
-		
+
 			return listaCuadruplos;
 		} else {
 			printf("Error fatal: No se encuentra el cuadruplo %i\n", direccionRetorno);
@@ -425,6 +509,106 @@ cuadruplos* generarCuadruploGotoCiclo(cuadruplos *listaCuadruplos,  pila *operan
 		exit(1);
 	}	
 }
+
+cuadruplos* generarCuadruploGotoFalsoElse(cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice){
+	//Variables auxiliares Enteras
+	int operandoTipo;	
+	int direccionRetorno;
+
+	cuadruplos *accederCuadruplo;
+
+	//Variables auxiliares Apuntadores
+	nodo *operador;
+	nodoOperador *operador1;
+	nodo *operando1;
+	nodo *operando2;
+	nodo *resultado;
+	nodoOperando *resultado1;
+	nodoOperador *salto;
+
+	nodo *falso;
+
+	operando1 = NULL;
+	operando2 = NULL;
+	resultado = NULL;
+
+	//Generacion del GOTO
+	//Truco sucio para castear a nodo
+	operador1 = (nodoOperador*)malloc(sizeof(nodoOperador));
+	operador1->operador = OP_GOTO;
+
+	push(pilaSaltos, operador1);
+	operador = pop(pilaSaltos);
+
+	//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
+	listaCuadruplos = generaCuadruplo(listaCuadruplos, operando1, operando2, operador, resultado, *contadorIndice);
+
+	//Checamos si no hubo algun error en la generacion de los cuadruplos
+	if (listaCuadruplos != NULL) {
+
+		falso = pop(pilaSaltos);
+		direccionRetorno = *(int*)(falso->dato);
+
+		//Buscamos el cuadruplo reciencreado para guardar su resultado en la tabla de operandos el cual lo pondra en 
+		HASH_FIND_INT(listaCuadruplos, &direccionRetorno, accederCuadruplo);
+
+		if (accederCuadruplo != NULL) {
+			*contadorIndice = *contadorIndice+1;
+
+			//Modificamos el cuadruplo anterior
+			sprintf(accederCuadruplo->resultado->nombre, "%d", *contadorIndice);
+			accederCuadruplo->resultado->direccion = *contadorIndice;
+			
+
+			//Metemos el contador actual en la pila de cuadruplos anterior
+			salto = (nodoOperador*)malloc(sizeof(nodoOperador));
+			salto->operador = *contadorIndice - 1;
+
+			//Lo metemos ne la pila de saltos
+			push(pilaSaltos, salto);
+
+			return listaCuadruplos;
+		} else {
+			printf("Error fatal: No se encuentra el cuadruplo %i\n", direccionRetorno);
+			exit(1);
+		}
+	} else {
+		printf("Error al crear el cuadruplo\n");
+		exit(1);
+	}	
+}
+
+cuadruplos* generarCuadruploGotoIf(cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice){
+	//Variables auxiliares Enteras
+	int operandoTipo;	
+	int direccionRetorno;
+
+	cuadruplos *accederCuadruplo;
+
+	//Variables auxiliares Apuntadores
+	nodo *retorno;
+
+	//Sacamos de la pila de saltos 
+	retorno = pop(pilaSaltos);
+	direccionRetorno = *(int*)(retorno->dato);
+
+	//Buscamos el cuadruplo reciencreado para guardar su resultado en la tabla de operandos el cual lo pondra en 
+	HASH_FIND_INT(listaCuadruplos, &direccionRetorno, accederCuadruplo);
+
+	if (accederCuadruplo != NULL) {
+
+		//Modificamos el cuadruplo anterior
+		sprintf(accederCuadruplo->resultado->nombre, "%d", *contadorIndice);
+		accederCuadruplo->resultado->direccion = *contadorIndice + 1;			
+		
+		return listaCuadruplos;
+	} else {
+		printf("Error fatal: No se encuentra el cuadruplo %i\n", direccionRetorno);
+		exit(1);
+	}
+	
+}
+
 
 
 //Generacion de cuadruplos para 
@@ -503,12 +687,9 @@ cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCua
 					
 				}
 				break;
-
-			//Prioridad: CLiclo
+			
+			//Prioridad Lectura
 			case 6:
-				break;
-
-			case 7:
 				if (operadorInt == OP_LECTURA){
 
 					reinsertarOperador = (nodoOperador*)malloc(sizeof(nodoOperador));
@@ -521,7 +702,8 @@ cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCua
 				}
 				break;
 
-			case 8:		
+			//Prioridad Escritura	
+			case 7:		
 				if (operadorInt == OP_ESCRITURA){
 
 					reinsertarOperador = (nodoOperador*)malloc(sizeof(nodoOperador));
@@ -548,11 +730,6 @@ cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCua
 			operando1Temp = ((nodoOperando*)(operando1->dato))->temp;
 			operando2Temp = ((nodoOperando*)(operando2->dato))->temp;
 			
-			//Impresion de datos
-			printf("Operando 1:  %i\n", operando1Tipo);
-			printf("Operando 2:  %i\n", operando2Tipo);
-			printf("Operador : %i\n", operadorInt);
-			printf("Resultado : %i\n", cuboSemantico[operando1Tipo][operando2Tipo][operadorInt]);
 			//Sacamos de la pila operador2 y operador1
 			//Checamos que el cuadruplo sea posible de realizar
 			if (cuboSemantico[operando1Tipo][operando2Tipo][operadorInt] != OP_ERROR) {

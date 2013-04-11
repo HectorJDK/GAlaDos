@@ -153,15 +153,15 @@ void  generarAsignacion(){
 }
 
 void  generarCiclo(){
-	listaCuadruplos = verificacionGeneracionCuadruplo(6 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+	listaCuadruplos = verificacionGeneracionCuadruplo(-1 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
 }
 
 void  generarLectura(){
-	listaCuadruplos = verificacionGeneracionCuadruplo(7 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+	listaCuadruplos = verificacionGeneracionCuadruplo(6 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
 }
 
 void  generarEscritura(){
-	listaCuadruplos = verificacionGeneracionCuadruplo(8 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+	listaCuadruplos = verificacionGeneracionCuadruplo(7 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
 }
 
 void gotoFalsoCiclo(){
@@ -170,6 +170,18 @@ void gotoFalsoCiclo(){
 
 void gotoCiclo(){
 		listaCuadruplos = generarCuadruploGotoCiclo(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
+}
+
+void gotoFalsoIf(){
+	listaCuadruplos = generarCuadruploGotoFalsoCiclo(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
+}
+
+void gotoFalsoElse(){
+	listaCuadruplos = generarCuadruploGotoFalsoElse(listaCuadruplos,  operandos, pilaSaltos, &contadorIndice);
+}
+
+void gotoIf(){
+	listaCuadruplos = generarCuadruploGotoIf(listaCuadruplos,  operandos, pilaSaltos, &contadorIndice);
 }
 
 void asignarMemoriaVariable(){
@@ -359,7 +371,7 @@ int main()
 
 	yyparse();
 	//Imprimir tabla de variables y procedimientos
-	imprimirObjetos(objetos);
+	//imprimirObjetos(objetos);
 	//Imprimir cuadruplos
 	imprimeCuadruplos(listaCuadruplos, 0);
 	//Imprimir cuadruplos version verbose
@@ -1376,17 +1388,23 @@ regresa:
 
 
 condicional:
-	SI APARENTESIS serexpresion CPARENTESIS ALLAVE bloque CLLAVE condicional_ifelse
+	SI APARENTESIS serexpresion CPARENTESIS 
+	{
+	 	gotoFalsoIf();
+	}
+	ALLAVE bloque CLLAVE condicional_if
+	{
+		gotoIf();
+	}
 	;
 
-condicional_ifelse:
+condicional_if:
 	/*Empty*/
-	| SINO condicional_else
-	;
-
-condicional_else:
-	ENTONCES APARENTESIS serexpresion CPARENTESIS ALLAVE bloque CLLAVE condicional_ifelse 
-	| ALLAVE bloque CLLAVE
+	| SINO 
+	{
+		gotoFalsoElse();
+	}
+	ALLAVE bloque CLLAVE
 	;
 
 ciclo:
