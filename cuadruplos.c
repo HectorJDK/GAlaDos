@@ -548,6 +548,11 @@ cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCua
 			operando1Temp = ((nodoOperando*)(operando1->dato))->temp;
 			operando2Temp = ((nodoOperando*)(operando2->dato))->temp;
 			
+			//Impresion de datos
+			printf("Operando 1:  %i\n", operando1Tipo);
+			printf("Operando 2:  %i\n", operando2Tipo);
+			printf("Operador : %i\n", operadorInt);
+			printf("Resultado : %i\n", cuboSemantico[operando1Tipo][operando2Tipo][operadorInt]);
 			//Sacamos de la pila operador2 y operador1
 			//Checamos que el cuadruplo sea posible de realizar
 			if (cuboSemantico[operando1Tipo][operando2Tipo][operadorInt] != OP_ERROR) {

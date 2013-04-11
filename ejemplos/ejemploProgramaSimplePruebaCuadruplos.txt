@@ -17,11 +17,8 @@ ejecutarPrograma {
 		decimal tres;
 		booleano b;	
 	]
-
-	//b=verdadero;
-	//b = 4<3;
-	LEERDELTECLADO(uno_x);
-	mientras (b){
+	
+	mientras (4 < 3){
 		uno_x = tres;
 		uno_x = tres;
 		uno_x = tres;

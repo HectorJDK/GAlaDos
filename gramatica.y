@@ -171,6 +171,7 @@ void gotoFalsoCiclo(){
 void gotoCiclo(){
 		listaCuadruplos = generarCuadruploGotoCiclo(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
 }
+
 void asignarMemoriaVariable(){
 	//Checamos en que seccion nos encontramos al momento de crear una variable
 	if (seccVariablesGlobales == 1) {
@@ -334,10 +335,7 @@ void calcularMemoriaVirtual(){
 	memoriaDecimalConstante = baseMemoriaConstante + (cantidadVariablesConstante * 1);
 	memoriaTextoConstante = baseMemoriaConstante + (cantidadVariablesConstante * 2);
 	memoriaBooleanoConstante = baseMemoriaConstante + (cantidadVariablesConstante * 3);
-
 }
-
-
 
 void agregarTablaConstantes(char *nombre, int tipo){
 	directorio *temp;
@@ -663,6 +661,10 @@ expresion:
 expresion_condicional:
 	/*empty*/
 	| op_booleanos exp
+	{
+		//Aqui va la generacion del cuadruplo de checar
+		generarRelacional();
+	}
 	;
 
 op_booleanos:
