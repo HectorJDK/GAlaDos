@@ -598,44 +598,34 @@ declara_variables:
 		asignarMemoriaVariable();
 	}
 	|
-	MATRIZDECIMAL IDENTIFICADOR dimensiones declara_variables_matriz
+	MATRIZDECIMAL IDENTIFICADOR dimensiones PUNTOYCOMA
 	{		
 		//Pendiente
 	}
 	|
-	MATRIZENTERA IDENTIFICADOR dimensiones declara_variables_matriz
+	MATRIZENTERA IDENTIFICADOR dimensiones PUNTOYCOMA
 	{		
 		//Pendiente
 	}
 	|
-	CREAROBJETO IDENTIFICADOR declara_variables_objeto
+	CREAROBJETO IDENTIFICADOR ES IDENTIFICADOR PUNTOYCOMA
 	{		
 		//Pendiente
 	}
-	;
-
-declara_variables_matriz:
-	PUNTOYCOMA
-	| IGUAL declara_variables_matriz1 PUNTOYCOMA
-	;
-
-declara_variables_matriz1:
-	asignacion_matriz 
-	| IDENTIFICADOR
-	;
-
-declara_variables_objeto:
-	PUNTOYCOMA
-	| ES IDENTIFICADOR PUNTOYCOMA
 	;
 
 asignacion_matriz:
-	ALLAVE asignacion_matriz_rep CLLAVE
+	ALLAVE asignacion_matriz_arreglo CLLAVE
 	;
 
-asignacion_matriz_rep:
+asignacion_matriz_arreglo:
+	asignacion_matriz_valor PUNTOYCOMA asignacion_matriz_opcional
+	;
+
+asignacion_matriz_opcional:
 	/*Empty*/
-	| asignacion_matriz_valor PUNTOYCOMA asignacion_matriz_rep;
+	| asignacion_matriz_arreglo
+	;
 
 asignacion_matriz_valor:
 	CTEENTERA asignacion_matriz_valor1 
@@ -648,12 +638,12 @@ asignacion_matriz_valor1:
 	;
 
 dimensiones:
-	ACORCHETE exp CCORCHETE dimensiones_rep
+	ACORCHETE serexpresion CCORCHETE dimensiones_rep
 	;
 
 dimensiones_rep:
 	/*empty*/
-	| ACORCHETE exp CCORCHETE
+	| ACORCHETE serexpresion CCORCHETE
 	;
 
 serexpresion: 
@@ -672,7 +662,8 @@ expresion_and_or:
 		push(operadores, operador);
 	}
 	serexpresion 
-	{	//Generar cuadruplo logico
+	{	
+		//Generar cuadruplo logico
 		generarAndOr();
 	}
 	| BARRA 
@@ -743,7 +734,7 @@ op_booleanos:
 	}
 	| MAYORIGUAL 
 	{
-	//Creamos el nodo operandor que se le hara push en la pila operadores
+		//Creamos el nodo operandor que se le hara push en la pila operadores
 		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
 		operador->operador = OP_MAYORIGUAL;
 		
@@ -764,8 +755,10 @@ op_booleanos:
 exp:
 	termino
 	{
+
 		generarSumaResta();	
-	} exp_suma_resta
+	} 
+	exp_suma_resta
 	;
 
 exp_suma_resta:
@@ -795,6 +788,7 @@ exp_suma_resta:
 termino:
 	factor
 	{
+
 		generarMultiplicacionDivision();
 	} 
 	termino_multi_divide
@@ -918,11 +912,14 @@ var_cte:
 
 		push(operandos,operando);
 	} 
-	| IDENTIFICADOR
-	{			
+	| identificadorOLlamadaAFuncion	
+	;
+
+identificadorOLlamadaAFuncion:
+	IDENTIFICADOR 
+	{
 		//Obtenemos el nombre de la variable que desamos usar
 		strncpy(nombreVariable, $1, tamanioIdentificadores);
-
 
 		if(seccMain == 1){
 			//Estamos en MAIN y la unica forma de hacer estatutos es dentro de funciones
@@ -949,7 +946,13 @@ var_cte:
 			//Estamos en la funcion de un objeto
 			//Pendiente
 		}
-	}	
+	}  
+	opcionalFuncion
+	;
+
+opcionalFuncion:
+	/*Empty*/
+	| llama_funcion_opcional APARENTESIS serexpresion CPARENTESIS 
 	;
 
 declara_objetos:
@@ -997,6 +1000,11 @@ declaracion_prototipos:
 	APARENTESIS parametros CPARENTESIS REGRESA declaracion_prototipos_regresa PUNTOYCOMA
 	;
 
+declaracion_prototipos_regresa:
+	tipo 
+	| NADA
+	;
+
 permiso:
 	PRIVADA 
 	| PUBLICA
@@ -1022,9 +1030,15 @@ parametros_rep:
 	parametros_rep1
 	;
 
+parametros_rep1:
+	/*Empty*/
+	| COMA parametros_rep
+	;
+
 tipo:	
 	ENTERO
 	{
+
 		tipoVariable=$1;
 	}
 	| DECIMAL 
@@ -1034,29 +1048,24 @@ tipo:
 	}
 	| BOOLEANO 
 	{
+
 		tipoVariable=$1;
 	}
 	| TEXTO 
 	{
+
 		tipoVariable=$1;
 	}
 	| MATRIZENTERA 
 	{
+
 		tipoVariable=$1;
 	}
 	| MATRIZDECIMAL
 	{
+
 		tipoVariable=$1;
 	}
-	;
-
-parametros_rep1:
-	| COMA parametros_rep
-	;
-
-declaracion_prototipos_regresa:
-	tipo 
-	| NADA
 	;
 
 implementa_funciones:
@@ -1105,7 +1114,8 @@ estatuto:
 	;
 
 decideEstatuto:
-	IDENTIFICADOR {
+	IDENTIFICADOR 
+	{
 		//Obtenemos el nombre de la variable que desamos usar
 		strncpy(nombreVariable, $1, tamanioIdentificadores);
 
@@ -1142,6 +1152,11 @@ estatutoOAsignacion:
 	asignacion1 
 	|
 	llama_funcion_opcional APARENTESIS serexpresion CPARENTESIS
+	;
+
+llama_funcion_opcional:
+	/*Empty*/
+	| FLECHA IDENTIFICADOR
 	;
 
 asignacion1:
@@ -1215,6 +1230,7 @@ lectura:
 	}
 	CPARENTESIS
 	{
+
 		generarLectura();
 	}
 	;
@@ -1289,9 +1305,9 @@ escritura_valores:
 	;
 
 valores:
-	 CTEENTERA 
-	 {
-	 //Obtenemos el valor de la constante
+	CTEENTERA 
+	{
+	 	//Obtenemos el valor de la constante
 		strncpy(nombreVariable, $1, tamanioIdentificadores);
 		agregarTablaConstantes(nombreVariable, 0);
 
@@ -1306,8 +1322,8 @@ valores:
 
 		push(operandos,operando);
 	}
-	 | CTEDECIMAL 
-	 {
+	| CTEDECIMAL 
+	{
 	 //Obtenemos el valor de la constante
 		strncpy(nombreVariable, $1, tamanioIdentificadores);
 		agregarTablaConstantes(nombreVariable, 1);
@@ -1323,8 +1339,8 @@ valores:
 
 		push(operandos,operando);
 	}
-	 | CTETEXTO
-	 {
+	| CTETEXTO
+	{
 	 	//Obtenemos el valor de la constante
 		strncpy(nombreVariable, $1, tamanioIdentificadores);
 		agregarTablaConstantes(nombreVariable, 2);
@@ -1377,11 +1393,6 @@ escritura_concatena:
 	;
 
 
-llama_funcion_opcional:
-	/*Empty*/
-	| FLECHA IDENTIFICADOR
-	;
-
 regresa:
 	REGRESA serexpresion
 	;
@@ -1390,10 +1401,12 @@ regresa:
 condicional:
 	SI APARENTESIS serexpresion CPARENTESIS 
 	{
+
 	 	gotoFalsoIf();
 	}
 	ALLAVE bloque CLLAVE condicional_if
 	{
+
 		gotoIf();
 	}
 	;
@@ -1402,6 +1415,7 @@ condicional_if:
 	/*Empty*/
 	| SINO 
 	{
+
 		gotoFalsoElse();
 	}
 	ALLAVE bloque CLLAVE
@@ -1410,16 +1424,20 @@ condicional_if:
 ciclo:
 	MIENTRAS 
 	{
+
 		salto = (nodoOperador*)malloc(sizeof(nodoOperador));
 		salto->operador = contadorIndice;
 		push(pilaSaltos, salto);
 	}
 	APARENTESIS serexpresion 
 	{
+
+
 		gotoFalsoCiclo();
 	} 
 	CPARENTESIS ALLAVE bloque CLLAVE 
-	{			
+	{	
+
 		gotoCiclo();
 	}
 	;

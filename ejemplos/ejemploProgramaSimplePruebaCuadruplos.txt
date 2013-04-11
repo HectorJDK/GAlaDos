@@ -8,8 +8,12 @@ Variables_Globales [
 	booleano d;
 ] 
 
-Declara_Funciones [ ]
-Implementa_Funciones [ ]
+Declara_Funciones [ 
+	//publica funcion1 (param2:decimal) regresa nada;
+	]
+Implementa_Funciones [ 
+
+]
 
 ejecutarPrograma {
 	Variables_Locales [
