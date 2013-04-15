@@ -361,6 +361,60 @@ void agregarTablaConstantes(char *nombre, int tipo){
 	}
 }
 
+void inicializarCompilador(){
+	//Accion numero 1
+		//Inicializacion de estructuras
+
+		//Calculamos la memoria a usar
+		calcularMemoriaVirtual();
+
+		//Creacion de las pilas en memoria
+		operandos = malloc(sizeof(pila));
+		operandos->tamanio = 0;
+		operandos->primero = NULL;
+
+		operadores = malloc(sizeof(pila));
+		operadores->tamanio = 0;
+		operadores->primero = NULL;
+
+		//Creacion de las pilas de Avail en Memoria
+		availEntero = malloc(sizeof(pila));
+		availEntero->tamanio = 0;
+		availEntero->primero = NULL;
+
+		availDecimal = malloc(sizeof(pila));
+		availDecimal->tamanio = 0;
+		availDecimal->primero = NULL;
+
+		availTexto = malloc(sizeof(pila));
+		availTexto->tamanio = 0;
+		availTexto->primero = NULL;
+
+		availBoolean = malloc(sizeof(pila));
+		availBoolean->tamanio = 0;
+		availBoolean->primero = NULL;
+
+		//Inicializacion de pila de Saltos
+		pilaSaltos = malloc(sizeof(pila));
+		pilaSaltos->tamanio = 0;
+		pilaSaltos->primero = NULL;
+
+		//Inicializacion del Avial
+		inicializarAvail(availEntero, availDecimal, availTexto, availBoolean, &memoriaEnteroTemp, &memoriaDecimalTemp, &memoriaTextoTemp, &memoriaBooleanoTemp);
+
+		//Inicializacion del CuboSemantico
+		inicializarSemantica(cuboSemantico);
+}
+
+void pushPilaOperadores(int valor){
+	//Creamos el nodo operandor que se le hara push en la pila operadores
+	operador = (nodoOperador*)malloc(sizeof(nodoOperador));
+	operador->operador = valor;
+		
+	//Metemos la multiplicacion en la pila de operadores
+	push(operadores, operador);
+}
+
 //----------------------------------------------------------------------------
 
 
@@ -450,48 +504,10 @@ int main()
 
 programa:
 	{
-		//Accion numero 1
-		//Inicializacion de estructuras
+		inicializarCompilador();
 
-		//Calculamos la memoria a usar
-		calcularMemoriaVirtual();
-
-		//Creacion de las pilas en memoria
-		operandos = malloc(sizeof(pila));
-		operandos->tamanio = 0;
-		operandos->primero = NULL;
-
-		operadores = malloc(sizeof(pila));
-		operadores->tamanio = 0;
-		operadores->primero = NULL;
-
-		//Creacion de las pilas de Avail en Memoria
-		availEntero = malloc(sizeof(pila));
-		availEntero->tamanio = 0;
-		availEntero->primero = NULL;
-
-		availDecimal = malloc(sizeof(pila));
-		availDecimal->tamanio = 0;
-		availDecimal->primero = NULL;
-
-		availTexto = malloc(sizeof(pila));
-		availTexto->tamanio = 0;
-		availTexto->primero = NULL;
-
-		availBoolean = malloc(sizeof(pila));
-		availBoolean->tamanio = 0;
-		availBoolean->primero = NULL;
-
-		//Inicializacion de pila de Saltos
-		pilaSaltos = malloc(sizeof(pila));
-		pilaSaltos->tamanio = 0;
-		pilaSaltos->primero = NULL;
-
-		//Inicializacion del Avial
-		inicializarAvail(availEntero, availDecimal, availTexto, availBoolean, &memoriaEnteroTemp, &memoriaDecimalTemp, &memoriaTextoTemp, &memoriaBooleanoTemp);
-
-		//Inicializacion del CuboSemantico
-		inicializarSemantica(cuboSemantico);
+		//Falta Realizar un Goto
+		//Meter en la pila de saltos hasta encontrar ejecutar Programa
 	}
 	declara_objetos 
 	{
@@ -655,11 +671,7 @@ expresion_and_or:
 	| AMPERSAND 
 	{
 		//Creamos el nodo operandor que se le hara push en la pila operadores
-		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-		operador->operador = OP_AND;
-		
-		//Metemos la multiplicacion en la pila de operadores
-		push(operadores, operador);
+		pushPilaOperadores(OP_AND);
 	}
 	serexpresion 
 	{	
@@ -668,12 +680,7 @@ expresion_and_or:
 	}
 	| BARRA 
 	{
-		//Creamos el nodo operandor que se le hara push en la pila operadores
-		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-		operador->operador = OP_OR;
-		
-		//Metemos la multiplicacion en la pila de operadores
-		push(operadores, operador);
+		pushPilaOperadores(OP_OR);
 	}
 	serexpresion 
 	{
@@ -698,57 +705,27 @@ expresion_condicional:
 op_booleanos:
 	COMPARA 
 	{
-		//Creamos el nodo operandor que se le hara push en la pila operadores
-		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-		operador->operador = OP_IGUAL;
-		
-		//Metemos la multiplicacion en la pila de operadores
-		push(operadores, operador);
+		pushPilaOperadores(OP_IGUAL);
 	}
 	| NEGACION 
 	{
-		//Creamos el nodo operandor que se le hara push en la pila operadores
-		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-		operador->operador = OP_DIFERENTE;
-		
-		//Metemos la multiplicacion en la pila de operadores
-		push(operadores, operador);
+		pushPilaOperadores(OP_DIFERENTE);
 	}
 	| MAYORQUE 
 	{
-		//Creamos el nodo operandor que se le hara push en la pila operadores
-		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-		operador->operador = OP_MAYORQUE;
-		
-		//Metemos la multiplicacion en la pila de operadores
-		push(operadores, operador);
+		pushPilaOperadores(OP_MAYORQUE);
 	}
 	| MENORQUE 
 	{
-		//Creamos el nodo operandor que se le hara push en la pila operadores
-		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-		operador->operador = OP_MENORQUE;
-		
-		//Metemos la multiplicacion en la pila de operadores
-		push(operadores, operador);
+		pushPilaOperadores(OP_MENORQUE);
 	}
 	| MAYORIGUAL 
 	{
-		//Creamos el nodo operandor que se le hara push en la pila operadores
-		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-		operador->operador = OP_MAYORIGUAL;
-		
-		//Metemos la multiplicacion en la pila de operadores
-		push(operadores, operador);
+		pushPilaOperadores(OP_MAYORIGUAL);
 	}
 	| MENORIGUAL
 	{
-		//Creamos el nodo operandor que se le hara push en la pila operadores
-		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-		operador->operador = OP_MENORIGUAL;
-		
-		//Metemos la multiplicacion en la pila de operadores
-		push(operadores, operador);
+		pushPilaOperadores(OP_MENORIGUAL);
 	} 
 	;
 
@@ -765,22 +742,12 @@ exp_suma_resta:
 	/*Empty*/
 	| MAS 
 	{
-		//Creamos el nodo operandor que se le hara push en la pila operadores
-		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-		operador->operador = OP_SUMA;
-		
-		//Metemos la multiplicacion en la pila de operadores
-		push(operadores, operador);
+		pushPilaOperadores(OP_SUMA);
 	}
 	exp 
 	| MENOS 
 	{
-		//Creamos el nodo operandor que se le hara push en la pila operadores
-		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-		operador->operador = OP_RESTA;
-		
-		//Metemos la multiplicacion en la pila de operadores
-		push(operadores, operador);
+		pushPilaOperadores(OP_RESTA);
 	}
 	exp
 	;
@@ -788,7 +755,6 @@ exp_suma_resta:
 termino:
 	factor
 	{
-
 		generarMultiplicacionDivision();
 	} 
 	termino_multi_divide
@@ -798,23 +764,13 @@ termino_multi_divide:
 	/*Empty*/
 	| POR
 	{
-		//Creamos el nodo operandor que se le hara push en la pila operadores
-		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-		operador->operador = OP_MULTIPLICACION;
-		
-		//Metemos la multiplicacion en la pila de operadores
-		push(operadores, operador);
+		pushPilaOperadores(OP_MULTIPLICACION);
 	} 
 	termino 
 	| 
 	ENTRE
 	{
-		//Creamos el nodo operandor que se le hara push en la pila operadores
-		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-		operador->operador = OP_DIVISION;
-		
-		//Metemos la division en la pila de operadores
-		push(operadores, operador);
+		pushPilaOperadores(OP_DIVISION);
 	} 
 	termino
 	;
@@ -822,12 +778,7 @@ termino_multi_divide:
 factor:
 	APARENTESIS
 	{
-		//Creacion del nodo para meterlo en la pila
-		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-		operador->operador = OP_APARENTESIS;
-
-		//Si encontramos un parentesis debemos meterlo como fondo falso
-		push(operadores, operador);
+		pushPilaOperadores(OP_APARENTESIS);
 	} 
 	serexpresion CPARENTESIS
 	{
@@ -1163,12 +1114,7 @@ asignacion1:
 	dimensiones IGUAL serexpresion 
 	| IGUAL
 	{
-		//Creamos el nodo operandor que se le hara push en la pila operadores
-		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-		operador->operador = OP_ASIGNACION;
-		
-		//Metemos la multiplicacion en la pila de operadores
-		push(operadores, operador);
+		pushPilaOperadores(OP_ASIGNACION);
 	} 
 	asignacion2
 	{
@@ -1190,12 +1136,7 @@ asignacion3:
 lectura:
 	LEERDELTECLADO
 	{
-		//Creamos el nodo operandor que se le hara push en la pila operadores
-		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-		operador->operador = OP_LECTURA;
-		
-		//Metemos la multiplicacion en la pila de operadores
-		push(operadores, operador);
+		pushPilaOperadores(OP_LECTURA);
 	}
  	APARENTESIS IDENTIFICADOR
 	{
@@ -1238,23 +1179,13 @@ lectura:
 escritura:
 	DESPLIEGA APARENTESIS 
 	{
-		//Creamos el nodo operandor que se le hara push en la pila operadores
-		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-		operador->operador = OP_ESCRITURA;
-		
-		//Metemos la multiplicacion en la pila de operadores
-		push(operadores, operador);
+		pushPilaOperadores(OP_ESCRITURA);
 	}
 	escritura_valores CPARENTESIS 
 	{
 		generarEscritura();
 
-		//Creamos el nodo operandor que se le hara push en la pila operadores
-		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-		operador->operador = OP_ESCRITURA;
-		
-		//Metemos la multiplicacion en la pila de operadores
-		push(operadores, operador);
+		pushPilaOperadores(OP_ESCRITURA);
 		
 		//crearemos un nodoOperando para agregarlo a la pila DUMMY
 		operando = (nodoOperando*)malloc(sizeof(nodoOperando));
@@ -1364,12 +1295,7 @@ escritura_valores1:
 	{
 		generarEscritura();
 
-		//Creamos el nodo operandor que se le hara push en la pila operadores
-		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-		operador->operador = OP_ESCRITURA;
-		
-		//Metemos la multiplicacion en la pila de operadores
-		push(operadores, operador);
+		pushPilaOperadores(OP_ESCRITURA);
 
 	} escritura_valores 
 	| dimensiones escritura_concatena
@@ -1381,13 +1307,7 @@ escritura_concatena:
 	{
 		generarEscritura();
 
-		//Creamos el nodo operandor que se le hara push en la pila operadores
-		operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-		operador->operador = OP_ESCRITURA;
-		
-		//Metemos la multiplicacion en la pila de operadores
-		push(operadores, operador);
-
+		pushPilaOperadores(OP_ESCRITURA);
 	}
 	escritura_valores
 	;
