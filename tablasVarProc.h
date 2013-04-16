@@ -16,8 +16,8 @@ typedef struct directorioProcedimientos {
 	//Key
 	char nombre[25];
 	int regresa;
-	int direccionCuadruplo;
 	int permiso;
+	int direccionCuadruplo;
 	directorio *variablesLocales;
 	UT_hash_handle hh;
 }directorioProcedimientos;

@@ -445,7 +445,7 @@ cuadruplos* generarCuadruploGotoFalsoCiclo(cuadruplos *listaCuadruplos,  pila *o
 
 cuadruplos* generarCuadruploGotoCiclo(cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice){
 	//Variables auxiliares Enteras
-	int operandoTipo;	
+	int operandoTipo;
 	int direccionRetorno;
 
 	cuadruplos *accederCuadruplo;
@@ -609,6 +609,43 @@ cuadruplos* generarCuadruploGotoIf(cuadruplos *listaCuadruplos,  pila *operandos
 	
 }
 
+cuadruplos* generarGoto(cuadruplos *listaCuadruplos,  pila *operadores, int *contadorIndice){
+	//Variables auxiliares Apuntadores
+	nodo *operador;
+	nodo *operando1;
+	nodo *operando2;
+	nodo *resultado;
+	nodoOperador *operador1;
+
+
+	//Esta funcion generara un triplo con los datos necesarios
+	resultado = NULL;
+	operando1 = NULL;
+	operando2 = NULL;
+
+	//Truco para castear sin problemas
+	operador1 = (nodoOperador*)malloc(sizeof(nodoOperador));
+	operador1->operador = OP_GOTO;
+	push(operadores, operador1);
+	operador = pop(operadores);
+
+	//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
+	listaCuadruplos = generaCuadruplo(listaCuadruplos, operando1, operando2, operador, resultado, *contadorIndice);
+
+	//Checamos si no hubo algun error en la generacion de los cuadruplos
+	if (listaCuadruplos == NULL) {
+			//Si hubo un error desplegarlo por pantalla
+			printf("Error en la creacion del cuadruplo\n");
+			exit(1);
+	} else {
+		//Tuvo exito la creacion del cuadruplo
+		*contadorIndice = *contadorIndice+1;
+
+		//Regresamos la lista
+		return listaCuadruplos;	
+	}
+
+}
 
 
 //Generacion de cuadruplos para 

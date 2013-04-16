@@ -184,6 +184,16 @@ void gotoIf(){
 	listaCuadruplos = generarCuadruploGotoIf(listaCuadruplos,  operandos, pilaSaltos, &contadorIndice);
 }
 
+
+void hacerGoto(){
+	listaCuadruplos = generarGoto(listaCuadruplos, operadores, &contadorIndice);
+}
+
+void rellenarGoto(){
+	listaCuadruplos = generarCuadruploGotoIf(listaCuadruplos,  operandos, pilaSaltos, &contadorIndice);
+}
+
+
 void asignarMemoriaVariable(){
 	//Checamos en que seccion nos encontramos al momento de crear una variable
 	if (seccVariablesGlobales == 1) {
@@ -415,6 +425,10 @@ void pushPilaOperadores(int valor){
 	push(operadores, operador);
 }
 
+void pushPilaSaltos(int valor){
+	
+}
+
 //----------------------------------------------------------------------------
 
 
@@ -424,13 +438,8 @@ int main()
 {
 
 	yyparse();
-	//Imprimir tabla de variables y procedimientos
 	//imprimirObjetos(objetos);
-	//Imprimir cuadruplos
 	imprimeCuadruplos(listaCuadruplos, 0);
-	//Imprimir cuadruplos version verbose
-	//imprimeCuadruplos(listaCuadruplos, 1);								
-	//Desplegar la tabla de objetos
 	return 0;
 }
 
@@ -504,10 +513,16 @@ int main()
 
 programa:
 	{
+		//Inicializamos las diferentes estructuras de control para el compilador
 		inicializarCompilador();
 
-		//Falta Realizar un Goto
-		//Meter en la pila de saltos hasta encontrar ejecutar Programa
+		//Metemos el contador en la pila de saltos
+		salto = (nodoOperador*)malloc(sizeof(nodoOperador));
+		salto->operador = contadorIndice;
+		push(pilaSaltos, salto);
+		
+		// cuadruplo 0 sera un goto a ejecutarPrograma
+		hacerGoto();
 	}
 	declara_objetos 
 	{
@@ -523,6 +538,10 @@ programa:
 	}
 		variables_globales declara_funciones implementa_funciones EJECUTARPROGRAMA
 	{
+		//Rellenamos el goto para que apuunte a ejecutar programa
+		rellenarGoto();
+
+		//LLenamos los datos a la tabla correspondiente
 		strncpy(nombreProcedimiento, "ejecutarProgama", tamanioIdentificadores);
 		objetos = agregarFuncion(objetos, ":main:" ,nombreProcedimiento);
 
@@ -1343,21 +1362,21 @@ condicional_if:
 
 ciclo:
 	MIENTRAS 
-	{
-
+	{	
+		//Metemos en la pila de saltos el contador actual
 		salto = (nodoOperador*)malloc(sizeof(nodoOperador));
 		salto->operador = contadorIndice;
 		push(pilaSaltos, salto);
+		
 	}
 	APARENTESIS serexpresion 
 	{
-
-
+		//Generamos el goto en falso para la expresion
 		gotoFalsoCiclo();
 	} 
 	CPARENTESIS ALLAVE bloque CLLAVE 
 	{	
-
+		//Generamos el goto para regresar a evaluar la expresion
 		gotoCiclo();
 	}
 	;

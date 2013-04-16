@@ -52,4 +52,5 @@ cuadruplos* generarCuadruploGotoFalsoCiclo(cuadruplos *listaCuadruplos,  pila *o
 cuadruplos* generarCuadruploGotoCiclo(cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice);
 cuadruplos* generarCuadruploGotoFalsoElse(cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice);
 cuadruplos* generarCuadruploGotoIf(cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice);
+cuadruplos* generarGoto(cuadruplos *listaCuadruplos,  pila *operadores, int *contadorIndice);
 cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[4][4][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean);
