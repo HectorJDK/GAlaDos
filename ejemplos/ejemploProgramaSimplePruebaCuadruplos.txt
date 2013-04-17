@@ -1,40 +1,22 @@
-	Declara_Objetos [	
-	
-]
-Variables_Globales [
-	texto uno1;
-	entero dos1;
-	entero tres1;
-	booleano d;
-] 
+Declara_Objetos []
 
-Declara_Funciones [ ]
-Implementa_Funciones [ 
+Variables_Globales [] 
 
-]
+Declara_Funciones []
+
+Implementa_Funciones []
 
 ejecutarPrograma {
 	Variables_Locales [
-		entero A;
-		entero B;
-		entero C;
-		entero D;
+		booleanO A;
 	]
-
-	mientras ( A + B * C < D) {
-		si ( A + B < C){
-			A = B + C;
-			mientras (A > B + C){
-				A = A - 1;
-			}
-		} sino {
-			mientras(B > C + D){
-				A = B + C * D;
-				B = A - D;
-			} 
-		}
-	}
-	A = B * C;
-	C = 0;
 	
+	SI (A){
+		A = 1 < 3;
+	} sino {
+		A = 2 > 3;
+	}
+
+	A = 2 > 1;
+
 }

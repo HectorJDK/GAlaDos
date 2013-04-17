@@ -8,9 +8,9 @@
 	#include "uthash.h"
 	#include "tablasVarProc.h"
 	#include "codigosOperaciones.h"
-	#include "cuadruplos.h"
 	#include "pilas.h"
 	#include "utilerias.h"
+	#include "cuadruplos.h"
 	#define YYERROR_VERBOSE 1
 	
 //----------------------------------------------------------------------------------------
@@ -21,11 +21,14 @@ void yyerror( const char *str )
 	fprintf( stderr, "error: %s\n", str );
 }
 
+//Contadores de temporales para las funciones
+int totalTempEntero = 0;
+int totalTempDecimal = 0;
+int totalTempTexto = 0;
+int totalTempBooleano = 0;
+
 //Globales miscelaneas de Control
 int tamanioIdentificadores = 25;
-
-//Banderas
-int error = 0;
 
 //Varialbes para el manejo de las secciones
 int seccVariablesGlobales = 0;
@@ -42,7 +45,7 @@ unsigned short tipoVariable;
 char nombreProcedimiento[25];
 int direccionVariableConstante;
 
-//Pilas Operandos
+//Pilas operaciones
 pila *operandos;
 pila *operadores;
 
@@ -133,66 +136,60 @@ directorio *constantes = NULL;
 //----------------------------------------------------------------------------
 
 void  generarMultiplicacionDivision(){
-	listaCuadruplos = verificacionGeneracionCuadruplo(1 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+	listaCuadruplos = generarCuadruploSequencial(1 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
 }
 
 void  generarSumaResta(){
-	listaCuadruplos = verificacionGeneracionCuadruplo(2 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+	listaCuadruplos = generarCuadruploSequencial(2 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
 }
 
 void  generarRelacional(){
-	listaCuadruplos = verificacionGeneracionCuadruplo(3, listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+	listaCuadruplos = generarCuadruploSequencial(3, listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
 }
 
 void  generarAndOr(){
-	listaCuadruplos = verificacionGeneracionCuadruplo(4, listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+	listaCuadruplos = generarCuadruploSequencial(4, listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
 }
 
 void  generarAsignacion(){
-	listaCuadruplos = verificacionGeneracionCuadruplo(5 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
-}
-
-void  generarCiclo(){
-	listaCuadruplos = verificacionGeneracionCuadruplo(-1 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+	listaCuadruplos = generarCuadruploSequencial(5 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
 }
 
 void  generarLectura(){
-	listaCuadruplos = verificacionGeneracionCuadruplo(6 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+	listaCuadruplos = generarCuadruploSequencial(6 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
 }
 
 void  generarEscritura(){
-	listaCuadruplos = verificacionGeneracionCuadruplo(7 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+	listaCuadruplos = generarCuadruploSequencial(7 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
 }
 
-void gotoFalsoCiclo(){
-		listaCuadruplos = generarCuadruploGotoFalsoCiclo(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
+void generarAccion1Ciclo(){
+		listaCuadruplos = generarCuadruploAccion1(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
 }
 
-void gotoCiclo(){
-		listaCuadruplos = generarCuadruploGotoCiclo(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
+void generarAccion2Ciclo(){
+		listaCuadruplos = generarCuadruploAccion2Ciclo(listaCuadruplos, pilaSaltos, &contadorIndice);
 }
 
-void gotoFalsoIf(){
-	listaCuadruplos = generarCuadruploGotoFalsoCiclo(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
+void generarAccion1If(){
+	listaCuadruplos = generarCuadruploAccion1(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
 }
 
-void gotoFalsoElse(){
-	listaCuadruplos = generarCuadruploGotoFalsoElse(listaCuadruplos,  operandos, pilaSaltos, &contadorIndice);
+void generarAccion2If(){
+	listaCuadruplos = generarCuadruploAccion2If(listaCuadruplos,  operandos, pilaSaltos, &contadorIndice);
 }
 
-void gotoIf(){
-	listaCuadruplos = generarCuadruploGotoIf(listaCuadruplos,  operandos, pilaSaltos, &contadorIndice);
+void generarAccion3If(){
+	listaCuadruplos = generarCuadruploAccion3If(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
 }
 
-
-void hacerGoto(){
-	listaCuadruplos = generarGoto(listaCuadruplos, operadores, &contadorIndice);
+void generarGoto(){
+	listaCuadruplos = generarCuadruploGoto(listaCuadruplos, &contadorIndice);
 }
 
 void rellenarGoto(){
-	listaCuadruplos = generarCuadruploGotoIf(listaCuadruplos,  operandos, pilaSaltos, &contadorIndice);
+	listaCuadruplos = generarCuadruploAccion3If(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
 }
-
 
 void asignarMemoriaVariable(){
 	//Checamos en que seccion nos encontramos al momento de crear una variable
@@ -373,47 +370,47 @@ void agregarTablaConstantes(char *nombre, int tipo){
 
 void inicializarCompilador(){
 	//Accion numero 1
-		//Inicializacion de estructuras
+	//Inicializacion de estructuras
 
-		//Calculamos la memoria a usar
-		calcularMemoriaVirtual();
+	//Calculamos la memoria a usar
+	calcularMemoriaVirtual();
 
-		//Creacion de las pilas en memoria
-		operandos = malloc(sizeof(pila));
-		operandos->tamanio = 0;
-		operandos->primero = NULL;
+	//Creacion de las pilas en memoria
+	operandos = malloc(sizeof(pila));
+	operandos->tamanio = 0;
+	operandos->primero = NULL;
 
-		operadores = malloc(sizeof(pila));
-		operadores->tamanio = 0;
-		operadores->primero = NULL;
+	operadores = malloc(sizeof(pila));
+	operadores->tamanio = 0;
+	operadores->primero = NULL;
 
-		//Creacion de las pilas de Avail en Memoria
-		availEntero = malloc(sizeof(pila));
-		availEntero->tamanio = 0;
-		availEntero->primero = NULL;
+	//Creacion de las pilas de Avail en Memoria
+	availEntero = malloc(sizeof(pila));
+	availEntero->tamanio = 0;
+	availEntero->primero = NULL;
 
-		availDecimal = malloc(sizeof(pila));
-		availDecimal->tamanio = 0;
-		availDecimal->primero = NULL;
+	availDecimal = malloc(sizeof(pila));
+	availDecimal->tamanio = 0;
+	availDecimal->primero = NULL;
 
-		availTexto = malloc(sizeof(pila));
-		availTexto->tamanio = 0;
-		availTexto->primero = NULL;
+	availTexto = malloc(sizeof(pila));
+	availTexto->tamanio = 0;
+	availTexto->primero = NULL;
 
-		availBoolean = malloc(sizeof(pila));
-		availBoolean->tamanio = 0;
-		availBoolean->primero = NULL;
+	availBoolean = malloc(sizeof(pila));
+	availBoolean->tamanio = 0;
+	availBoolean->primero = NULL;
 
-		//Inicializacion de pila de Saltos
-		pilaSaltos = malloc(sizeof(pila));
-		pilaSaltos->tamanio = 0;
-		pilaSaltos->primero = NULL;
+	//Inicializacion de pila de Saltos
+	pilaSaltos = malloc(sizeof(pila));
+	pilaSaltos->tamanio = 0;
+	pilaSaltos->primero = NULL;
 
-		//Inicializacion del Avial
-		inicializarAvail(availEntero, availDecimal, availTexto, availBoolean, &memoriaEnteroTemp, &memoriaDecimalTemp, &memoriaTextoTemp, &memoriaBooleanoTemp);
+	//Inicializacion del Avial
+	inicializarAvail(availEntero, availDecimal, availTexto, availBoolean, &memoriaEnteroTemp, &memoriaDecimalTemp, &memoriaTextoTemp, &memoriaBooleanoTemp);
 
-		//Inicializacion del CuboSemantico
-		inicializarSemantica(cuboSemantico);
+	//Inicializacion del CuboSemantico
+	inicializarSemantica(cuboSemantico);
 }
 
 void pushPilaOperadores(int valor){
@@ -423,10 +420,6 @@ void pushPilaOperadores(int valor){
 		
 	//Metemos la multiplicacion en la pila de operadores
 	push(operadores, operador);
-}
-
-void pushPilaSaltos(int valor){
-	
 }
 
 //----------------------------------------------------------------------------
@@ -522,7 +515,7 @@ programa:
 		push(pilaSaltos, salto);
 		
 		// cuadruplo 0 sera un goto a ejecutarPrograma
-		hacerGoto();
+		generarGoto();
 	}
 	declara_objetos 
 	{
@@ -1341,12 +1334,12 @@ condicional:
 	SI APARENTESIS serexpresion CPARENTESIS 
 	{
 
-	 	gotoFalsoIf();
+	 	generarAccion1If();
 	}
 	ALLAVE bloque CLLAVE condicional_if
 	{
 
-		gotoIf();
+		generarAccion3If();
 	}
 	;
 
@@ -1354,8 +1347,7 @@ condicional_if:
 	/*Empty*/
 	| SINO 
 	{
-
-		gotoFalsoElse();
+		generarAccion2If();
 	}
 	ALLAVE bloque CLLAVE
 	;
@@ -1372,11 +1364,11 @@ ciclo:
 	APARENTESIS serexpresion 
 	{
 		//Generamos el goto en falso para la expresion
-		gotoFalsoCiclo();
+		generarAccion1Ciclo();
 	} 
 	CPARENTESIS ALLAVE bloque CLLAVE 
 	{	
 		//Generamos el goto para regresar a evaluar la expresion
-		gotoCiclo();
+		generarAccion2Ciclo();
 	}
 	;

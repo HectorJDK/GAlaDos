@@ -1,7 +1,8 @@
-#include "uthash.h"
-#include "pilas.h"
 #ifndef CUADRUPLOS_H
 #define CUADRUPLOS_H
+#include "uthash.h"
+#include "pilas.h"
+
 /*
 Hector Jesus De La Garza Ponce 	619971
 Oziel Alonzo Garza Lopez 		805074
@@ -22,9 +23,11 @@ typedef struct nodoOperador
 //Estructura Nodo Operandos---------------------------------------------------------------------------------------------
 typedef struct nodoOperando
 {	
+	/*Key*/
+	char nombre[25];
 	int temp;
 	int tipo;
-	char nombre[25];
+	int reciclada;
 	int direccion;
 }nodoOperando;
 //--------------------------------------------------------------------------------------------------------------------
@@ -40,17 +43,22 @@ typedef struct cuadruplos
 	nodoOperando *resultado;
 	UT_hash_handle hh;
 } cuadruplos;
-#endif
+
 
 //Firmas de los metodos
-cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *operando1, nodo *operando2, nodo *operador, nodo *resultado, int indice);
 void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode);
+void reciclarVariable(nodo *variable, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean);
+cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *operando1, nodo *operando2, int operador, nodo *resultado, int indice);
+cuadruplos* generarCuadruploExpresion(cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[4][4][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean);
 cuadruplos* generarCuadruploAsignacion(cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[4][4][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean);
 cuadruplos* generarCuadruploLectura(cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int *contadorIndice);
 cuadruplos* generarCuadruploEscritura(cuadruplos *listaCuadruplos,  pila *operandos, pila *operadores,  int *contadorIndice);
-cuadruplos* generarCuadruploGotoFalsoCiclo(cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice);
-cuadruplos* generarCuadruploGotoCiclo(cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice);
-cuadruplos* generarCuadruploGotoFalsoElse(cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice);
-cuadruplos* generarCuadruploGotoIf(cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice);
-cuadruplos* generarGoto(cuadruplos *listaCuadruplos,  pila *operadores, int *contadorIndice);
-cuadruplos* verificacionGeneracionCuadruplo (int prioridad, cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[4][4][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean);
+cuadruplos* generarCuadruploAccion1(cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice);
+cuadruplos* generarCuadruploAccion2Ciclo(cuadruplos *listaCuadruplos, pila *pilaSaltos, int *contadorIndice);
+cuadruplos* generarCuadruploAccion2If(cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice);
+cuadruplos* generarCuadruploAccion3If(cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice);
+cuadruplos* generarCuadruploGoto(cuadruplos *listaCuadruplos, int *contadorIndice);
+cuadruplos* generarCuadruploGotoFalso(cuadruplos *listaCuadruplos, nodo *operando1, int *contadorIndice);
+cuadruplos* generarCuadruploSequencial(int prioridad, cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[4][4][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean);
+
+#endif
