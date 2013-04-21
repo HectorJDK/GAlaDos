@@ -320,4 +320,60 @@ void imprimirObjetos(directorioObjetos *objetos) {
 				}		        
 			}
 	}
+
+/*
+* Funcion para escribir en un archivo los elementos del directorio de objetos asi como los 
+* elementos del directorio de funciones y variables que esten asociados.
+* El archivo se almacenará en disco.
+*/
+void generarDatos(directorioObjetos *objetos) {
+	
+	//Estructuras auxiliares		
+	directorioObjetos *o;
+	directorioProcedimientos *s;
+	directorio *p;
+	
+	//Crear el archivo y guardarlo en carpeta raiz
+	FILE *fp;
+	fp = fopen("datos.txt", "w");
+		
+	fprintf(fp,  "<GALaDos>\n");
+			//Imprimir tabla de objetos
+			for(o = objetos; o != NULL; o=(directorioObjetos*)(o->hh.next)){
+				fprintf(fp,  "<%s>\n", o->nombre);
+						
+
+				//Imprimir variables globales (main)
+				fprintf(fp,  "<variablesGlobales>\n");
+				for(p=o->variablesGlobales; p!= NULL; p=(struct directorio*)(p->hh.next)) {						
+							fprintf(fp,  "<%lu>\n", p->direccion);
+							fprintf(fp,  "<nombre>%s</nombre>\n", p->nombre);
+							fprintf(fp,  "<tipo>%i</tipo>\n", p->tipo);
+							fprintf(fp,  "</%lu>\n", p->direccion);
+				}
+				fprintf(fp,  "</variablesGlobales>\n");
+
+				//Imprimir procedimientos del objeto y sus tablas de variables
+				fprintf(fp,  "<procedimientos>\n");
+				for(s=o->procedimientos; s!= NULL; s=(directorioProcedimientos*)(s->hh.next)) {
+						fprintf(fp,  "<%s>\n", s->nombre);
+							fprintf(fp,  "<regresa>%i</regresa>\n", s->regresa);
+							fprintf(fp,  "<permiso>%i</permiso>\n", s->permiso);
+							fprintf(fp,  "<direccionCuadruplo>%i</direccionCuadruplo>\n", s->direccionCuadruplo);
+							
+						fprintf(fp,  "<variablesLocales>\n");
+						for(p=s->variablesLocales; p!= NULL; p=(struct directorio*)(p->hh.next)) {
+							fprintf(fp,  "<%lu>\n", p->direccion);
+							fprintf(fp,  "<nombre>%s</nombre>\n", p->nombre);
+							fprintf(fp,  "<tipo>%i</tipo>\n", p->tipo);
+							fprintf(fp,  "</%lu>\n", p->direccion);
+						}
+						fprintf(fp,  "</variablesLocales>\n");
+						fprintf(fp,  "</%s>\n", s->nombre);
+				}
+				fprintf(fp,  "</procedimientos>\n");
+				fprintf(fp,  "</%s>\n", o->nombre);						       
+			}
+		fprintf(fp,  "</GALaDos>\n");
+	}
 	

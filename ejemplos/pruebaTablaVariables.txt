@@ -4,6 +4,51 @@
 //Oziel Alonso Garza Lopez
 
 Declara_Objetos [	
+	Clase x {
+		Atributos_Globales[
+			entero unox;
+			decimal dosx;
+			texto tresx;	
+			booleano cuatrox;
+			//matrizDecimal cincox [1];
+			//matrizEntera seisx [2][2];
+			//crearObjeto sietex;
+		]
+		Declara_Funciones[
+		]
+		Implementa_Funciones[
+		]
+	}
+	Clase y {
+		Atributos_Globales[
+			entero unoy;
+			decimal dosy;
+			texto tresy;	
+			booleano cuatroy;
+			//matrizDecimal cincoy [1];
+			//matrizEntera seisy [2][2];
+			//crearObjeto sietey;
+		]
+		Declara_Funciones[
+		]
+		Implementa_Funciones[
+		]
+	}
+	Clase z {
+		Atributos_Globales[
+			entero unoz;
+			decimal dosz;
+			texto tresz;	
+			booleano cuatroz;
+			//matrizDecimal cincoz [1];
+			//matrizEntera seisz [2][2];
+			//crearObjeto sietez;
+		]
+		Declara_Funciones[
+		]
+		Implementa_Funciones[
+		]
+	}
 	
 ]
 Variables_Globales [
@@ -11,9 +56,8 @@ Variables_Globales [
 			decimal dosx;
 			texto tresx;	
 			booleano cuatrox;
-			matrizDecimal cincox [1];
-			matrizEntera seisx [2][2];
-			crearObjeto sietex;
+			//matrizDecimal cincox [1];
+			//matrizEntera seisx [2][2];
 			] 
 Declara_Funciones [
 	publica funcion1 (param2:decimal) regresa nada;
@@ -25,69 +69,47 @@ Implementa_Funciones [
 	funcion1 () { 
 		Variables_Locales[
 			entero variable1;
-			matrizDecimal matriz1 [10];
+			entero variable2;
+			//matrizDecimal matriz1 [10];
 		]
 		variable1 = 5;
-		leerDelteclado (entero);
-		despliega (5<<variable1<<matriz[2]);
+		
 	    si(variable1 < 4){
-			leer = leerdelteclado(entero);
-			despliega (5<<variable1<<matriz[2]);
+			
 			variable1 = 5;
-			leerDelteclado (entero);
-		} sino entonces(variable1<=2){
-			leer = leerdelteclado(entero);
-			despliega (5<<variable1<<matriz[2]);
-			variable1 = 5;
-			leerDelteclado (entero);
+		
 		} sino {
-			leer = leerdelteclado(entero);
-			despliega (5<<variable1<<matriz[2]);
-			variable1 = 5;
-			leerDelteclado (entero);
-		}
 
-		mientras(variable1 & variable2){
-			leer = leerdelteclado(entero);
-			despliega (5<<variable1<<matriz[2]);
+		mientras(falso){
+			
 			variable1 = 5;
-			leerDelteclado (entero);
+			
 		}
-		llamadaFuncion(uno);
+		//variable1 = funcion1(uno);
+	}
 	}
 	funcion2 () { 
 		Variables_Locales[
 			entero variable2;
-			matrizDecimal matriz2 [20];
+			//matrizDecimal matriz2 [20];
 		]
-		variable1 = 5;
-		leerDelteclado (entero);
-		despliega (5<<variable1<<matriz[2]);
-	    si(variable1 < 4){
-			leer = leerdelteclado(entero);
-			despliega (5<<variable1<<matriz[2]);
-			variable1 = 5;
-			leerDelteclado (entero);
-		} sino entonces(variable1<=2){
-			leer = leerdelteclado(entero);
-			despliega (5<<variable1<<matriz[2]);
-			variable1 = 5;
-			leerDelteclado (entero);
-		} sino {
-			leer = leerdelteclado(entero);
-			despliega (5<<variable1<<matriz[2]);
-			variable1 = 5;
-			leerDelteclado (entero);
-		}
+		variable2 = 5;
+		
+	    si(variable2 < 4){
+			
+			variable2 = 5;
+			
+		} sino { 
 
-		mientras(variable1 | variable2){
-			leer = leerdelteclado(entero);
-			despliega (5<<variable1<<matriz[2]);
-			variable1 = 5;
-			leerDelteclado (entero);
+		mientras(verdadero){
+			
+			variable2 = 5;
+			
 		}
-		llamadaFuncion(uno);
+		//variable2 = funcion1(uno);
 	}
+	}
+	
 ]
 ejecutarPrograma {
 	Variables_Locales [
@@ -95,10 +117,9 @@ ejecutarPrograma {
 		decimal dos;
 		decimal tres;	
 		booleano cuatro;
-		matrizDecimal cinco [1];
-		matrizEntera seis [2][2];
-		crearObjeto siete;
+		//matrizDecimal cinco [1];
+		//matrizEntera seis [2][2];		
 	]
-	uno*dos*tres;
+	uno = uno*dos*tres;
 }
 
