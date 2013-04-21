@@ -60,5 +60,5 @@ cuadruplos* generarCuadruploAccion3If(cuadruplos *listaCuadruplos,  pila *operan
 cuadruplos* generarCuadruploGoto(cuadruplos *listaCuadruplos, int *contadorIndice);
 cuadruplos* generarCuadruploGotoFalso(cuadruplos *listaCuadruplos, nodo *operando1, int *contadorIndice);
 cuadruplos* generarCuadruploSequencial(int prioridad, cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[4][4][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean);
-
+void generarObj(cuadruplos *listaCuadruplos); 
 #endif

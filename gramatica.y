@@ -432,7 +432,8 @@ int main()
 
 	yyparse();
 	//imprimirObjetos(objetos);
-	imprimeCuadruplos(listaCuadruplos, 0);
+	//imprimeCuadruplos(listaCuadruplos, 0);
+	generarObj(listaCuadruplos);
 	return 0;
 }
 

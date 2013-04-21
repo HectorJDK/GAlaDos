@@ -804,3 +804,23 @@ cuadruplos* generarCuadruploSequencial(int prioridad, cuadruplos *listaCuadruplo
 		return listaCuadruplos;
 	}
 }
+
+/*
+*generarObj
+*Crea el archivo obj de traduccion del lenguaje
+*/	
+void generarObj(cuadruplos *listaCuadruplos) {
+	
+	//Crear el archivo y guardarlo en carpeta raiz
+	FILE *fp;
+	fp = fopen("codigoObjeto.txt", "w");
+	
+	cuadruplos *temporal;
+
+		for(temporal = listaCuadruplos; temporal != NULL; temporal=(cuadruplos*)(temporal->hh.next)) {
+			char operacion[10];					
+			
+			fprintf(fp,  "%i, %i, %i, %i\n", temporal->operador, temporal->operando1->direccion, temporal->operando2->direccion, temporal->resultado->direccion);
+			
+		}
+	}
