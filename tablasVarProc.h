@@ -41,4 +41,4 @@ directorioObjetos* buscarObjeto(directorioObjetos *objetos, char *nombre);
 directorio* agregarConstante(directorio *constantes, char *nombre, unsigned short tipo, int direccion);
 directorio* buscarConstante(directorio *constantes, char *nombre);
 void imprimirObjetos(directorioObjetos *objetos);
-void generarDatos(directorioObjetos *objetos);
+void generarDatos(directorioObjetos *objetos, directorio *constantes );

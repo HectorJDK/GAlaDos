@@ -813,7 +813,7 @@ void generarObj(cuadruplos *listaCuadruplos) {
 	
 	//Crear el archivo y guardarlo en carpeta raiz
 	FILE *fp;
-	fp = fopen("codigoObjeto.txt", "w");
+	fp = fopen("GAlaDos-MaqVirtual/obj/codigoObjeto.txt", "w");
 	
 	cuadruplos *temporal;
 

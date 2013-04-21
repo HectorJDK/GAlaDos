@@ -120,6 +120,6 @@ ejecutarPrograma {
 		//matrizDecimal cinco [1];
 		//matrizEntera seis [2][2];		
 	]
-	uno = uno*dos*tres;
+	uno = 1 + 2;
 }
 

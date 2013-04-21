@@ -431,10 +431,10 @@ int main()
 {
 
 	yyparse();
-	imprimirObjetos(objetos);
+	//imprimirObjetos(objetos);
 	//imprimeCuadruplos(listaCuadruplos, 0);
 	generarObj(listaCuadruplos);
-	generarDatos(objetos);
+	generarDatos(objetos, constantes);
 	return 0;
 }
 

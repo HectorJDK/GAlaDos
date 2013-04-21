@@ -326,18 +326,20 @@ void imprimirObjetos(directorioObjetos *objetos) {
 * elementos del directorio de funciones y variables que esten asociados.
 * El archivo se almacenará en disco.
 */
-void generarDatos(directorioObjetos *objetos) {
+void generarDatos(directorioObjetos *objetos, directorio *constantes ) {
 	
 	//Estructuras auxiliares		
 	directorioObjetos *o;
 	directorioProcedimientos *s;
 	directorio *p;
+	directorio *c;
 	
 	//Crear el archivo y guardarlo en carpeta raiz
 	FILE *fp;
-	fp = fopen("datos.txt", "w");
+	fp = fopen("GAlaDos-MaqVirtual/obj/datos.txt", "w");
 		
 	fprintf(fp,  "<GALaDos>\n");
+
 			//Imprimir tabla de objetos
 			for(o = objetos; o != NULL; o=(directorioObjetos*)(o->hh.next)){
 				fprintf(fp,  "<%s>\n", o->nombre);
@@ -373,7 +375,16 @@ void generarDatos(directorioObjetos *objetos) {
 				}
 				fprintf(fp,  "</procedimientos>\n");
 				fprintf(fp,  "</%s>\n", o->nombre);						       
-			}
+			}	
+			//Imprimir la tabla de constantes (para todos los objetos)
+			fprintf(fp,  "<constantes>\n");
+						for(c=constantes; c!= NULL; c=(struct directorio*)(c->hh.next)) {
+							fprintf(fp,  "<%lu>\n", c->direccion);
+							fprintf(fp,  "<valor>%s</valor>\n", c->nombre);
+							fprintf(fp,  "<tipo>%i</tipo>\n", c->tipo);
+							fprintf(fp,  "</%lu>\n", c->direccion);
+						}
+						fprintf(fp,  "</constantes>\n");		
 		fprintf(fp,  "</GALaDos>\n");
 	}
 	
