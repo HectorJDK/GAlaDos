@@ -337,7 +337,7 @@ void generarDatos(directorioObjetos *objetos, directorio *constantes ) {
 	//Crear el archivo y guardarlo en carpeta raiz
 	FILE *fp;
 	fp = fopen("GAlaDos-MaqVirtual/obj/datos.txt", "w");
-		
+	fprintf(fp,  "<?xml version='1.0'?>\n");
 	fprintf(fp,  "<GALaDos>\n");
 
 			//Imprimir tabla de objetos
@@ -348,10 +348,11 @@ void generarDatos(directorioObjetos *objetos, directorio *constantes ) {
 				//Imprimir variables globales (main)
 				fprintf(fp,  "<variablesGlobales>\n");
 				for(p=o->variablesGlobales; p!= NULL; p=(struct directorio*)(p->hh.next)) {						
-							fprintf(fp,  "<%lu>\n", p->direccion);
+							fprintf(fp,  "<variableGlobal>\n");
+							fprintf(fp,  "<direccion>%lu</direccion>\n", p->direccion);
 							fprintf(fp,  "<nombre>%s</nombre>\n", p->nombre);
 							fprintf(fp,  "<tipo>%i</tipo>\n", p->tipo);
-							fprintf(fp,  "</%lu>\n", p->direccion);
+							fprintf(fp,  "</variableGlobal>\n");
 				}
 				fprintf(fp,  "</variablesGlobales>\n");
 
@@ -365,10 +366,11 @@ void generarDatos(directorioObjetos *objetos, directorio *constantes ) {
 							
 						fprintf(fp,  "<variablesLocales>\n");
 						for(p=s->variablesLocales; p!= NULL; p=(struct directorio*)(p->hh.next)) {
-							fprintf(fp,  "<%lu>\n", p->direccion);
+							fprintf(fp,  "<variableLocal>\n");
+							fprintf(fp,  "<direccion>%lu</direccion>\n", p->direccion);
 							fprintf(fp,  "<nombre>%s</nombre>\n", p->nombre);
 							fprintf(fp,  "<tipo>%i</tipo>\n", p->tipo);
-							fprintf(fp,  "</%lu>\n", p->direccion);
+							fprintf(fp,  "</variableLocal>\n");
 						}
 						fprintf(fp,  "</variablesLocales>\n");
 						fprintf(fp,  "</%s>\n", s->nombre);
@@ -379,10 +381,11 @@ void generarDatos(directorioObjetos *objetos, directorio *constantes ) {
 			//Imprimir la tabla de constantes (para todos los objetos)
 			fprintf(fp,  "<constantes>\n");
 						for(c=constantes; c!= NULL; c=(struct directorio*)(c->hh.next)) {
-							fprintf(fp,  "<%lu>\n", c->direccion);
+							fprintf(fp,  "<constante>\n");
+							fprintf(fp,  "<direccion>%lu</direccion>\n", c->direccion);
 							fprintf(fp,  "<valor>%s</valor>\n", c->nombre);
 							fprintf(fp,  "<tipo>%i</tipo>\n", c->tipo);
-							fprintf(fp,  "</%lu>\n", c->direccion);
+							fprintf(fp,  "</constante>\n");
 						}
 						fprintf(fp,  "</constantes>\n");		
 		fprintf(fp,  "</GALaDos>\n");

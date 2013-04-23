@@ -863,7 +863,7 @@ var_cte:
 	| CTEBOOLEANO
 	{
 		//Obtenemos el valor de la constante
-		strncpy(nombreVariable, $1, tamanioIdentificadores);
+		strncpy(nombreVariable, $1, tamanioIdentificadores);		
 		agregarTablaConstantes(nombreVariable, 3);
 
 		variable = buscarConstante(constantes, nombreVariable);

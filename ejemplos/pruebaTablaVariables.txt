@@ -80,11 +80,11 @@ Implementa_Funciones [
 		
 		} sino {
 
-		mientras(falso){
+		//mientras(falso){
 			
-			variable1 = 5;
+		//	variable1 = 5;
 			
-		}
+		//}
 		//variable1 = funcion1(uno);
 	}
 	}
@@ -101,11 +101,11 @@ Implementa_Funciones [
 			
 		} sino { 
 
-		mientras(verdadero){
+		//mientras(verdadero){
 			
-			variable2 = 5;
+		//	variable2 = 5;
 			
-		}
+		//}
 		//variable2 = funcion1(uno);
 	}
 	}
@@ -120,6 +120,6 @@ ejecutarPrograma {
 		//matrizDecimal cinco [1];
 		//matrizEntera seis [2][2];		
 	]
-	uno = 1 + 2;
+	uno =  6 / 2;
 }
 

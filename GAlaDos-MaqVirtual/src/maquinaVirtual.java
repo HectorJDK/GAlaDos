@@ -13,7 +13,7 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-//Libreria para lista encadenada
+//Librerias para estructuras
 import java.util.*;
 
 
@@ -31,7 +31,8 @@ public class maquinaVirtual {
 	    String line;									//String para leer la linea de archivo
 	    String[] cuadruploLinea;						//String auxiliar para separacion de elementos del cuadruplo
 	    int operacion, operando1, operando2;			//Auxiliares para almacenar elementos de los cuadruplos	    
-		try {
+		xmlParser datos;
+	    try {
 			
 			//Inicializacion de variables y estructuras
 			registro = new registro();	
@@ -45,6 +46,7 @@ public class maquinaVirtual {
 	        //Crear arrayList del bloque de memoria
 	        bloque = new HashMap<Integer,registro>();	  
 	        
+	        datos = new xmlParser();
 	        /**
 	         * Seccion para cargar los cuadruplos de archivo a la estructura arraylist
 	         */
@@ -66,26 +68,11 @@ public class maquinaVirtual {
 	       
 	        /**
 	         * Seccion para cargar los datos de archivo 
-	         * Pendiente libreria XML 
 	         */
-	        //Ingresar la tabla de constantes a la memoria
-	        //Pendiente obtener de XML
-	        //Probar constante 1 y constante 2
-	        registro.setDireccion(13002);
-	        registro.setValor(1);
-	        //Agregarlo al bloque
-    		bloque.put(13002, registro);
-    	
-    		//Reinicializar registro
-    		registro = new registro();
+	        //Ingresar la tabla de constantes a la memoria	        
+	        bloque = datos.cargarDatos(registro, bloque);
     		
-    		//Agregar otra constante
-	        registro.setDireccion(13003);
-	        registro.setValor(2);
-	        //Agregarlo al bloque
-    		bloque.put(13003, registro);
-    		//Iniciar ejecucion
-    		
+	        //Iniciar ejecucion    		
     		while(!finEjecucion){
     		
     			//Primer cuadruplo
@@ -95,15 +82,16 @@ public class maquinaVirtual {
     			}
     			//Obtener la operacion a ejecutar
     			operacion = cuadruplo.getOperacion();    			
+    			//Obtener los operandos 
+    			operando1 = bloque.get(cuadruplo.getOperando1()).getValor();
+    			operando2 = bloque.get(cuadruplo.getOperando2()).getValor();
     			
     			switch (operacion){
     			//Suma
-    			case (0):    				    				
-    				//Obtener los operandos 
-    				operando1 = bloque.get(cuadruplo.getOperando1()).getValor();
-    				operando2 = bloque.get(cuadruplo.getOperando2()).getValor();
-    				
-    				//Agregarlos en un registro nuevo
+    			case (0):  
+    				//Caso entero
+    				    				
+    				//Agregar un registro nuevo
     				registro.setDireccion(cuadruplo.getResultado());    			
     				registro.setValor(operando1 + operando2);
     				
@@ -113,9 +101,52 @@ public class maquinaVirtual {
     				//Imprimir resultado de suma de 1 + 2 
     				System.out.println(registro.getValor());
     				break;
-    			}
+    				//Resta
+    			case (1):  
+    				//Caso entero
+    				
+    				//Agregar un registro nuevo
+    				registro.setDireccion(cuadruplo.getResultado());    			
+    				registro.setValor(operando1 - operando2);
+    				
+    				//Agregar el registro al bloque de memoria
+    				bloque.put(cuadruplo.getResultado(), registro);
+    				
+    				//Imprimir resultado de suma de 1 + 2 
+    				System.out.println(registro.getValor());
+    				break;    			
+    			//Division
+				case (2):  
+					//Caso entero
+					
+					//Agregar un registro nuevo
+					registro.setDireccion(cuadruplo.getResultado());    			
+					registro.setValor(operando1 / operando2);
+					
+					//Agregar el registro al bloque de memoria
+					bloque.put(cuadruplo.getResultado(), registro);
+					
+					//Imprimir resultado de suma de 1 + 2 
+					System.out.println(registro.getValor());
+					break;    		
+	    			//Multiplicacion
+				case (3):  
+					//Caso entero
+					
+					//Agregar un registro nuevo
+					registro.setDireccion(cuadruplo.getResultado());    			
+					registro.setValor(operando1 * operando2);
+					
+					//Agregar el registro al bloque de memoria
+					bloque.put(cuadruplo.getResultado(), registro);
+					
+					//Imprimir resultado de suma de 1 + 2 
+					System.out.println(registro.getValor());
+					break;
+	    			
+    			}    			
     			finEjecucion = true;
-    		}    		
+    	}
 	        
 	    } finally {
 	        br.close();
