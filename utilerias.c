@@ -322,7 +322,7 @@ void inicializarAvail(pila *availEntero, pila *availDecimal, pila *availTexto, p
 	nodoOperando *datoBooleano;
 
 	//Creacion de los nodos con todos sus datos 
-	for(repeticion = 0; repeticion < 1000; repeticion++) {
+	for(repeticion = 999; repeticion >= 0; repeticion--) {
 
 		//Creacion de los nodos enteros
 		datoEntero = (nodoOperando*)malloc(sizeof(nodoOperando));

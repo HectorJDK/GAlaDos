@@ -117,9 +117,15 @@ ejecutarPrograma {
 		decimal dos;
 		decimal tres;	
 		booleano cuatro;
+		texto cinco;
 		//matrizDecimal cinco [1];
 		//matrizEntera seis [2][2];		
 	]
 	uno =  6 / 2;
+	mientras(uno<2.0){		
+		despliega("valor de uno");		
+		uno = 5.0;
+	}	
+	despliega("fin");
 }
 

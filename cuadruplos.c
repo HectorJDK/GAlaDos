@@ -668,7 +668,7 @@ cuadruplos* generarCuadruploAccion3If(cuadruplos *listaCuadruplos,  pila *operan
 
 		//Modificamos el cuadruplo anterior
 		sprintf(accederCuadruplo->resultado->nombre, "%d", *contadorIndice);
-		accederCuadruplo->resultado->direccion = *contadorIndice + 1;			
+		accederCuadruplo->resultado->direccion = *contadorIndice ;			
 		
 		return listaCuadruplos;
 	} else {

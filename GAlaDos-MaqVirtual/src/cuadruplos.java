@@ -19,6 +19,7 @@ public class cuadruplos {
 		this.resultado=-1;
 	}
 	
+	//Getters y setter
 	public int getOperacion(){
 		return this.operacion;
 	}

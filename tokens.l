@@ -90,7 +90,7 @@ blanks					([ \t\n\r]+)
 								yylval.sval = malloc(strlen(yytext));
 								strncpy(yylval.sval, yytext, strlen(yytext));
 								return CTEDECIMAL;}
-	{falso}						{
+	{falso}						{								
 								yylval.sval = malloc(strlen(yytext));
 								strncpy(yylval.sval, yytext, strlen(yytext));
 								return CTEBOOLEANO;}

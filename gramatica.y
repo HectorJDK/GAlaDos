@@ -537,7 +537,7 @@ programa:
 		rellenarGoto();
 
 		//LLenamos los datos a la tabla correspondiente
-		strncpy(nombreProcedimiento, "ejecutarProgama", tamanioIdentificadores);
+		strncpy(nombreProcedimiento, "ejecutarPrograma", tamanioIdentificadores);
 		objetos = agregarFuncion(objetos, ":main:" ,nombreProcedimiento);
 
 	} 
