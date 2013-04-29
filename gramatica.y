@@ -13,7 +13,7 @@
 	#include "cuadruplos.h"
 	#define YYERROR_VERBOSE 1
 	
-//----------------------------------------------------------------------------------------
+//------------------------------------Variables de Control-----------------------------------------------
 
 
 void yyerror( const char *str )
@@ -131,9 +131,7 @@ directorioObjetos *objetos = NULL;
 //Declaracion para la tabla de constates
 directorio *constantes = NULL;
 
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
+//---------------------------------WRAPPERS-------------------------------------------
 
 void  generarMultiplicacionDivision(){
 	listaCuadruplos = generarCuadruploSequencial(1 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
@@ -190,6 +188,8 @@ void generarGoto(){
 void rellenarGoto(){
 	listaCuadruplos = generarCuadruploAccion3If(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
 }
+
+//----------------------------------------Funciones de Control--------------------------------------------------
 
 void asignarMemoriaVariable(){
 	//Checamos en que seccion nos encontramos al momento de crear una variable
@@ -413,6 +413,23 @@ void inicializarCompilador(){
 	inicializarSemantica(cuboSemantico);
 }
 
+void pushPilaOperandos(directorio *variable){
+	//Creamos la nueva variable para agregar a la pila de variables
+	operando = (nodoOperando*)malloc(sizeof(nodoOperando));
+	if(variable == NULL){
+		operando->temp = -1;
+		operando->tipo = -1; 
+		strcpy(operando->nombre, "/n");
+		operando->direccion = -1;
+	} else {
+		operando->temp = 0;
+		operando->tipo = variable->tipo; 
+		strcpy(operando->nombre, variable->nombre);
+		operando->direccion = variable->direccion;
+	}
+	push(operandos,operando);
+}
+
 void pushPilaOperadores(int valor){
 	//Creamos el nodo operandor que se le hara push en la pila operadores
 	operador = (nodoOperador*)malloc(sizeof(nodoOperador));
@@ -422,8 +439,11 @@ void pushPilaOperadores(int valor){
 	push(operadores, operador);
 }
 
-//----------------------------------------------------------------------------
-
+void pushPilaSaltos(int valor){
+	salto = (nodoOperador*)malloc(sizeof(nodoOperador));
+	salto->operador = valor;
+	push(pilaSaltos, salto);
+}
 
 //----------------------------------MAIN--------------------------------------
 
@@ -432,12 +452,11 @@ int main()
 
 	yyparse();
 	//imprimirObjetos(objetos);
-	//imprimeCuadruplos(listaCuadruplos, 0);
-	generarObj(listaCuadruplos);
-	generarDatos(objetos, constantes);
+	imprimeCuadruplos(listaCuadruplos, 0);
 	return 0;
 }
 
+//----------------------------------TOKENS--------------------------------------
 
 %}
 
@@ -506,15 +525,15 @@ int main()
 %start programa
 %%
 
+//-------------------------------------REGLAS--------------------------------------
+
 programa:
 	{
 		//Inicializamos las diferentes estructuras de control para el compilador
 		inicializarCompilador();
 
 		//Metemos el contador en la pila de saltos
-		salto = (nodoOperador*)malloc(sizeof(nodoOperador));
-		salto->operador = contadorIndice;
-		push(pilaSaltos, salto);
+		pushPilaSaltos(contadorIndice);
 		
 		// cuadruplo 0 sera un goto a ejecutarPrograma
 		generarGoto();
@@ -537,7 +556,7 @@ programa:
 		rellenarGoto();
 
 		//LLenamos los datos a la tabla correspondiente
-		strncpy(nombreProcedimiento, "ejecutarPrograma", tamanioIdentificadores);
+		strncpy(nombreProcedimiento, "ejecutarProgama", tamanioIdentificadores);
 		objetos = agregarFuncion(objetos, ":main:" ,nombreProcedimiento);
 
 	} 
@@ -818,13 +837,7 @@ var_cte:
 		variable = buscarConstante(constantes, nombreVariable);
 
 		//crearemos un nodoOperando para agregarlo a la pila
-		operando = (nodoOperando*)malloc(sizeof(nodoOperando));
-		operando->temp = 0;
-		operando->tipo = variable->tipo; 
-		strcpy(operando->nombre, variable->nombre);
-		operando->direccion = variable->direccion;
-
-		push(operandos,operando);
+		pushPilaOperandos(variable);
 	} 
 
 	| CTEDECIMAL
@@ -836,13 +849,7 @@ var_cte:
 		variable = buscarConstante(constantes, nombreVariable);
 
 		//crearemos un nodoOperando para agregarlo a la pila
-		operando = (nodoOperando*)malloc(sizeof(nodoOperando));
-		operando->temp = 0;
-		operando->tipo = variable->tipo; 
-		strcpy(operando->nombre, variable->nombre);
-		operando->direccion = variable->direccion;
-
-		push(operandos,operando);
+		pushPilaOperandos(variable);
 	} 
 	| CTETEXTO
 	{
@@ -852,30 +859,18 @@ var_cte:
 		variable = buscarConstante(constantes, nombreVariable);
 
 		//crearemos un nodoOperando para agregarlo a la pila
-		operando = (nodoOperando*)malloc(sizeof(nodoOperando));
-		operando->temp = 0;
-		operando->tipo = variable->tipo; 
-		strcpy(operando->nombre, variable->nombre);
-		operando->direccion = variable->direccion;
-
-		push(operandos,operando);
+		pushPilaOperandos(variable);
 	} 
 	| CTEBOOLEANO
 	{
 		//Obtenemos el valor de la constante
-		strncpy(nombreVariable, $1, tamanioIdentificadores);		
+		strncpy(nombreVariable, $1, tamanioIdentificadores);
 		agregarTablaConstantes(nombreVariable, 3);
 
 		variable = buscarConstante(constantes, nombreVariable);
 
 		//crearemos un nodoOperando para agregarlo a la pila
-		operando = (nodoOperando*)malloc(sizeof(nodoOperando));
-		operando->temp = 0;
-		operando->tipo = variable->tipo; 
-		strcpy(operando->nombre, variable->nombre);
-		operando->direccion = variable->direccion;
-
-		push(operandos,operando);
+		pushPilaOperandos(variable);
 	} 
 	| identificadorOLlamadaAFuncion	
 	;
@@ -899,13 +894,7 @@ identificadorOLlamadaAFuncion:
 			}
 
 			//crearemos un nodoOperando para agregarlo a la pila
-			operando = (nodoOperando*)malloc(sizeof(nodoOperando));
-			operando->temp = 0;
-			operando->tipo = variable->tipo; 
-			strcpy(operando->nombre, variable->nombre);
-			operando->direccion = variable->direccion;
-
-			push(operandos,operando);
+			pushPilaOperandos(variable);
 
 		} else if (seccObjeto == 1) {
 			//Estamos en la funcion de un objeto
@@ -1097,13 +1086,7 @@ decideEstatuto:
 			}
 
 			//crearemos un nodoOperando para agregarlo a la pila
-			operando = (nodoOperando*)malloc(sizeof(nodoOperando));
-			operando->temp = 0;
-			operando->tipo = variable->tipo; 
-			strcpy(operando->nombre, variable->nombre);
-			operando->direccion = variable->direccion;
-
-			push(operandos,operando);
+			pushPilaOperandos(variable);
 
 		} else if (seccObjeto == 1) {
 			//Estamos en la funcion de un objeto
@@ -1170,13 +1153,7 @@ lectura:
 			}
 
 			//crearemos un nodoOperando para agregarlo a la pila
-			operando = (nodoOperando*)malloc(sizeof(nodoOperando));
-			operando->temp = 0;
-			operando->tipo = variable->tipo; 
-			strcpy(operando->nombre, variable->nombre);
-			operando->direccion = variable->direccion;
-
-			push(operandos,operando);
+			pushPilaOperandos(variable);
 
 		} else if (seccObjeto == 1) {
 			//Estamos en la funcion de un objeto
@@ -1202,12 +1179,7 @@ escritura:
 		pushPilaOperadores(OP_ESCRITURA);
 		
 		//crearemos un nodoOperando para agregarlo a la pila DUMMY
-		operando = (nodoOperando*)malloc(sizeof(nodoOperando));
-		operando->temp = -1;
-		operando->tipo = -1; 
-		strcpy(operando->nombre, "NuLl");
-		operando->direccion = -1;
-		push(operandos,operando);
+		pushPilaOperandos(NULL);
 
 		generarEscritura();
 	}
@@ -1234,13 +1206,7 @@ escritura_valores:
 			}
 
 			//crearemos un nodoOperando para agregarlo a la pila
-			operando = (nodoOperando*)malloc(sizeof(nodoOperando));
-			operando->temp = 0;
-			operando->tipo = variable->tipo; 
-			strcpy(operando->nombre, variable->nombre);
-			operando->direccion = variable->direccion;
-
-			push(operandos,operando);
+			pushPilaOperandos(variable);
 
 		} else if (seccObjeto == 1) {
 			//Estamos en la funcion de un objeto
@@ -1259,13 +1225,8 @@ valores:
 		variable = buscarConstante(constantes, nombreVariable);
 
 		//crearemos un nodoOperando para agregarlo a la pila
-		operando = (nodoOperando*)malloc(sizeof(nodoOperando));
-		operando->temp = 0;
-		operando->tipo = variable->tipo; 
-		strcpy(operando->nombre, variable->nombre);
-		operando->direccion = variable->direccion;
+		pushPilaOperandos(variable);
 
-		push(operandos,operando);
 	}
 	| CTEDECIMAL 
 	{
@@ -1276,13 +1237,7 @@ valores:
 		variable = buscarConstante(constantes, nombreVariable);
 
 		//crearemos un nodoOperando para agregarlo a la pila
-		operando = (nodoOperando*)malloc(sizeof(nodoOperando));
-		operando->temp = 0;
-		operando->tipo = variable->tipo; 
-		strcpy(operando->nombre, variable->nombre);
-		operando->direccion = variable->direccion;
-
-		push(operandos,operando);
+		pushPilaOperandos(variable);
 	}
 	| CTETEXTO
 	{
@@ -1293,13 +1248,7 @@ valores:
 		variable = buscarConstante(constantes, nombreVariable);
 
 		//crearemos un nodoOperando para agregarlo a la pila
-		operando = (nodoOperando*)malloc(sizeof(nodoOperando));
-		operando->temp = 0;
-		operando->tipo = variable->tipo; 
-		strcpy(operando->nombre, variable->nombre);
-		operando->direccion = variable->direccion;
-
-		push(operandos,operando);
+		pushPilaOperandos(variable);
 	 }
 	 ;
 
@@ -1358,10 +1307,7 @@ ciclo:
 	MIENTRAS 
 	{	
 		//Metemos en la pila de saltos el contador actual
-		salto = (nodoOperador*)malloc(sizeof(nodoOperador));
-		salto->operador = contadorIndice;
-		push(pilaSaltos, salto);
-		
+		pushPilaSaltos(contadorIndice);
 	}
 	APARENTESIS serexpresion 
 	{
