@@ -22,6 +22,10 @@
 #define OP_LECTURA	 		17
 #define OP_ESCRITURA  		18
 #define OP_GOTO      		19
+#define OP_ENDPROC			20
+#define OP_ERA 				21
+#define OP_PARAM			22
+#define OP_GOSUB			23
 
 #define OP_ERROR			-1
 

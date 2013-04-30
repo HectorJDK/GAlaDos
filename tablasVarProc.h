@@ -11,6 +11,13 @@ typedef struct directorio {
 	UT_hash_handle hh;         /* makes this structure hashable */
 } directorio;
 
+//Estructura Variables uthash-------------------------------------------------------
+typedef struct directorioParametros {
+	int numeroParametro;              /* key */
+	int tipo;
+	UT_hash_handle hh;         /* makes this structure hashable */
+} directorioParametros;
+
 //Estructura Procedimientos uthash-------------------------------------------------------
 typedef struct directorioProcedimientos {
 	//Key
@@ -18,6 +25,7 @@ typedef struct directorioProcedimientos {
 	int regresa;
 	int permiso;
 	int direccionCuadruplo;
+	directorioParametros *parametros;
 	directorio *variablesLocales;
 	UT_hash_handle hh;
 }directorioProcedimientos;
@@ -32,6 +40,8 @@ typedef struct directorioObjetos {
 
 directorioObjetos* agregarVariablesLocales(directorioObjetos *objetos, char *objeto, char *funcion, char *nombre, unsigned short tipo, unsigned long direccion);
 directorio* buscarVariablesLocales(directorioObjetos *objetos, char *objeto, char *funcion, char *nombre);
+directorioObjetos* agregarParametros(directorioObjetos *objetos, char *objeto, char *funcion, int tipo, int cantidadParametros);
+int checarParametro(directorioObjetos *objetos, char *objeto, char *funcion, int numeroParametro, int tipo);
 directorioObjetos* agregarVariablesGlobales(directorioObjetos *objetos, char *objeto, char *nombre, unsigned short tipo, unsigned long direccion);
 directorio* buscarVariablesGlobales(directorioObjetos *objetos, char *objeto, char *nombre);
 directorioObjetos* agregarFuncion(directorioObjetos *objetos, char *objeto, char *nombre);

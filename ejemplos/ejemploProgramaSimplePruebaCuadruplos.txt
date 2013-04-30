@@ -2,9 +2,19 @@ Declara_Objetos []
 
 Variables_Globales [] 
 
-Declara_Funciones []
+Declara_Funciones [
+	publica prueba (dato1:entero) regresa nada;
+]
 
-Implementa_Funciones []
+Implementa_Funciones [
+	prueba (dato1:entero){
+		Variables_Locales [
+			entero C;
+		]
+
+		C = 1 + 2;
+	}
+]
 
 ejecutarPrograma {
 	Variables_Locales [
@@ -12,6 +22,6 @@ ejecutarPrograma {
 	]
 	
 	A = 1 + 2;
+	prueba(A + 2);
 	
-
 }

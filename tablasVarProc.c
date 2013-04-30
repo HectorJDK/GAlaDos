@@ -82,6 +82,88 @@ directorio* buscarVariablesLocales(directorioObjetos *objetos, char *objeto, cha
 }
 
 /*
+* Funcion para agregar los parametros al directorio de funciones.
+*/
+directorioObjetos* agregarParametros(directorioObjetos *objetos, char *objeto, char *funcion, int tipo, int cantidadParametros) {
+		
+		//Variables auxiliares
+		directorioObjetos *exiteObjeto;
+		directorioProcedimientos *existeProcedimiento;
+		directorioParametros *temp;
+
+		//Buscar el objeto en el directorio
+		HASH_FIND_STR(objetos, objeto, exiteObjeto);  /* existe el objeto? */
+		if (exiteObjeto) {
+				//Buscar la funcion en el directorio
+				HASH_FIND_STR(exiteObjeto->procedimientos, funcion, existeProcedimiento);  /* existe el procedimiento? */
+				if (existeProcedimiento) {
+					//Checar si la variable ya existe
+					HASH_FIND_INT(existeProcedimiento->parametros, &cantidadParametros, temp);
+					if (temp==NULL) {
+							//Agregar la nueva variable al directorio de parametros
+							temp = (directorioParametros*)malloc(sizeof(directorioParametros));
+							temp->numeroParametro = cantidadParametros;
+							temp->tipo = tipo;
+							HASH_ADD_INT(existeProcedimiento->parametros, numeroParametro, temp);
+							return objetos;   
+					} else {
+							printf("Error al momento de grabar contadores erroneo");
+							exit(1);
+					}
+				} else {
+					printf("Error Funcion %s no se encuentra declarada \n", funcion);
+					exit(1);
+				}
+		} else {
+			printf("Error Clase %s no se encuentra declarada \n", objeto);
+			exit(1);
+		}
+}
+
+/*
+* Funcion para buscar en la tabla de variables de una funcion, solo regresa el directorio de la variable para ser usada
+*/
+int checarParametro(directorioObjetos *objetos, char *objeto, char *funcion, int numeroParametro, int tipo) {
+		
+		//Variables auxiliares
+		directorioObjetos *exiteObjeto;
+		directorioProcedimientos *existeProcedimiento;
+		directorioParametros *temp;
+
+		//Buscar el objeto en el directorio
+		HASH_FIND_STR(objetos, objeto, exiteObjeto);  /* existe el objeto? */
+		if (exiteObjeto) {
+				//Buscar la funcion en el directorio
+				HASH_FIND_STR(exiteObjeto->procedimientos, funcion, existeProcedimiento);  /* existe el procedimiento? */
+				if (existeProcedimiento) {
+					//Checar si la variable ya existe
+					HASH_FIND_INT(existeProcedimiento->parametros, &numeroParametro, temp);
+					if (temp == NULL) {
+												
+						printf("Error Funcion: %s no contiene el parametro numero %i \n", funcion, numeroParametro);
+						exit(1);
+					} else {
+						//Checar que los tipos de datos sean iguales
+						if (temp->tipo != tipo){
+							//El dato no es el declarado anteriormente
+							printf("Error Funcion: %s el parametro # %i no concuerda con el declarado \n", funcion, numeroParametro);
+							exit(1);
+						} else {
+							//Valor es compatible
+							return 1;
+						}
+					}
+				} else {
+					printf("Error Funcion: %s no declarada\n", funcion);
+					exit(1);
+				}
+		} else {
+			printf("Error Clase: %s no declarada\n", objeto);
+			exit(1);
+		}
+}
+
+/*
 * Funcion para agregar las variables globales al directorio de objetos.
 */
 directorioObjetos* agregarVariablesGlobales(directorioObjetos *objetos, char *objeto, char *nombre, unsigned short tipo, unsigned long direccion) {
@@ -288,8 +370,6 @@ directorio* buscarConstante(directorio *constantes, char *nombre){
 			return temp;
 		}       
 }
-
-
 
 /*
 * Funcion para desplegar los elementos del directorio de objetos asi como los 

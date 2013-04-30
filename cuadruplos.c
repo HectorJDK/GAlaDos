@@ -106,6 +106,22 @@ void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode) {
 				case 19:
 				strcpy(operacion, "goto");
 				break;
+
+				case 20:
+				strcpy(operacion, "ENDPROC");
+				break;
+
+				case 21:
+				strcpy(operacion, "ERA");
+				break;
+
+				case 22:
+				strcpy(operacion, "PARAM");
+				break;
+
+				case 23:
+				strcpy(operacion, "GOSUB");
+				break;
 			}
 			printf("Cuadruplo: %d | %s %s %s %s \n", temporal->indice, operacion, temporal->operando1->nombre, temporal->operando2->nombre, temporal->resultado->nombre);
 		}
@@ -712,6 +728,147 @@ cuadruplos* generarCuadruploGotoFalso(cuadruplos *listaCuadruplos, nodo *operand
 			printf("Error en la creacion del cuadruplo\n");
 			exit(1);
 	} else {
+		//Tuvo exito la creacion del cuadruplo
+		*contadorIndice = *contadorIndice+1;
+
+		//Regresamos la lista
+		return listaCuadruplos;	
+	}
+}
+
+/*
+Funcion encargada de generar el cuadruplo de ENDPROC y aumentar en 1 el contador de indices
+*/
+cuadruplos* generarCuadruploEra(cuadruplos *listaCuadruplos, char *nombre, int *contadorIndice){
+	//Variables auxiliares Apuntadores
+	cuadruplos *accederCuadruplo;
+
+	//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
+	listaCuadruplos = generaCuadruplo(listaCuadruplos, NULL, NULL, OP_ERA, NULL, *contadorIndice);
+
+	//Checamos si no hubo algun error en la generacion de los cuadruplos
+	if (listaCuadruplos == NULL) {
+			//Si hubo un error desplegarlo por pantalla
+			printf("Error en la creacion del cuadruplo\n");
+			exit(1);
+	} else {
+		//Buscamos el cuadruplo que acabamos de crear
+		HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
+
+		//Rellenamos los datos del Goto para que apunte de nuevo a la evaluacion
+		if(accederCuadruplo != NULL){
+			sprintf(accederCuadruplo->operando1->nombre, "%s", nombre);
+			printf("%s\n", nombre);
+		} else {
+			printf("Error en el acceso al cuadruplo\n");
+			exit(1);
+		}
+
+		//Tuvo exito la creacion del cuadruplo
+		*contadorIndice = *contadorIndice+1;
+
+		//Regresamos la lista
+		return listaCuadruplos;	
+	}
+}
+
+/*
+Funcion encargada de generar el cuadruplo de ENDPROC y aumentar en 1 el contador de indices
+*/
+cuadruplos* generarCuadruploEndProc(cuadruplos *listaCuadruplos, int *contadorIndice){
+	//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
+	listaCuadruplos = generaCuadruplo(listaCuadruplos, NULL, NULL, OP_ENDPROC, NULL, *contadorIndice);
+
+	//Checamos si no hubo algun error en la generacion de los cuadruplos
+	if (listaCuadruplos == NULL) {
+			//Si hubo un error desplegarlo por pantalla
+			printf("Error en la creacion del cuadruplo\n");
+			exit(1);
+	} else {
+		//Tuvo exito la creacion del cuadruplo
+		*contadorIndice = *contadorIndice+1;
+
+		//Regresamos la lista
+		return listaCuadruplos;	
+	}
+}
+
+/*
+Funcion encargada de generar el cuadruplo de ENDPROC y aumentar en 1 el contador de indices
+*/
+cuadruplos* generarCuadruploParam(cuadruplos *listaCuadruplos, int *cantidadParametros, pila *operandos, int *contadorIndice){
+	//Variables auxiliares Apuntadores
+	nodo *operando;
+	nodoOperando *debug;
+	cuadruplos *accederCuadruplo;
+
+	//Sacamos el operando de la pila
+	operando = pop(operandos);
+	debug = ((nodoOperando*)operando->dato);
+
+
+	printf("%i\n",debug->temp);
+	printf("%i\n",debug->tipo);
+	printf("%s\n",debug->nombre);
+	printf("%i\n",debug->direccion);
+
+	//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
+	listaCuadruplos = generaCuadruplo(listaCuadruplos, operando, NULL, OP_PARAM, NULL, *contadorIndice);
+
+	//Checamos si no hubo algun error en la generacion de los cuadruplos
+	if (listaCuadruplos == NULL) {
+			//Si hubo un error desplegarlo por pantalla
+			printf("Error en la creacion del cuadruplo\n");
+			exit(1);
+	} else {
+		//Buscamos el cuadruplo que acabamos de crear
+		HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
+
+		//Rellenamos los datos del Goto para que apunte de nuevo a la evaluacion
+		if(accederCuadruplo != NULL){
+			accederCuadruplo->resultado->direccion = *(int*)(cantidadParametros);
+			sprintf(accederCuadruplo->resultado->nombre, "param%d", *(int*)(cantidadParametros));
+		} else {
+			printf("Error en el acceso al cuadruplo\n");
+			exit(1);
+		}	
+		
+		//Tuvo exito la creacion del cuadruplo
+		*contadorIndice = *contadorIndice+1;
+
+		//Regresamos la lista
+		return listaCuadruplos;	
+	}
+}
+
+/*
+Funcion encargada de generar el cuadruplo de ENDPROC y aumentar en 1 el contador de indices
+*/
+cuadruplos* generarCuadruploGosub(cuadruplos *listaCuadruplos, int direccionFuncion, int *contadorIndice){
+	//Variables auxiliares Apuntadores
+	cuadruplos *accederCuadruplo;
+
+	//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
+	listaCuadruplos = generaCuadruplo(listaCuadruplos, NULL, NULL, OP_GOSUB, NULL, *contadorIndice);
+
+	//Checamos si no hubo algun error en la generacion de los cuadruplos
+	if (listaCuadruplos == NULL) {
+			//Si hubo un error desplegarlo por pantalla
+			printf("Error en la creacion del cuadruplo\n");
+			exit(1);
+	} else {
+		//Buscamos el cuadruplo que acabamos de crear
+		HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
+
+		//Rellenamos los datos del Goto para que apunte de nuevo a la evaluacion
+		if(accederCuadruplo != NULL){
+			accederCuadruplo->operando1->direccion =  direccionFuncion;
+			sprintf(accederCuadruplo->operando1->nombre, "%d", direccionFuncion);
+		} else {
+			printf("Error en el acceso al cuadruplo\n");
+			exit(1);
+		}	
+		
 		//Tuvo exito la creacion del cuadruplo
 		*contadorIndice = *contadorIndice+1;
 
