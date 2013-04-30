@@ -50,9 +50,10 @@ int seccFuncionesImplementacion = 0;
 int direccionVariable;
 char nombreObjeto[25];
 char nombreVariable[25];
+char nombreObjetoActual[25];
 unsigned short tipoVariable;
 char nombreProcedimiento[25];
-char nombreFuncionActual[25];
+char nombreProcedimientoActual[25];
 int direccionVariableConstante;
 
 //Pilas operaciones
@@ -359,25 +360,38 @@ void asignarMemoriaVariableConstante(int tipoConstate){
 	}
 }
 
-void calcularMemoriaVirtual(){
-	//Memoria Temporal
+void calcularMemoriaTemporal(){
 	memoriaEnteroTemp = baseMemoriaTemp + (cantidadVariablesTemp * 0);
 	memoriaDecimalTemp = baseMemoriaTemp + (cantidadVariablesTemp * 1);
 	memoriaTextoTemp = baseMemoriaTemp + (cantidadVariablesTemp * 2);
 	memoriaBooleanoTemp = baseMemoriaTemp + (cantidadVariablesTemp * 3);
+}
 
-	//Memoria Local
+void calcularMemoriaLocal(){
 	memoriaEnteroLocal = baseMemoriaLocal + (cantidadVariablesLocal * 0);
 	memoriaDecimalLocal = baseMemoriaLocal + (cantidadVariablesLocal * 1);
 	memoriaTextoLocal =	baseMemoriaLocal + (cantidadVariablesLocal * 2);
 	memoriaBooleanoLocal = baseMemoriaLocal + (cantidadVariablesLocal * 3);
 
-	//Memoria Global
+}
+
+void calcularMemoriaGlobal(){
 	memoriaEnteroGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 0);
 	memoriaDecimalGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 1);
 	memoriaTextoGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 2);
 	memoriaBooleanoGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 3);
+}
 
+void calcularMemoriaVirtual(){
+	//Memoria Temporal
+	calcularMemoriaTemporal();
+	
+	//Memoria Local
+	calcularMemoriaLocal();
+
+	//Memoria Global
+	calcularMemoriaGlobal();
+	
 	//Memoria Constante
 	memoriaEnteroConstante = baseMemoriaConstante + (cantidadVariablesConstante * 0);
 	memoriaDecimalConstante = baseMemoriaConstante + (cantidadVariablesConstante * 1);
@@ -482,6 +496,8 @@ int main()
 	yyparse();
 	imprimirObjetos(objetos);
 	imprimeCuadruplos(listaCuadruplos, 0);
+	printf("\n");
+	imprimeCuadruplos(listaCuadruplos, 2);
 	return 0;
 }
 
@@ -572,7 +588,8 @@ programa:
 	{
 		//Accion numero 2
 		//Agregar main a tabla de objetos, siempre habra que haber un main	
-		objetos = agregarObjeto(objetos, ":main:");
+		strncpy(nombreObjetoActual, ":main:", tamanioIdentificadores);
+		objetos = agregarObjeto(objetos, nombreObjetoActual);
 
 		//Prendemos la bandera de MAIN
 		seccMain = 1;
@@ -586,15 +603,14 @@ programa:
 		rellenarGoto();
 
 		//LLenamos los datos a la tabla correspondiente
-		strncpy(nombreProcedimiento, "ejecutarProgama", tamanioIdentificadores);
-		strncpy(nombreFuncionActual, "ejecutarProgama", tamanioIdentificadores);
-		objetos = agregarFuncion(objetos, ":main:" ,nombreProcedimiento);
+		strncpy(nombreProcedimientoActual, "ejecutarProgama", tamanioIdentificadores);
+		objetos = agregarFuncion(objetos, nombreObjetoActual , nombreProcedimientoActual);
 
 	} 
 	ALLAVE variables_locales bloque CLLAVE
 	{	
 		//Desplegar mensaje de terminacion de compilacion
-		printf("programa correctamente escrito\n");
+		printf("Programa Compilado\n\n");
 	}
 	;
 
@@ -617,34 +633,18 @@ bloque_variables:
 bloque_variables_rep:
 	/* empty */
 	| declara_variables 
-	{	
-		//Verificamos en que parte estamos
-		if(seccMain == 1){
-			//Estamos en el main
-			//Checar la bandera de variables
-			if(seccVariablesGlobales == 1){
-				//Agregar a tabla de variables globales					
-				objetos = agregarVariablesGlobales(objetos, ":main:" , nombreVariable, tipoVariable, direccionVariable);
-				tipoVariable = -1;
+	{
+		//Checar la bandera de variables
+		if(seccVariablesGlobales == 1){
+			//Agregar a tabla de variables globales					
+			objetos = agregarVariablesGlobales(objetos, nombreObjetoActual, nombreVariable, tipoVariable, direccionVariable);
+			tipoVariable = -1;
 
-			} else if(seccVariablesLocales == 1){	
-				//Agregar a tabla de variables locales de la funcion
-				objetos = agregarVariablesLocales(objetos, ":main:", nombreProcedimiento, nombreVariable, tipoVariable, direccionVariable);
-				tipoVariable = -1;
-			}
-		} else if (seccObjeto == 1){
-			//Estamos en un objeto
-			if(seccVariablesGlobales == 1){
-				//Agregar a tabla de variables globales					
-				objetos = agregarVariablesGlobales(objetos, nombreObjeto, nombreVariable, tipoVariable, direccionVariable);
-				tipoVariable = -1;
-
-			} else if(seccVariablesLocales == 1){	
-				//Agregar a tabla de variables locales de la funcion
-				objetos = agregarVariablesLocales(objetos, nombreObjeto, nombreProcedimiento, nombreVariable, tipoVariable, direccionVariable);
-				tipoVariable = -1;
-			}
-		}								
+		} else if(seccVariablesLocales == 1){	
+			//Agregar a tabla de variables locales de la funcion
+			objetos = agregarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual, nombreVariable, tipoVariable, direccionVariable);
+			tipoVariable = -1;
+		}
 	} 
 	bloque_variables_rep
 	;
@@ -796,7 +796,6 @@ op_booleanos:
 exp:
 	termino
 	{
-
 		generarSumaResta();	
 	} 
 	exp_suma_resta
@@ -917,59 +916,49 @@ identificadorOLlamadaAFuncion:
 	{	
 		//Verificamos que sea solo una variable y no un identificador
 		if (esFuncion == 0) {
-			if(seccMain == 1){
-			//Estamos en MAIN y la unica forma de hacer estatutos es dentro de funciones
-			//Obtenemos los valores de las variables si no existen exit
-			//variable = buscarVariablesLocales(objetos, ":main:", nombreProcedimiento,  nombreVariable);
-				printf("%s\n",nombreProcedimiento );
-				printf("%s\n",nombreVariable );
-				variable = buscarVariablesLocales(objetos, ":main:", nombreFuncionActual,  nombreVariable);
+	
+			//Obtenemos los valores de las variables
+			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
 
 			//La variable no se encontro
-				if (variable == NULL) {
+			if (variable == NULL) {
 				//Si esta variable entonces la tomamos si no es asi marcaremos un error
-					variable = buscarVariablesGlobales(objetos, ":main:", nombreVariable);
-				}
+				variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreVariable);
+			}
 
 			//crearemos un nodoOperando para agregarlo a la pila
-				pushPilaOperandos(variable);
-
-			} else if (seccObjeto == 1) {
-			//Estamos en la funcion de un objeto
-			//Pendiente
-			}	
+			pushPilaOperandos(variable);
 		}
+
+		//Volvemos a inicializar
+		esFuncion = 0;
 	}
 	;
 
 opcionalFuncion:
 	/*Empty*/
 	| llama_funcion_opcional APARENTESIS 
-	{
-		//Si no esta en formato de objeto->funcion el primer identificador es de la funcion
-		if (esObjeto == 0) {
-			strncpy(nombreProcedimiento, nombreVariable, tamanioIdentificadores);
-		}
-
+	{	
+		//Inicializacion de los datos
 		esFuncion = 1;
 		cantidadParametros = 0;
 
-		//Se debe verificar que exista
-		//Determianos en que parte estamos
-		if(seccMain == 1){
-			//Estamos en MAIN	
-			funcion = buscarFuncion(objetos, ":main:", nombreProcedimiento);
-
-			//Verificamos que exista, si no marcamos un error
-			if (funcion == NULL){
-				printf("Error no existe la funcion %s \n", nombreProcedimiento);
-				exit(1);
-			}			
-
-		} else if (seccObjeto == 1) {
-			//Estams en objeto
-
+		//Si no esta en formato de objeto->funcion el primer identificador es de la funcion
+		if (esObjeto == 0) {
+			strncpy(nombreProcedimiento, nombreVariable, tamanioIdentificadores);
+			//Se debe verificar que exista (Se busca en el objeto actual)
+			funcion = buscarFuncion(objetos, nombreObjetoActual, nombreProcedimiento);
+		} else {
+			//**** Esta funcion debe ser especial porque debera buscar las capacidadesde dependiendo de qcomo se asicio
+			//Se debe verificar con el nombre del objeto que se puso ()
+			funcion = buscarFuncion(objetos, nombreObjeto, nombreProcedimiento);	
 		}
+
+		//Verificamos que exista, si no marcamos un error
+		if (funcion == NULL){
+			printf("Error no existe la funcion %s \n", nombreProcedimiento);
+			exit(1);
+		}			
 
 		//Creacion del ERA
 		generarEra();
@@ -996,29 +985,26 @@ opcionalFuncion:
 opcionalFuncion2:
 	llama_funcion_opcional APARENTESIS 
 	{
-		//Si no esta en formato de objeto->funcion el primer identificador es de la funcion
-		if (esObjeto == 0) {
-			strncpy(nombreProcedimiento, nombreVariable, tamanioIdentificadores);
-		}
+		//Inicializacion de los datos
 		esFuncion = 1;
 		cantidadParametros = 0;
 
-		//Se debe verificar que exista
-		//Determianos en que parte estamos
-		if(seccMain == 1){
-			//Estamos en MAIN	
-			funcion = buscarFuncion(objetos, ":main:", nombreProcedimiento);
-
-			//Verificamos que exista, si no marcamos un error
-			if (funcion == NULL){
-				printf("Error no existe la funcion %s \n", nombreProcedimiento);
-				exit(1);
-			}			
-
-		} else if (seccObjeto == 1) {
-			//Estams en objeto
-
+		//Si no esta en formato de objeto->funcion el primer identificador es de la funcion
+		if (esObjeto == 0) {
+			strncpy(nombreProcedimiento, nombreVariable, tamanioIdentificadores);
+			//Se debe verificar que exista (Se busca en el objeto actual)
+			funcion = buscarFuncion(objetos, nombreObjetoActual, nombreProcedimiento);
+		} else {
+			//**** Esta funcion debe ser especial porque debera buscar las capacidadesde dependiendo de qcomo se asicio
+			//Se debe verificar con el nombre del objeto que se puso ()
+			funcion = buscarFuncion(objetos, nombreObjeto, nombreProcedimiento);	
 		}
+
+		//Verificamos que exista, si no marcamos un error
+		if (funcion == NULL){
+			printf("Error no existe la funcion %s \n", nombreProcedimiento);
+			exit(1);
+		}			
 
 		//Creacion del ERA
 		generarEra();
@@ -1044,24 +1030,23 @@ opcionalFuncion2:
 parametros_funcion:
 	/*Empty*/
 	| serexpresion 
-	{
-		printf("entre en parametros\n");
+	{	
+		//aumentamos en 1 la cantidad de parametros al entrar
 		cantidadParametros++;
 
-		//Determianos en que parte estamos
-		if(seccMain == 1){
-			//Se saca el valor de la pila de Operandos
-			nodoAuxiliar = pop(operandos);
-
-			//Verificamos que el tipo del parametro sea el mismo 
-			checarParametro(objetos, ":main:", nombreProcedimiento, cantidadParametros,((nodoOperando*)(nodoAuxiliar->dato))->tipo);
-			
-			push(operandos, ((nodoOperando*)(nodoAuxiliar->dato)));
-
-		} else if (seccObjeto == 1) {
-			//Estams en objeto
-
+		//Tenemos que buscar en el objeto actual si no esta en modo de objeto->funcion();
+		if (esObjeto == 0) {
+			//Realizamos las busquedas en el objetoActual
+			strncpy(nombreObjeto, nombreObjetoActual, tamanioIdentificadores);
 		}
+
+		//Se saca el valor de la pila de Operandos
+		nodoAuxiliar = pop(operandos);
+
+		//Verificamos que el tipo del parametro sea el mismo 
+		checarParametro(objetos, nombreObjeto, nombreProcedimiento, cantidadParametros, ((nodoOperando*)(nodoAuxiliar->dato))->tipo);
+			
+		push(operandos, ((nodoOperando*)(nodoAuxiliar->dato)));
 
 		//Generacion de los parametros
 		generarParam();
@@ -1116,31 +1101,24 @@ declara_funciones_rep:
 declaracion_prototipos:
 	permiso IDENTIFICADOR 
 	{
-		//Checamos en que parte estamos
-		if(seccMain == 1){
-			//Estamos en MAIN
-			strncpy(nombreProcedimiento, $2, tamanioIdentificadores);
-			objetos = agregarFuncion(objetos, ":main:" ,nombreProcedimiento);
-		} else if (seccObjeto == 1) {
-			//Estams en objeto
+		//Especificamos que estamos metiendo variables en la seccion de Locales
+		seccVariablesLocales = 1;
 
-		}
+		//Cargamos los datos en la tablas especiales
+		strncpy(nombreProcedimientoActual, $2, tamanioIdentificadores);
+		objetos = agregarFuncion(objetos, nombreObjetoActual, nombreProcedimientoActual);
 	}
 	APARENTESIS parametros CPARENTESIS REGRESA declaracion_prototipos_regresa PUNTOYCOMA
 	{
 		//Agregar a la tabla de procedimientos el tipo de permiso que este tendra
 		//Checamos en que parte estamos
-		if(seccMain == 1){
-			//Estamos en MAIN	
-			funcion = buscarFuncion(objetos, ":main:", nombreProcedimiento);
+		funcion = buscarFuncion(objetos, nombreObjetoActual, nombreProcedimientoActual);
 
-			//Asignarle a la funcion actual el tipo de dato que regresara en este caso nada
-			funcion->permiso = permisoFuncion;
+		//Asignarle a la funcion actual el tipo de dato que regresara en este caso nada
+		funcion->permiso = permisoFuncion;
 
-		} else if (seccObjeto == 1) {
-			//Estams en objeto
-
-		}
+		//Salimos de la seccion de variables locales
+		seccVariablesLocales = 0;
 	}
 	;
 
@@ -1148,32 +1126,18 @@ declaracion_prototipos_regresa:
 	tipo
 	{
 		//Checamos en que parte estamos
-		if(seccMain == 1){
-			//Estamos en MAIN	
-			funcion = buscarFuncion(objetos, ":main:", nombreProcedimiento);
+		funcion = buscarFuncion(objetos, nombreObjetoActual, nombreProcedimientoActual);
 
-			//Asignarle a la funcion actual el tipo de dato que regresara
-			funcion->regresa = tipoVariable;
-
-		} else if (seccObjeto == 1) {
-			//Estams en objeto
-
-		}
+		//Asignarle a la funcion actual el tipo de dato que regresara
+		funcion->regresa = tipoVariable;
 	}
 	| NADA
 	{
 		//Checamos en que parte estamos
-		if(seccMain == 1){
-			//Estamos en MAIN	
-			funcion = buscarFuncion(objetos, ":main:", nombreProcedimiento);
+		funcion = buscarFuncion(objetos, nombreObjetoActual, nombreProcedimientoActual);
 
-			//Asignarle a la funcion actual el tipo de dato que regresara en este caso nada
-			funcion->regresa = -1;
-
-		} else if (seccObjeto == 1) {
-			//Estams en objeto
-
-		}
+		//Asignarle a la funcion actual el tipo de dato que regresara
+		funcion->regresa = -1;	
 	}
 	;
 
@@ -1215,35 +1179,31 @@ parametros_rep:
 			//Obtenemos la memoria a usar
 			asignarMemoriaVariable();
 
+			printf("direccion Variable %i \n", direccionVariable);
+
 			//Agregar la variable a la tabla de parametros
-			objetos = agregarParametros(objetos, ":main:", nombreProcedimiento, tipoVariable, cantidadParametros);
+			objetos = agregarParametros(objetos, nombreObjetoActual, nombreProcedimientoActual, tipoVariable, cantidadParametros);
 
 			//Agregar el parametro a la tabla de variables locales de la funcion
-			objetos = agregarVariablesLocales(objetos, ":main:", nombreProcedimiento, nombreVariable, tipoVariable, direccionVariable);	
+			objetos = agregarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual, nombreVariable, tipoVariable, direccionVariable);	
 		}
 		
 		//Seccion Implementacion
 		if (seccFuncionesImplementacion == 1) {
 			
 			//Chequeo semantico de la cantidad de parametros y su tipo de dato
-			if(seccMain == 1){
-				//Checamos que la variable exista en el scope
-				variable = buscarVariablesLocales(objetos, ":main:", nombreProcedimiento,  nombreVariable);
+			//Checamos que la variable exista en el scope
+			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
 
-				//La variable no se encontro
-				if (variable == NULL) {
-					//Si esta variable entonces la tomamos si no es asi marcaremos un error
-					variable = buscarVariablesGlobales(objetos, ":main:", nombreVariable);
-				}
-
-				//Verificamos que los tipos de datos sean los mismo
-				checarParametro(objetos, ":main:", nombreProcedimiento, cantidadParametros, tipoVariable);
-
-			} else if (seccObjeto == 1) {
-				//Estamos en la funcion de un objeto
-				//Pendiente
+			//La variable no se encontro
+			if (variable == NULL) {
+				//Si esta variable entonces la tomamos si no es asi marcaremos un error
+				variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreVariable);
 			}
-			
+
+			//Verificamos que los tipos de datos sean los mismo
+			checarParametro(objetos, nombreObjetoActual, nombreProcedimientoActual, cantidadParametros, tipoVariable);
+
 		}
 	} 
 	parametros_rep1
@@ -1309,23 +1269,16 @@ funciones:
 	IDENTIFICADOR 
 	{
 		//Actualizar el temporal con el nombre de la funcion
-		strncpy(nombreProcedimiento, $1, tamanioIdentificadores);
+		strncpy(nombreProcedimientoActual, $1, tamanioIdentificadores);
 	} 
 	APARENTESIS parametros CPARENTESIS ALLAVE variables_locales
 	{
-		//Agregar a la tabla de procedimientos el inicio del cuadruplo de la funcion
-		//Checamos en que parte estamos
-		if(seccMain == 1){
-			//Estamos en MAIN	
-			funcion = buscarFuncion(objetos, ":main:", nombreProcedimiento);
+		//Agregar a la tabla de procedimientos el inicio del cuadruplo de la funcion		
+		funcion = buscarFuncion(objetos, nombreObjetoActual, nombreProcedimientoActual);
 
-			//Asignarle a la funcion actual el tipo de dato que regresara en este caso nada
-			funcion->direccionCuadruplo = contadorIndice;
+		//Asignarle a la funcion actual el tipo de dato que regresara en este caso nada
+		funcion->direccionCuadruplo = contadorIndice;
 
-		} else if (seccObjeto == 1) {
-			//Estams en objeto
-
-		}
 	} bloque CLLAVE
 	{
 		generarEndProc();
@@ -1380,9 +1333,7 @@ llama_funcion_opcional:
 	/*Empty*/
 	| FLECHA IDENTIFICADOR
 	{
-		printf("ERROR\n");
-		//El primer identificador sera el objeto a tratar de encontrar
-		strncpy(nombreProcedimiento, nombreVariable, tamanioIdentificadores);
+		strncpy(nombreObjeto, nombreVariable, tamanioIdentificadores);
 		strncpy(nombreProcedimiento, $2, tamanioIdentificadores);
 		esObjeto = 1;
 	}
@@ -1394,27 +1345,19 @@ asignacion1:
 	{	
 		//Verificamos que sea solo una variable y no un identificador
 		if (esFuncion == 0) {
-			if(seccMain == 1){
-			//Estamos en MAIN y la unica forma de hacer estatutos es dentro de funciones
 			//Obtenemos los valores de las variables si no existen exit
-			//variable = buscarVariablesLocales(objetos, ":main:", nombreProcedimiento,  nombreVariable);
-				variable = buscarVariablesLocales(objetos, ":main:", nombreProcedimiento,  nombreVariable);
+			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
 
 			//La variable no se encontro
-				if (variable == NULL) {
+			if (variable == NULL) {
 				//Si esta variable entonces la tomamos si no es asi marcaremos un error
-					variable = buscarVariablesGlobales(objetos, ":main:", nombreVariable);
-				}
+				variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreVariable);
+			}
 
 			//crearemos un nodoOperando para agregarlo a la pila
-				pushPilaOperandos(variable);
-
-			} else if (seccObjeto == 1) {
-			//Estamos en la funcion de un objeto
-			//Pendiente
-			}	
+			pushPilaOperandos(variable);
 		}
-	
+
 		pushPilaOperadores(OP_ASIGNACION);
 	} 
 	asignacion2
@@ -1444,29 +1387,21 @@ lectura:
 		//Obtenemos el nombre de la variable que desamos usar
 		strncpy(nombreVariable, $4, tamanioIdentificadores);
 
-		if(seccMain == 1){
-			//Estamos en MAIN y la unica forma de hacer estatutos es dentro de funciones
-			//Obtenemos los valores de las variables si no existen exit
-			//variable = buscarVariablesLocales(objetos, ":main:", nombreProcedimiento,  nombreVariable);
-			variable = buscarVariablesLocales(objetos, ":main:", nombreProcedimiento,  nombreVariable);
+		//Obtenemos los valores de las variables si no existen exit
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
 			
-			//La variable no se encontro
-			if (variable == NULL) {
-				//Si esta variable entonces la tomamos si no es asi marcaremos un error
-				variable = buscarVariablesGlobales(objetos, ":main:", nombreVariable);
-			}
-
-			//crearemos un nodoOperando para agregarlo a la pila
-			pushPilaOperandos(variable);
-
-		} else if (seccObjeto == 1) {
-			//Estamos en la funcion de un objeto
-			//Pendiente
+		//La variable no se encontro
+		if (variable == NULL) {
+			//Si esta variable entonces la tomamos si no es asi marcaremos un error
+			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreVariable);
 		}
+
+		//crearemos un nodoOperando para agregarlo a la pila
+		pushPilaOperandos(variable);
+
 	}
 	CPARENTESIS
 	{
-
 		generarLectura();
 	}
 	;
@@ -1495,27 +1430,19 @@ escritura_valores:
 	{
 		//Obtenemos el nombre de la variable que desamos usar
 		strncpy(nombreVariable, $1, tamanioIdentificadores);
-
-
-		if(seccMain == 1){
-			//Estamos en MAIN y la unica forma de hacer estatutos es dentro de funciones
-			//Obtenemos los valores de las variables si no existen exit
-			//variable = buscarVariablesLocales(objetos, ":main:", nombreProcedimiento,  nombreVariable);
-			variable = buscarVariablesLocales(objetos, ":main:", nombreProcedimiento,  nombreVariable);
+		
+		//Obtenemos los valores de las variables si no existen exit
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
 			
-			//La variable no se encontro
-			if (variable == NULL) {
-				//Si esta variable entonces la tomamos si no es asi marcaremos un error
-				variable = buscarVariablesGlobales(objetos, ":main:", nombreVariable);
-			}
+		//La variable no se encontro
+		if (variable == NULL) {
+			//Si esta variable entonces la tomamos si no es asi marcaremos un error
+			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreVariable);
+		}
 
-			//crearemos un nodoOperando para agregarlo a la pila
-			pushPilaOperandos(variable);
+		//crearemos un nodoOperando para agregarlo a la pila
+		pushPilaOperandos(variable);
 
-		} else if (seccObjeto == 1) {
-			//Estamos en la funcion de un objeto
-			//Pendiente
-		}	
 	} escritura_valores1
 	;
 
@@ -1588,12 +1515,10 @@ regresa:
 condicional:
 	SI APARENTESIS serexpresion CPARENTESIS 
 	{
-
 	 	generarAccion1If();
 	}
 	ALLAVE bloque CLLAVE condicional_if
 	{
-
 		generarAccion3If();
 	}
 	;

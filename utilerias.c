@@ -328,28 +328,28 @@ void inicializarAvail(pila *availEntero, pila *availDecimal, pila *availTexto, p
 		datoEntero = (nodoOperando*)malloc(sizeof(nodoOperando));
 		datoEntero->temp = 1;
 		datoEntero->tipo = 0;
-		sprintf(datoEntero->nombre, "tempInt_%d", *memoriaEnteroTemp - repeticion);
+		sprintf(datoEntero->nombre, "tempInt_%d", *memoriaEnteroTemp + repeticion);
 		datoEntero->direccion = *memoriaEnteroTemp + repeticion;
 
 		//Creacion de los nodos Decimal
 		datoDecimal = (nodoOperando*)malloc(sizeof(nodoOperando));
 		datoDecimal->temp = 1;
 		datoDecimal->tipo = 1;
-		sprintf(datoDecimal->nombre, "tempDec_%d", *memoriaDecimalTemp - repeticion);
+		sprintf(datoDecimal->nombre, "tempDec_%d", *memoriaDecimalTemp + repeticion);
 		datoDecimal->direccion = *memoriaDecimalTemp + repeticion;
 
 		//Creacion de los nodos Texto
 		datoTexto = (nodoOperando*)malloc(sizeof(nodoOperando));
 		datoTexto->temp = 1;
 		datoTexto->tipo = 2;
-		sprintf(datoTexto->nombre, "tempText_%d", *memoriaTextoTemp - repeticion);
+		sprintf(datoTexto->nombre, "tempText_%d", *memoriaTextoTemp + repeticion);
 		datoTexto->direccion = *memoriaTextoTemp + repeticion;
 
 		//Creacion de los nodos Booleano
 		datoBooleano = (nodoOperando*)malloc(sizeof(nodoOperando));
 		datoBooleano->temp = 1;
 		datoBooleano->tipo = 3;
-		sprintf(datoBooleano->nombre, "tempBool_%d", *memoriaBooleanoTemp - repeticion);
+		sprintf(datoBooleano->nombre, "tempBool_%d", *memoriaBooleanoTemp + repeticion);
 		datoBooleano->direccion = *memoriaBooleanoTemp + repeticion;
 
 		//Metemos en las pilas

@@ -4,6 +4,7 @@ Variables_Globales []
 
 Declara_Funciones [
 	publica prueba (dato1:entero) regresa nada;
+	privada funciona (dato2:decimal) regresa nada;
 ]
 
 Implementa_Funciones [
@@ -13,6 +14,19 @@ Implementa_Funciones [
 		]
 
 		C = 1 + 2;
+	}
+	
+	funciona (dato2:decimal){
+		Variables_Locales [
+			entero A;
+			entero B;
+			entero C;
+	]
+		A = 2;
+		C = 3;
+		B = 5;
+		A = A * B - C;
+		prueba(A);
 	}
 ]
 
