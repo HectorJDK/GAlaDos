@@ -122,9 +122,9 @@ ejecutarPrograma {
 		//matrizEntera seis [2][2];		
 	]
 	uno =  6 / 2;
-	mientras(uno<2.0){		
+	mientras(uno<8.0){		
 		despliega("valor de uno");		
-		uno = 5.0;
+		uno = uno + 1.0;
 	}	
 	despliega("fin");
 }

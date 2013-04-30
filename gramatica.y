@@ -979,7 +979,7 @@ parametros_rep:
 	DOSPUNTOS tipo 
 	{		
 		//Agregar el parametro a la tabla de variables locales de la funcion	
-		objetos = agregarVariablesLocales(objetos, ":main:", nombreProcedimiento, nombreVariable, tipoVariable,1);
+		objetos = agregarVariablesLocales(objetos, ":main:", nombreProcedimiento, nombreVariable, tipoVariable, $2);
 	} 
 	parametros_rep1
 	;

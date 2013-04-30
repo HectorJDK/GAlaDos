@@ -32,6 +32,8 @@ public class maquinaVirtual {
 	    String[] cuadruploLinea;						//String auxiliar para separacion de elementos del cuadruplo
 	    int operacion, tipo, indice;					//Auxiliares para el manejo de ejecucion de los cuadruplos	    
 		xmlParser datos;	
+		Stack<Integer> pilaEjecucion;
+		Stack<HashMap<Integer, registro>> pilaBase;		
 	    try {
 			
 			//Inicializacion de variables y estructuras
@@ -40,7 +42,7 @@ public class maquinaVirtual {
 			indice = 0;
 			finEjecucion = false; 				        
 			line = br.readLine();			
-	        
+	        pilaEjecucion = new Stack<Integer>();
 	        //Crear arraylist de objetos cuadruplos
 	        cuadruplos = new ArrayList<cuadruplos>();
 	       
@@ -590,14 +592,14 @@ public class maquinaVirtual {
 					} else if(tipoOperando1 == 1){
 						if(tipoOperando2 == 0){
 							//Decimal != Entero
-							if(operando1D < operando2E){
+							if(operando1D != operando2E){
 								registro.setValorBooleano(true);
 							} else {								
 								registro.setValorBooleano(false);
 							}
 						} else {
 							//Decimal != Decimal
-							if(operando1D < operando2D){
+							if(operando1D != operando2D){
 								registro.setValorBooleano(true);
 							} else {
 								registro.setValorBooleano(false);
@@ -781,6 +783,7 @@ public class maquinaVirtual {
     				//finEjecucion = true;					
 					break;
 				case 16:
+					//GOTOFALSO
 					if(!bloque.get(direccionOperando1).getValorBooleano()){						
 						indice = cuadruplo.getResultado();
 					} else {
@@ -836,17 +839,40 @@ public class maquinaVirtual {
 																		
 					indice++;
     				cuadruplo = cuadruplos.get(indice);
-    				
+    				funcion funcion = new funcion(3,2);
+    				funcion.setNombre("funcion1");
+    				datos.cargarDatosFuncion( registro, ":main:", funcion);
+    				System.out.println("func"+funcion.getPermiso());
     				//finEjecucion = true;					
 					break;
 				case 19:	
-				
+					//GOTO
 					indice = cuadruplo.getResultado();
 									
 					cuadruplo = cuadruplos.get(indice);
 					//finEjecucion = true;
 					break;
-				
+				case 20:
+					//ERA
+					//llamar a funcion en xmlParser y obtener tamaño de la funcion
+					//crear el objeto funcion 
+					
+					//Guardar el bloque de memoria
+				case 21: 
+					//PARAM
+					//asignar cada parametro con su valor a la estructura de la funcion
+					
+					//Meter direccion de retorno en la pila de ejecucion
+					//pilaEjecucion.push(123);
+				case 22:
+					//GOSUB
+					//Meter el objeto funcion en la pila
+					
+				case 23:
+					//RET
+					//Sacar la direccion de ejecucion
+					//pilaEjecucion.pop();
+					//Reestablecer el bloque de memoria
     			}    		     			    		
     	}
 	        
