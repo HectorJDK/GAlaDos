@@ -3,14 +3,14 @@ Declara_Objetos []
 Variables_Globales [] 
 
 Declara_Funciones [
-	publica prueba (dato1:entero) regresa nada;
+	publica prueba (dato1:decimal) regresa nada;
 	privada funciona (dato2:decimal) regresa nada;
 ]
 
 Implementa_Funciones [
-	prueba (dato1:entero){
+	prueba (dato1:decimal){
 		Variables_Locales [
-			entero C;
+			decimal C;
 		]
 
 		C = 1 + 2;
@@ -18,7 +18,7 @@ Implementa_Funciones [
 	
 	funciona (dato2:decimal){
 		Variables_Locales [
-			entero A;
+			decimal A;
 			entero B;
 			entero C;
 	]
@@ -32,7 +32,7 @@ Implementa_Funciones [
 
 ejecutarPrograma {
 	Variables_Locales [
-		entero A;
+		decimal A;
 	]
 	
 	A = 1 + 2;

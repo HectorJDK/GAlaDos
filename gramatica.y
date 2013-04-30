@@ -1101,6 +1101,9 @@ declara_funciones_rep:
 declaracion_prototipos:
 	permiso IDENTIFICADOR 
 	{
+		//Reseteo de las variables
+		calcularMemoriaLocal();
+
 		//Especificamos que estamos metiendo variables en la seccion de Locales
 		seccVariablesLocales = 1;
 
@@ -1179,8 +1182,6 @@ parametros_rep:
 			//Obtenemos la memoria a usar
 			asignarMemoriaVariable();
 
-			printf("direccion Variable %i \n", direccionVariable);
-
 			//Agregar la variable a la tabla de parametros
 			objetos = agregarParametros(objetos, nombreObjetoActual, nombreProcedimientoActual, tipoVariable, cantidadParametros);
 
@@ -1191,6 +1192,9 @@ parametros_rep:
 		//Seccion Implementacion
 		if (seccFuncionesImplementacion == 1) {
 			
+			//Temporalmente estamos en la seccion de locales
+			seccVariablesLocales = 1;
+
 			//Chequeo semantico de la cantidad de parametros y su tipo de dato
 			//Checamos que la variable exista en el scope
 			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
@@ -1204,6 +1208,11 @@ parametros_rep:
 			//Verificamos que los tipos de datos sean los mismo
 			checarParametro(objetos, nombreObjetoActual, nombreProcedimientoActual, cantidadParametros, tipoVariable);
 
+			//Recoremos las variables que ya tenemos definidas para aumentar su contador
+			asignarMemoriaVariable();
+
+			//Salimos de la seccion de locales
+			seccVariablesLocales = 0;
 		}
 	} 
 	parametros_rep1
@@ -1271,7 +1280,12 @@ funciones:
 		//Actualizar el temporal con el nombre de la funcion
 		strncpy(nombreProcedimientoActual, $1, tamanioIdentificadores);
 	} 
-	APARENTESIS parametros CPARENTESIS ALLAVE variables_locales
+	APARENTESIS 
+	{
+		//Entramos a una nueva funcion se debe borrar los datos temporales
+		calcularMemoriaLocal();
+	}
+	parametros CPARENTESIS ALLAVE variables_locales
 	{
 		//Agregar a la tabla de procedimientos el inicio del cuadruplo de la funcion		
 		funcion = buscarFuncion(objetos, nombreObjetoActual, nombreProcedimientoActual);
