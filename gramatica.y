@@ -36,7 +36,6 @@ int esObjeto = 0;
 
 //Globales de control para validacion de parametros
 nodo *nodoAuxiliar;
-nodoOperando *reinsertarOperando;
 
 //Varialbes para el manejo de las secciones
 int seccMain = 0;
@@ -456,6 +455,33 @@ void inicializarCompilador(){
 	inicializarSemantica(cuboSemantico);
 }
 
+inicializarTemporales(){
+	//liberacion de espacio en memoria
+	free(availEntero);
+	free(availDecimal);
+	free(availTexto);
+	free(availBoolean);
+
+	//Creacion de las pilas de Avail en Memoria
+	availEntero = malloc(sizeof(pila));
+	availEntero->tamanio = 0;
+	availEntero->primero = NULL;
+
+	availDecimal = malloc(sizeof(pila));
+	availDecimal->tamanio = 0;
+	availDecimal->primero = NULL;
+
+	availTexto = malloc(sizeof(pila));
+	availTexto->tamanio = 0;
+	availTexto->primero = NULL;
+
+	availBoolean = malloc(sizeof(pila));
+	availBoolean->tamanio = 0;
+	availBoolean->primero = NULL;
+
+	inicializarAvail(availEntero, availDecimal, availTexto, availBoolean, &memoriaEnteroTemp, &memoriaDecimalTemp, &memoriaTextoTemp, &memoriaBooleanoTemp);
+}
+
 void pushPilaOperandos(directorio *variable){
 	//Creamos la nueva variable para agregar a la pila de variables
 	operando = (nodoOperando*)malloc(sizeof(nodoOperando));
@@ -606,6 +632,12 @@ programa:
 		strncpy(nombreProcedimientoActual, "ejecutarProgama", tamanioIdentificadores);
 		objetos = agregarFuncion(objetos, nombreObjetoActual , nombreProcedimientoActual);
 
+		//Entramos a una nueva funcion se debe inicializar los locaes
+		calcularMemoriaLocal();
+
+		//Entramos a una nueva seccion debemos inicializar los temporales
+		inicializarTemporales();
+		
 	} 
 	ALLAVE variables_locales bloque CLLAVE
 	{	
@@ -1282,8 +1314,13 @@ funciones:
 	} 
 	APARENTESIS 
 	{
-		//Entramos a una nueva funcion se debe borrar los datos temporales
+		printf("entre a borrar\n");
+
+		//Entramos a una nueva funcion se debe inicializar los locaes
 		calcularMemoriaLocal();
+
+		//Entramos a una nueva seccion debemos inicializar los temporales
+		inicializarTemporales();
 	}
 	parametros CPARENTESIS ALLAVE variables_locales
 	{
