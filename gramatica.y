@@ -237,6 +237,20 @@ void generarFinPrograma(){
 	listaCuadruplos = generarCuadruploEndProgram(listaCuadruplos, &contadorIndice);
 }
 
+//Esta funcion probablemente se deba cambiar
+void generarTemporalFuncion(){
+	//Acedemos el dato de retorno basados en la forma de objeto->funcion()
+	variable = buscarVariablesRetorno(objetos, nombreObjeto, nombreProcedimiento);
+
+	//Verificamos que la funcion sea adecuada para una expresion
+	if (variable->tipo != -1) {
+		//Generamos el cuadruplo de la variable
+		listaCuadruplos = generarCuadruploTemporalFuncion(listaCuadruplos, operandos, variable->tipo, variable->direccion, variable->nombre , availEntero, availDecimal, availTexto, availBoolean, &contadorIndice);
+	} else {
+		printf("Error en funcion %s: No se puede usar en una expresion ya que no regresa ningun tipo de dato\n", nombreProcedimiento);
+		exit(1);
+	}
+}
 //----------------------------------------Funciones de Control--------------------------------------------------
 
 void asignarMemoriaVariable(){
@@ -1051,6 +1065,9 @@ opcionalFuncion:
 
 		//Generar el Gosub
 		generarGosub();
+
+		//Aqui se debe generar el temporal y se mete en la pila
+		generarTemporalFuncion();
 	}
 	;
 

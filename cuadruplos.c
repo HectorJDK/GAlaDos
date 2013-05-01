@@ -1030,6 +1030,72 @@ cuadruplos* generarCuadruploReturn(cuadruplos *listaCuadruplos, pila *operandos,
 }
 
 /*
+Funcion encargada de generar el cuadruplo temporal para las llamadas a funciones en expresiones y aumentar en 1 el contador de indices
+*/
+cuadruplos* generarCuadruploTemporalFuncion(cuadruplos *listaCuadruplos, pila *operandos, int tipo, long direccion, char *nombre, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean, int *contadorIndice){
+	//Apuntadores para el manejo del avail
+	nodo *resultadoAvail;
+	cuadruplos *accederCuadruplo;
+
+	//Instruccion para obtener el Temporal Adecuado	
+	switch(tipo){
+		case 0:
+			resultadoAvail = pop(availEntero);
+			break;
+
+		case 1:
+			resultadoAvail = pop(availDecimal);
+			break;
+
+		case 2:
+			resultadoAvail = pop(availTexto);
+			break;
+
+		case 3:
+			resultadoAvail = pop(availBoolean);
+			break;
+	}
+
+	//Checamos si hay avail disponible para la variable, si no hay error en memoria
+	if (resultadoAvail == NULL) {
+		printf("Error no hay memoria disponible\n");
+		exit(1);
+	}
+
+	//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
+	listaCuadruplos = generaCuadruplo(listaCuadruplos, NULL, NULL, OP_ASIGNACION, resultadoAvail, *contadorIndice);
+
+	//Checamos si no hubo algun error en la generacion de los cuadruplos
+	if (listaCuadruplos == NULL) {
+			//Si hubo un error desplegarlo por pantalla
+			printf("Error en la creacion del cuadruplo\n");
+			exit(1);
+	} else {
+		//Buscamos el cuadruplo que acabamos de crear
+		HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
+
+		//Rellenamos los datos del Goto para que apunte de nuevo a la evaluacion
+		if(accederCuadruplo != NULL){
+			accederCuadruplo->operando1->tipo =  tipo;
+			accederCuadruplo->operando1->direccion =  direccion;
+			strcpy(accederCuadruplo->operando1->nombre, nombre);
+		} else {
+			printf("Error en el acceso al cuadruplo\n");
+			exit(1);
+		}	
+		
+		//Tuvo exito la creacion del cuadruplo
+		*contadorIndice = *contadorIndice+1;
+
+		//Metemos en la pila de operandos el temporal recien creado que sera usado para la expresion
+		push(operandos, ((nodoOperando*)(resultadoAvail->dato)));
+
+		//Regresamos la lista
+		return listaCuadruplos;	
+	}
+}
+
+/*
 Funcion encargada de generar el cuadruplo de ENDPROC y aumentar en 1 el contador de indices
 */
 cuadruplos* generarCuadruploEndProgram(cuadruplos *listaCuadruplos, int *contadorIndice){
