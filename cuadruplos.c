@@ -1120,8 +1120,11 @@ void generarObj(cuadruplos *listaCuadruplos) {
 
 		for(temporal = listaCuadruplos; temporal != NULL; temporal=(cuadruplos*)(temporal->hh.next)) {
 			char operacion[10];					
-			
-			fprintf(fp,  "%i, %i, %i, %i\n", temporal->operador, temporal->operando1->direccion, temporal->operando2->direccion, temporal->resultado->direccion);
-			
+			if(temporal->operador == 21){
+				fprintf(fp,  "%i, %s, %i, %i\n", temporal->operador, temporal->operando1->nombre, temporal->operando2->direccion, temporal->resultado->direccion);							
+			} else {
+				fprintf(fp,  "%i, %i, %i, %i\n", temporal->operador, temporal->operando1->direccion, temporal->operando2->direccion, temporal->resultado->direccion);			
+			}
 		}
-	}
+	
+}
