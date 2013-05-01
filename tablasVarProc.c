@@ -472,6 +472,7 @@ void generarDatos(directorioObjetos *objetos, directorio *constantes ) {
 	directorioProcedimientos *s;
 	directorio *p;
 	directorio *c;
+	directorioParametros *dp;
 	
 	//Crear el archivo y guardarlo en carpeta raiz
 	FILE *fp;
@@ -494,6 +495,16 @@ void generarDatos(directorioObjetos *objetos, directorio *constantes ) {
 							fprintf(fp,  "</variableGlobal>\n");
 				}
 				fprintf(fp,  "</variablesGlobales>\n");
+				//Imprimir retornos (main)
+				fprintf(fp,  "<variablesRetornos>\n");
+				for(p=o->variablesRetorno; p!= NULL; p=(struct directorio*)(p->hh.next)) {						
+							fprintf(fp,  "<variableRetorno>\n");
+							fprintf(fp,  "<direccion>%lu</direccion>\n", p->direccion);
+							fprintf(fp,  "<nombre>%s</nombre>\n", p->nombre);
+							fprintf(fp,  "<tipo>%i</tipo>\n", p->tipo);
+							fprintf(fp,  "</variableRetorno>\n");
+				}
+				fprintf(fp,  "</variablesRetornos>\n");
 
 				//Imprimir procedimientos del objeto y sus tablas de variables
 				fprintf(fp,  "<procedimientos>\n");
@@ -502,7 +513,14 @@ void generarDatos(directorioObjetos *objetos, directorio *constantes ) {
 							fprintf(fp,  "<regresa>%i</regresa>\n", s->regresa);
 							fprintf(fp,  "<permiso>%i</permiso>\n", s->permiso);
 							fprintf(fp,  "<direccionCuadruplo>%i</direccionCuadruplo>\n", s->direccionCuadruplo);
-							
+						fprintf(fp,  "<parametros>\n");
+						for(dp=s->parametros; dp!= NULL; dp=(struct directorioParametros*)(dp->hh.next)) {
+							fprintf(fp,  "<parametro>\n");
+							fprintf(fp,  "<numeroParametro>%i</numeroParametro>\n", dp->numeroParametro);							
+							fprintf(fp,  "<tipo>%i</tipo>\n", dp->tipo);
+							fprintf(fp,  "</parametro>\n");
+						}
+						fprintf(fp,  "</parametros>\n");	
 						fprintf(fp,  "<variablesLocales>\n");
 						for(p=s->variablesLocales; p!= NULL; p=(struct directorio*)(p->hh.next)) {
 							fprintf(fp,  "<variableLocal>\n");
