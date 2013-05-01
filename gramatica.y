@@ -520,10 +520,12 @@ int main()
 {
 
 	yyparse();
+	generarObj(listaCuadruplos);
 	imprimirObjetos(objetos);
+	//imprimeCuadruplos(listaCuadruplos, 0);
+	//printf("\n");	
 	imprimeCuadruplos(listaCuadruplos, 0);
-	printf("\n");
-	imprimeCuadruplos(listaCuadruplos, 2);
+	generarDatos(objetos, constantes);
 	return 0;
 }
 
