@@ -224,6 +224,65 @@ directorio* buscarVariablesGlobales(directorioObjetos *objetos, char *objeto, ch
 }
 
 /*
+* Funcion para agregar las variables globales (retorno) al directorio de objetos.
+*/
+directorioObjetos* agregarVariablesRetorno(directorioObjetos *objetos, char *objeto, char *nombre, int tipo, unsigned long direccion) {
+		//Variables auxiliares
+		directorioObjetos *existe;
+		directorio *temp;
+
+		//Buscar el objeto en el directorio
+		HASH_FIND_STR(objetos, objeto, existe); 
+		if (existe) {
+				//Checar si la variable ya existe
+				HASH_FIND_STR(existe->variablesRetorno, nombre, temp);
+				if (temp==NULL) {
+						//Agregar la nueva variable al directorio
+						temp = (directorio*)malloc(sizeof(directorio));
+						strcpy(temp->nombre, nombre);
+						temp->tipo = tipo;
+						temp->direccion = direccion;
+						HASH_ADD_STR(existe->variablesRetorno, nombre, temp);  
+						return objetos;   
+				} else {
+						printf("Error Variable %s ya esta delcarada \n", nombre);
+						exit(1);
+				}
+		} else {
+				printf("Error Clase %s no se encuentra declarada \n", objeto);
+				exit(1);
+		}
+}
+
+/*
+* Funcion para buscar en la tabla de retorno globales de funcion, solo regresa el directorio de la variable para ser usada
+*/
+directorio* buscarVariablesRetorno(directorioObjetos *objetos, char *objeto, char *nombre) {
+		
+		//Variables auxiliares
+		directorioObjetos *existe;
+		directorio *temp;
+
+		//Buscar el objeto en el directorio
+		HASH_FIND_STR(objetos, objeto, existe); 
+		if (existe) {
+				//Checar si la variable ya existe
+				HASH_FIND_STR(existe->variablesRetorno, nombre, temp);
+				//Si ya existe manejar el error y terminar compilacion
+				if (temp == NULL) {
+					printf("Error Variable %s no esta delcarada \n", nombre);
+					exit(1);
+				} else {
+					//Si la variable existe regresar el directorio de la variable
+					return temp;
+				}
+		} else {
+			printf("Error Clase %s no se encuentra declarada \n", objeto);
+			exit(1);
+		}
+}
+
+/*
 * Funcion para agregar las funciones al directorio de objetos.
 */
 directorioObjetos* agregarFuncion(directorioObjetos *objetos, char *objeto, char *nombre) {

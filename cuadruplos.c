@@ -970,6 +970,58 @@ cuadruplos* generarCuadruploGosub(cuadruplos *listaCuadruplos, int direccionFunc
 }
 
 /*
+Funcion encargada de generar el cuadruplo de ENDPROC y aumentar en 1 el contador de indices
+*/
+cuadruplos* generarCuadruploReturn(cuadruplos *listaCuadruplos, pila *operandos, int tipo, long direccion, char *nombre, int *contadorIndice){
+	//Variables auxiliares Apuntadores
+	cuadruplos *accederCuadruplo;
+
+	//Variables auxiliares Apuntadores
+	nodo *operando;
+	int operandoInt;
+
+	//Sacamos el operando de la expresion de operandos
+	operando = pop(operandos);	
+	operandoInt = ((nodoOperando*)(operando->dato))->tipo;;
+
+	//Checamos que se pueda hacer la asignacion
+	//Esto quiere decir que el valor que regresemos sea igual al que definimos
+	if (operandoInt == tipo){
+		//Generamos el cuadruplo de asignacion por el momento solo con el dato del operando que usaremos
+		listaCuadruplos = generaCuadruplo(listaCuadruplos, operando, NULL, OP_ASIGNACION, NULL, *contadorIndice);
+
+		//Checamos si no hubo algun error en la generacion de los cuadruplos
+		if (listaCuadruplos == NULL) {
+			//Si hubo un error desplegarlo por pantalla
+			printf("Error en la creacion del cuadruplo\n");
+			exit(1);
+		} else {
+			//Buscamos el cuadruplo que acabamos de crear para darle los valores correspondientes
+			HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
+
+			//Rellenamos los datos del Goto para que apunte de nuevo a la evaluacion
+			if(accederCuadruplo != NULL){
+				accederCuadruplo->resultado->tipo = tipo;
+				accederCuadruplo->resultado->direccion =  direccion;
+				strcpy(accederCuadruplo->resultado->nombre, nombre);
+			} else {
+				printf("Error en el acceso al cuadruplo\n");
+				exit(1);
+			}	
+
+			//Tuvo exito la creacion del cuadruplo
+			*contadorIndice = *contadorIndice+1;
+
+			//Regresamos la lista
+			return listaCuadruplos;	
+		}
+	} else {
+		printf("Error en el retorno, no es posible regresar una variable tipo %i, cuando se definio una %i \n", operandoInt, tipo);
+		exit(1);
+	}
+}
+
+/*
 Funcion encargada de seleccionar que funcion se debera usar para generar cuadruplos secuenciales
 Util para control y para no confundir que parametros se deben usar
 */

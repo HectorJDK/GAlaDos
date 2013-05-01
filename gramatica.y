@@ -35,15 +35,11 @@ int esFuncion = 0;
 int esObjeto = 0;
 
 //Globales de control para validacion de parametros
-nodo *nodoAuxiliar;
-
-//Varialbes para el manejo de las secciones
-int seccMain = 0;
-int seccObjeto = 0;
 int seccVariablesLocales = 0;
 int seccVariablesGlobales = 0;
 int seccFuncionesDeclaracion = 0;
 int seccFuncionesImplementacion = 0;
+int regresoNecesario = 0;
 
 //Variables para la creacion de variables en la tabla
 int direccionVariable;
@@ -54,6 +50,7 @@ unsigned short tipoVariable;
 char nombreProcedimiento[25];
 char nombreProcedimientoActual[25];
 int direccionVariableConstante;
+nodo *nodoAuxiliar;
 
 //Pilas operaciones
 pila *operandos;
@@ -129,6 +126,10 @@ int memoriaDecimalGlobal;
 int memoriaTextoGlobal;
 int memoriaBooleanoGlobal;
 //****************************
+
+//Variables de Retorno de las funciones
+//De las 0 a la 999
+int memoriaVariablesRetorno;
 
 //cuboSemantico
 static int cuboSemantico[4][4][14];
@@ -216,6 +217,21 @@ void generarGosub(){
 
 void generarEra(){
 	listaCuadruplos = generarCuadruploEra(listaCuadruplos, nombreProcedimiento, &contadorIndice);
+}
+
+void generarReturn(){
+	//Buscamos el dato de la variable de retorno de la funcion
+	variable = buscarVariablesRetorno(objetos, nombreObjetoActual, nombreProcedimientoActual);
+
+	//Verificamos que la funcion pueda regresar alguna dato de funcion
+	if (variable->tipo != -1) {
+		//Generamos el return del cuadruplo aqui se checara si es posible realizarlo o no
+		listaCuadruplos = generarCuadruploReturn(listaCuadruplos, operandos, variable->tipo, variable->direccion, variable->nombre ,&contadorIndice);	
+	} else {
+		printf("Error en funcion %s: No se puede regresar un dato cuando se especifica como nada\n", nombreProcedimientoActual);
+		exit(1);
+	}
+	
 }
 
 //----------------------------------------Funciones de Control--------------------------------------------------
@@ -359,6 +375,16 @@ void asignarMemoriaVariableConstante(int tipoConstate){
 	}
 }
 
+void asignarMemoriaVariableRetorno(){
+	if (memoriaVariablesRetorno < 1000) {
+		direccionVariable = memoriaVariablesRetorno;
+		memoriaVariablesRetorno++;
+	} else{
+		printf("Error: memoria insuficiente de tipo retorno\n");
+		exit(1);
+	}	
+}
+
 void calcularMemoriaTemporal(){
 	memoriaEnteroTemp = baseMemoriaTemp + (cantidadVariablesTemp * 0);
 	memoriaDecimalTemp = baseMemoriaTemp + (cantidadVariablesTemp * 1);
@@ -381,6 +407,10 @@ void calcularMemoriaGlobal(){
 	memoriaBooleanoGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 3);
 }
 
+void calcularMemoriaRetorno(){
+	memoriaVariablesRetorno = 0;
+}
+
 void calcularMemoriaVirtual(){
 	//Memoria Temporal
 	calcularMemoriaTemporal();
@@ -390,6 +420,9 @@ void calcularMemoriaVirtual(){
 
 	//Memoria Global
 	calcularMemoriaGlobal();
+
+	//Memoria de variables de retorno
+	calcularMemoriaRetorno();
 	
 	//Memoria Constante
 	memoriaEnteroConstante = baseMemoriaConstante + (cantidadVariablesConstante * 0);
@@ -612,16 +645,16 @@ programa:
 	}
 	declara_objetos 
 	{
-		//Accion numero 2
-		//Agregar main a tabla de objetos, siempre habra que haber un main	
-		strncpy(nombreObjetoActual, ":main:", tamanioIdentificadores);
+		//Reiniciar el calculo de las memoria global
+		calcularMemoriaGlobal();
+
+		//Reiniciar el calculo de las memoria de retorno
+		calcularMemoriaRetorno();
+
+		//Agregar main a tabla de objetos, siempre habra que haber un main
+		strncpy(nombreObjetoActual, "main", tamanioIdentificadores);
 		objetos = agregarObjeto(objetos, nombreObjetoActual);
-
-		//Prendemos la bandera de MAIN
-		seccMain = 1;
-
-		//Apagamos la bandera de Objeto
-		seccObjeto = 0;
+		
 	}
 		variables_globales declara_funciones implementa_funciones EJECUTARPROGRAMA
 	{
@@ -1154,6 +1187,12 @@ declaracion_prototipos:
 
 		//Salimos de la seccion de variables locales
 		seccVariablesLocales = 0;
+
+		//Calculamos la direccion de la variable de retorno a usar
+		asignarMemoriaVariableRetorno();
+
+		//Agregamos la variable de retorno al directorio de datos
+		objetos = agregarVariablesRetorno(objetos, nombreObjetoActual, nombreProcedimientoActual, funcion->regresa, direccionVariable);
 	}
 	;
 
@@ -1309,13 +1348,14 @@ implementa_funciones_rep:
 funciones:
 	IDENTIFICADOR 
 	{
+		//Inicializamos la bandera de necesidad Retorno
+		regresoNecesario = 0;
+
 		//Actualizar el temporal con el nombre de la funcion
 		strncpy(nombreProcedimientoActual, $1, tamanioIdentificadores);
 	} 
 	APARENTESIS 
 	{
-		printf("entre a borrar\n");
-
 		//Entramos a una nueva funcion se debe inicializar los locaes
 		calcularMemoriaLocal();
 
@@ -1330,8 +1370,22 @@ funciones:
 		//Asignarle a la funcion actual el tipo de dato que regresara en este caso nada
 		funcion->direccionCuadruplo = contadorIndice;
 
+		variable = buscarVariablesRetorno(objetos, nombreObjetoActual, nombreProcedimientoActual);
+
+		if (variable->tipo == -1) {
+			regresoNecesario = 0;
+		} else {
+			regresoNecesario = 1;
+		}
+
 	} bloque CLLAVE
 	{
+		if (regresoNecesario == 1) {
+			printf("Error en funcion %s: Se espera regresar un valor\n", nombreProcedimientoActual);
+			exit(1);
+		}
+		
+		//Generamos el fin del bloque
 		generarEndProc();
 	}
 	;
@@ -1559,7 +1613,23 @@ escritura_concatena:
 
 
 regresa:
-	REGRESA serexpresion
+	REGRESA
+	{
+		//Metemos el operador en la pila de operadores
+		pushPilaOperadores(OP_RETURN);
+	} serexpresion
+	{	
+		//Desactivamos el regreso necesario porque almenos se especifico una vez un return
+		if (regresoNecesario == 1) {
+			regresoNecesario = 0;
+		}
+
+		//Generamos el "return" que en reailidad sera una asignacion del resultado a su variable global
+		generarReturn();
+
+		//Generamos 
+		generarEndProc();
+	}
 	;
 
 
