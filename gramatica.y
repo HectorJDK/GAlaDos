@@ -30,6 +30,7 @@ int totalTempBooleano = 0;
 //Globales miscelaneas de Control
 int tamanioIdentificadores = 25;
 int cantidadParametros = 0;
+int cantidadParametrosFuncion = 0;
 int permisoFuncion = 0;
 int esFuncion = 0;
 int esObjeto = 0;
@@ -574,7 +575,7 @@ int main()
 	imprimirObjetos(objetos);
 	//imprimeCuadruplos(listaCuadruplos, 0);
 	//printf("\n");	
-	imprimeCuadruplos(listaCuadruplos, 0);
+	//imprimeCuadruplos(listaCuadruplos, 0);
 	generarDatos(objetos, constantes);
 	return 0;
 }
@@ -1200,24 +1201,35 @@ declaracion_prototipos:
 		//Cargamos los datos en la tablas especiales
 		strncpy(nombreProcedimientoActual, $2, tamanioIdentificadores);
 		objetos = agregarFuncion(objetos, nombreObjetoActual, nombreProcedimientoActual);
+
+		//Inicializacion de la cantidad de parametros
+		cantidadParametros = 0;
 	}
 	APARENTESIS parametros CPARENTESIS REGRESA declaracion_prototipos_regresa PUNTOYCOMA
 	{
-		//Agregar a la tabla de procedimientos el tipo de permiso que este tendra
-		//Checamos en que parte estamos
+		//Encontramos la funcion que ya estaba definida
 		funcion = buscarFuncion(objetos, nombreObjetoActual, nombreProcedimientoActual);
 
-		//Asignarle a la funcion actual el tipo de dato que regresara en este caso nada
-		funcion->permiso = permisoFuncion;
+		//Checamos que el usuario haya puesto todos los parametros
+		cantidadParametrosFuncion = HASH_COUNT(funcion->parametros);
 
-		//Salimos de la seccion de variables locales
-		seccVariablesLocales = 0;
+		//Verificacion de la cantidad de parametros
+		if (cantidadParametros != cantidadParametrosFuncion) {
+			printf("Error en implementacion de funcion %s: No se definieron los %i que se esperaban\n", nombreProcedimientoActual, cantidadParametrosFuncion);
+			exit(1);
+		} else {
+			//Asignarle a la funcion actual el tipo de dato que regresara en este caso nada
+			funcion->permiso = permisoFuncion;
 
-		//Calculamos la direccion de la variable de retorno a usar
-		asignarMemoriaVariableRetorno();
+			//Salimos de la seccion de variables locales
+			seccVariablesLocales = 0;
 
-		//Agregamos la variable de retorno al directorio de datos
-		objetos = agregarVariablesRetorno(objetos, nombreObjetoActual, nombreProcedimientoActual, funcion->regresa, direccionVariable);
+			//Calculamos la direccion de la variable de retorno a usar
+			asignarMemoriaVariableRetorno();
+
+			//Agregamos la variable de retorno al directorio de datos
+			objetos = agregarVariablesRetorno(objetos, nombreObjetoActual, nombreProcedimientoActual, funcion->regresa, direccionVariable);
+		}
 	}
 	;
 
@@ -1254,9 +1266,6 @@ permiso:
 parametros:
 	/*Empty*/
 	| parametros_rep
-	{
-		cantidadParametros = 0;
-	}
 	;
 
 parametros_rep:
@@ -1364,10 +1373,7 @@ implementa_funciones:
 
 implementa_funciones_rep:
 	/*Empty*/
-	| funciones
-	{
-		cantidadParametros = 0;
-	} implementa_funciones_rep
+	| funciones implementa_funciones_rep
 	;
 
 funciones:
@@ -1386,21 +1392,33 @@ funciones:
 
 		//Entramos a una nueva seccion debemos inicializar los temporales
 		inicializarTemporales();
+
+		//Inicializamos la cantidad de parametros
+		cantidadParametros = 0;
 	}
 	parametros CPARENTESIS ALLAVE variables_locales
 	{
 		//Agregar a la tabla de procedimientos el inicio del cuadruplo de la funcion		
 		funcion = buscarFuncion(objetos, nombreObjetoActual, nombreProcedimientoActual);
 
-		//Asignarle a la funcion actual el tipo de dato que regresara en este caso nada
-		funcion->direccionCuadruplo = contadorIndice;
+		//Checamos que el usuario haya puesto todos los parametros
+		cantidadParametrosFuncion = HASH_COUNT(funcion->parametros);
 
-		variable = buscarVariablesRetorno(objetos, nombreObjetoActual, nombreProcedimientoActual);
-
-		if (variable->tipo == -1) {
-			regresoNecesario = 0;
+		//Verificacion de la cantidad de parametros
+		if (cantidadParametros != cantidadParametrosFuncion) {
+			printf("Error en implementacion de funcion %s: No se definieron los %i que se esperaban\n", nombreProcedimientoActual, cantidadParametrosFuncion);
+			exit(1);
 		} else {
-			regresoNecesario = 1;
+			//Asignarle a la funcion actual el tipo de dato que regresara en este caso nada
+			funcion->direccionCuadruplo = contadorIndice;
+
+			variable = buscarVariablesRetorno(objetos, nombreObjetoActual, nombreProcedimientoActual);
+
+			if (variable->tipo == -1) {
+				regresoNecesario = 0;
+			} else {
+				regresoNecesario = 1;
+			}
 		}
 
 	} bloque CLLAVE
