@@ -122,6 +122,10 @@ void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode) {
 				case 23:
 				strcpy(operacion, "GOSUB");
 				break;
+
+				case 25:
+				strcpy(operacion, "ENDPROGRAM");
+				break;
 			}
 			printf("Cuadruplo: %d | %s %s %s %s \n", temporal->indice, operacion, temporal->operando1->nombre, temporal->operando2->nombre, temporal->resultado->nombre);
 		}
@@ -245,6 +249,10 @@ void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode) {
 
 				case 23:
 				strcpy(operacion, "GOSUB");
+				break;
+
+				case 25:
+				strcpy(operacion, "ENDPROGRAM");
 				break;
 			}
 			
@@ -1018,6 +1026,24 @@ cuadruplos* generarCuadruploReturn(cuadruplos *listaCuadruplos, pila *operandos,
 	} else {
 		printf("Error en el retorno, no es posible regresar una variable tipo %i, cuando se definio una %i \n", operandoInt, tipo);
 		exit(1);
+	}
+}
+
+/*
+Funcion encargada de generar el cuadruplo de ENDPROC y aumentar en 1 el contador de indices
+*/
+cuadruplos* generarCuadruploEndProgram(cuadruplos *listaCuadruplos, int *contadorIndice){
+	//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
+	listaCuadruplos = generaCuadruplo(listaCuadruplos, NULL, NULL, OP_ENDPROGRAM, NULL, *contadorIndice);
+
+	//Checamos si no hubo algun error en la generacion de los cuadruplos
+	if (listaCuadruplos == NULL) {
+			//Si hubo un error desplegarlo por pantalla
+			printf("Error en la creacion del cuadruplo\n");
+			exit(1);
+	} else {
+		//Regresamos la lista
+		return listaCuadruplos;	
 	}
 }
 

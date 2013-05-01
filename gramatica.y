@@ -231,7 +231,10 @@ void generarReturn(){
 		printf("Error en funcion %s: No se puede regresar un dato cuando se especifica como nada\n", nombreProcedimientoActual);
 		exit(1);
 	}
-	
+}
+
+void generarFinPrograma(){
+	listaCuadruplos = generarCuadruploEndProgram(listaCuadruplos, &contadorIndice);
 }
 
 //----------------------------------------Funciones de Control--------------------------------------------------
@@ -676,6 +679,9 @@ programa:
 	} 
 	ALLAVE variables_locales bloque CLLAVE
 	{	
+		//Generar el cuadruplo de fin de programa
+		generarFinPrograma();
+
 		//Desplegar mensaje de terminacion de compilacion
 		printf("Programa Compilado\n\n");
 	}
@@ -1615,11 +1621,7 @@ escritura_concatena:
 
 
 regresa:
-	REGRESA
-	{
-		//Metemos el operador en la pila de operadores
-		pushPilaOperadores(OP_RETURN);
-	} serexpresion
+	REGRESA serexpresion
 	{	
 		//Desactivamos el regreso necesario porque almenos se especifico una vez un return
 		if (regresoNecesario == 1) {
