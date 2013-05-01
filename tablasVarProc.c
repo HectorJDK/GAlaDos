@@ -448,6 +448,12 @@ void imprimirObjetos(directorioObjetos *objetos) {
 						printf("Sus variables globales son \n");
 						printf("Nombre de la variable: %s , tipo: %i , direccion: %lu \n", p->nombre, p->tipo, p->direccion);
 				}
+
+				for(p=o->variablesRetorno; p!= NULL; p=(struct directorio*)(p->hh.next)) {
+						printf("Sus variables de funciones son \n");
+						printf("Nombre de la variable: %s , tipo: %i , direccion: %lu \n", p->nombre, p->tipo, p->direccion);
+				}
+
 				//Imprimir procedimientos del objeto y sus tablas de variables
 				printf("Sus procedimientos son: \n");
 				for(s=o->procedimientos; s!= NULL; s=(directorioProcedimientos*)(s->hh.next)) {

@@ -27,6 +27,7 @@
 #define OP_PARAM			22
 #define OP_GOSUB			23
 #define OP_RETURN			24
+#define OP_ENDPROGRAM		25
 
 #define OP_ERROR			-1
 
