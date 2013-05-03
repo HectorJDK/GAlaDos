@@ -575,7 +575,7 @@ int main()
 	imprimirObjetos(objetos);
 	//imprimeCuadruplos(listaCuadruplos, 0);
 	//printf("\n");	
-	//imprimeCuadruplos(listaCuadruplos, 0);
+	imprimeCuadruplos(listaCuadruplos, 0);
 	generarDatos(objetos, constantes);
 	return 0;
 }
@@ -1046,10 +1046,11 @@ opcionalFuncion:
 		if (funcion == NULL){
 			printf("Error no existe la funcion %s \n", nombreProcedimiento);
 			exit(1);
-		}			
+		}		
 
 		//Creacion del ERA
 		generarEra();
+		
 
 	} parametros_funcion CPARENTESIS
 	{
@@ -1069,6 +1070,10 @@ opcionalFuncion:
 
 		//Aqui se debe generar el temporal y se mete en la pila
 		generarTemporalFuncion();
+		
+	
+		
+
 	}
 	;
 
@@ -1120,7 +1125,7 @@ opcionalFuncion2:
 
 parametros_funcion:
 	/*Empty*/
-	| serexpresion 
+	| serexpresion2 
 	{	
 		//aumentamos en 1 la cantidad de parametros al entrar
 		cantidadParametros++;
@@ -1709,3 +1714,201 @@ ciclo:
 		generarAccion2Ciclo();
 	}
 	;
+
+
+/*-----------------------------------------------------------------------------------------------------------*/
+	serexpresion2: 
+	expresion2 expresion_and_or2
+	;
+
+	expresion_and_or2:
+	/*empty*/
+	| AMPERSAND 
+	{
+		//Creamos el nodo operandor que se le hara push en la pila operadores
+		pushPilaOperadores(OP_AND);
+	}
+	serexpresion2 
+	{	
+		//Generar cuadruplo logico
+		generarAndOr();
+	}
+	| BARRA 
+	{
+		pushPilaOperadores(OP_OR);
+	}
+	serexpresion2 
+	{
+		//Generar cuadruplo logico
+		generarAndOr();
+	}
+	;
+
+exp2:
+	termino2
+	{
+		generarSumaResta();	
+	} 
+	exp_suma_resta2
+	;
+
+expresion2:
+	exp2 expresion_condicional2
+	;
+
+	expresion_condicional2:
+	/*empty*/
+	| op_booleanos2 exp2
+	{
+		//Aqui va la generacion del cuadruplo de checar
+		generarRelacional();
+	}
+	;
+
+termino2:
+	factor2
+	{
+		generarMultiplicacionDivision();
+	} 
+	termino_multi_divide2
+	;
+
+	exp_suma_resta2:
+	/*Empty*/
+	| MAS 
+	{
+		pushPilaOperadores(OP_SUMA);
+	}
+	exp2
+	| MENOS 
+	{
+		pushPilaOperadores(OP_RESTA);
+	}
+	exp2
+	;
+
+op_booleanos2:
+	COMPARA 
+	{
+		pushPilaOperadores(OP_IGUAL);
+	}
+	| NEGACION 
+	{
+		pushPilaOperadores(OP_DIFERENTE);
+	}
+	| MAYORQUE 
+	{
+		pushPilaOperadores(OP_MAYORQUE);
+	}
+	| MENORQUE 
+	{
+		pushPilaOperadores(OP_MENORQUE);
+	}
+	| MAYORIGUAL 
+	{
+		pushPilaOperadores(OP_MAYORIGUAL);
+	}
+	| MENORIGUAL
+	{
+		pushPilaOperadores(OP_MENORIGUAL);
+	} 
+	;
+
+
+termino_multi_divide2:
+	/*Empty*/
+	| POR
+	{
+		pushPilaOperadores(OP_MULTIPLICACION);
+	} 
+	termino2 
+	| 
+	ENTRE
+	{
+		pushPilaOperadores(OP_DIVISION);
+	} 
+	termino2
+	;
+
+	factor2:
+	APARENTESIS
+	{
+		pushPilaOperadores(OP_APARENTESIS);
+	} 
+	serexpresion2 CPARENTESIS
+	{
+		//Encontramos el cirre del parentesis lo sacamos de la pila
+		pop(operadores);	
+	} 
+	| MAS factor_operando2 
+	| MENOS factor_operando2 
+	| factor_operando2
+	;
+
+	factor_operando2:
+	var_cte2 	
+	;
+
+var_cte2:
+	CTEENTERA
+	{
+		//Obtenemos el valor de la constante
+		strncpy(nombreVariable, $1, tamanioIdentificadores);
+		agregarTablaConstantes(nombreVariable, 0);
+
+		variable = buscarConstante(constantes, nombreVariable);
+
+		//crearemos un nodoOperando para agregarlo a la pila
+		pushPilaOperandos(variable);
+	} 
+
+	| CTEDECIMAL
+	{
+		//Obtenemos el valor de la constante
+		strncpy(nombreVariable, $1, tamanioIdentificadores);
+		agregarTablaConstantes(nombreVariable, 1);
+
+		variable = buscarConstante(constantes, nombreVariable);
+
+		//crearemos un nodoOperando para agregarlo a la pila
+		pushPilaOperandos(variable);
+	} 
+	| CTETEXTO
+	{
+		//Obtenemos el valor de la constante
+		strncpy(nombreVariable, $1, tamanioIdentificadores);
+		agregarTablaConstantes(nombreVariable, 2);
+		variable = buscarConstante(constantes, nombreVariable);
+
+		//crearemos un nodoOperando para agregarlo a la pila
+		pushPilaOperandos(variable);
+	} 
+	| CTEBOOLEANO
+	{
+		//Obtenemos el valor de la constante
+		strncpy(nombreVariable, $1, tamanioIdentificadores);
+		agregarTablaConstantes(nombreVariable, 3);
+
+		variable = buscarConstante(constantes, nombreVariable);
+
+		//crearemos un nodoOperando para agregarlo a la pila
+		pushPilaOperandos(variable);
+	} 
+	| IDENTIFICADOR
+	{
+		//Obtenemos el nombre de la variable que desamos usar
+		strncpy(nombreVariable, $1, tamanioIdentificadores);
+		//Obtenemos los valores de las variables
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+
+		//La variable no se encontro
+		if (variable == NULL) {
+			//Si esta variable entonces la tomamos si no es asi marcaremos un error
+			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreVariable);
+		}
+
+		//crearemos un nodoOperando para agregarlo a la pila
+		pushPilaOperandos(variable);
+	}	
+	;
+

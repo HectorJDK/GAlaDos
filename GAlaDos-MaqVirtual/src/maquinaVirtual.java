@@ -4,7 +4,7 @@
  * Programa que carga los cuadruplos y datos (tablas de objetos y constantes)
  * a estructuras especiales. 
  * Realiza el proceso de ejecucion mediante la simulacion de un bloque de 
- * memoria con registros (clase registro.java)
+ * memoria con registros.
  * 
  * @author Oziel Garza, Hector De la Garza
  */
@@ -14,17 +14,12 @@ import java.io.*;
 //Librerias para estructuras
 import java.util.*;
 
-
 public class maquinaVirtual {
 	
 	//Estructuras de memoria
 	static bloque constantes;							//Espacio de constantes
 	static objetos workspaceActual;						//El espacio de memoria actual
-	static funcion funcion;								//Funcion actual
-	
-	
-	
-
+	static funcion funcion;								//Funcion actual		
 	
 	public static void main(String [ ] args) throws IOException{
 		
@@ -35,7 +30,7 @@ public class maquinaVirtual {
 		ArrayList<cuadruplos> cuadruplos ;				//Crear la lista que contendra los cuadruplos						
 		ArrayList<objetos> workspaces;					//Espacios de ejecucion (objetos)		
 		xmlParser datos;								//Manejador del xml
-		bloque bloque;		
+		bloque bloque;									//Objeto auxiliar para el manejo de los bloques de datos
 		cuadruplos cuadruplo;					 		//Crear el objeto cuadruplo			
 		String[] cuadruploLinea;						//String auxiliar para separacion de elementos del cuadruplo
 		String line;									//String para leer la linea de archivo
@@ -44,20 +39,7 @@ public class maquinaVirtual {
 		int operacion;									//Auxiliares para el manejo de ejecucion de los cuadruplos	  
 		Stack<Integer> pilaEjecucion;					//Pila para transferir ejecucion a modulos
 		Stack<funcion> pilaFuncion;						//Pila para almacenar la base del modulo
-		funcion funcionNueva;							//Funcion temporal para llamada a modulos					
-		/*
-		HashMap<Integer, registro> bloque;				//Crear la estructura que contendrá el bloque de memoria con los registros				
-		HashMap<Integer, registro> bloqueRetornos;		//Crear la estructura que contendrá el bloque de memoria con los registros						
-		cuadruplos cuadruplo;					 		//Crear el objeto cuadruplo				
-	
-		
-	    String line;									//String para leer la linea de archivo
-	    String[] cuadruploLinea;						//String auxiliar para separacion de elementos del cuadruplo
-	    int operacion, tipo, indice;					//Auxiliares para el manejo de ejecucion de los cuadruplos	    
-		xmlParser datos;	
-		Stack<Integer> pilaEjecucion;
-		Stack<HashMap<Integer, registro>> pilaBase;
-		Stack<funcion> pilaFuncion;*/
+		funcion funcionNueva;							//Funcion temporal para llamada a modulos							
 		
 	    try {
 			
@@ -90,25 +72,7 @@ public class maquinaVirtual {
 	        finEjecucion = false; 	
 	        pilaEjecucion = new Stack<Integer>();
 	        pilaFuncion = new Stack<funcion>();
-	        funcionNueva = new funcion();
-	        
-	        /*
-			funcion funcion = new funcion(0,0);
-			indice = 0;
-						        
-			line = br.readLine();			
-	        pilaEjecucion = new Stack<Integer>();
-	        pilaBase = new Stack<HashMap<Integer, registro>>();
-	        pilaFuncion = new Stack<funcion>();
-	        //Crear arraylist de objetos cuadruplos
-	        cuadruplos = new ArrayList<cuadruplos>();
-	        
-	        boolean banderaFuncion = false;
-	       
-	        //Crear arrayList del bloque de memoria
-	        bloque = new HashMap<Integer,registro>();	  
-	        bloqueRetornos = new HashMap<Integer,registro>();	  
-	        */
+	        funcionNueva = new funcion();	        	       
 	      
 	        /**
 	         * Seccion para cargar los cuadruplos de archivo a la estructura arraylist
@@ -146,19 +110,18 @@ public class maquinaVirtual {
     		
 	       // Iniciar ejecucion    		
     		while(!finEjecucion){
-    			
-    			 			
-    			
+    			    			 			    			
     			//Obtener la operacion a ejecutar
     			operacion = cuadruplo.getOperacion(); 
     			
     			int direccionOperando1, direccionOperando2, direccionResultado,  tipoOperando1, tipoOperando2, tipoResultado;
-    			//Direcciones
+    			
+    			//Direcciones de operandos y resultado
     			direccionOperando1 = cuadruplo.getOperando1();
 				direccionOperando2 = cuadruplo.getOperando2();    			
 				direccionResultado= cuadruplo.getResultado();
     				
-				//Tipos
+				//Tipos de operandos y resultado
     			tipoOperando1 = obtenerTipo(direccionOperando1);
     			tipoOperando2 = obtenerTipo(direccionOperando2);
     			if(direccionResultado>=0 && direccionResultado<1000){ 
@@ -166,7 +129,8 @@ public class maquinaVirtual {
     			} else {
     				tipoResultado = obtenerTipo(direccionResultado);
     			}
-    		
+    			
+    			//Variables de operandos
     			int operando1E=0, operando2E=0;
     			double operando1D=0.0, operando2D=0.0;
     			String operando1T="", operando2T=""; 
@@ -218,7 +182,7 @@ public class maquinaVirtual {
     					direccionOperando1 = bloque.mapearDireccion(direccionOperando1);
 						switch(tipoOperando1){
 						case 0:						
-							operando1E =  funcion.getLocales().entero.get(direccionOperando1);    			
+							operando1E =  funcion.getLocales().entero.get(direccionOperando1); 							
 						break;
 						case 1:    		
 							operando1D =  funcion.getLocales().decimal.get(direccionOperando1);    
@@ -413,12 +377,13 @@ public class maquinaVirtual {
     			break;    				
     			//Resta
     			case (1): 
+    				
     				if(tipoOperando1 == 0){
     					if(tipoOperando2 == 0){
     						//Resta de dos enteros
     						if(tipoResultado==0){ 
     							//Asignarlo a un entero
-    	    					almacenaEntero(constantes, workspaceActual, funcion, bloque, direccionResultado, operando1E - operando2E);	    					     	    								
+    		    				almacenaEntero(constantes, workspaceActual, funcion, bloque, direccionResultado, operando1E - operando2E);	    					     	    								
     						} else {
     							//Asignarlo a un decimal
     							almacenaDecimal(constantes, workspaceActual, funcion, bloque, direccionResultado, operando1E - operando2E);	    					     	    								        						
@@ -1046,13 +1011,15 @@ public class maquinaVirtual {
 					break;
 				case 21:					
 					//ERA
+					
+					
 					//Obtener el nombre de la funcion
 					String nombreFuncion = cuadruplo.getOperando1S();
 
 					//Crear la nueva funcion
 					funcionNueva = new funcion();
 			        //Cargar su informacion
-			        funcionNueva = datos.cargarFunciones(workspaceActual, nombreFuncion, funcion);										
+			        funcionNueva = datos.cargarFunciones(workspaceActual, nombreFuncion, funcionNueva);										
     				
 					indice++;					
     				cuadruplo = cuadruplos.get(indice);    			
@@ -1063,11 +1030,13 @@ public class maquinaVirtual {
 					//Obtenemos la direccion del parametro y numero de parametro
 					int direccionParametro = cuadruplo.getOperando1();
 					int numeroParametro = cuadruplo.getResultado()-1;					
-					//Obtenemos el registro del parametro
+					//System.out.println("temp9000-"+obtieneEntero(constantes, workspaceActual, funcion, bloque, direccionParametro));
+					//Asignamos el parametro en la funcion nueva
 					switch(tipoOperando1){
 					case 0:
 						//Entero
 						funcionNueva.locales.ingresaElementoEntero(numeroParametro, obtieneEntero(constantes, workspaceActual, funcion, bloque, direccionParametro));
+						
 						break;
 					case 1:
 						//Decimal
@@ -1081,28 +1050,29 @@ public class maquinaVirtual {
 						//Booleano
 						funcionNueva.locales.ingresaElementoBooleano(numeroParametro, obtieneBooleano(constantes, workspaceActual, funcion, bloque, direccionParametro));
 						break;
-					}														
+					}
+					
 					indice++;
-    				cuadruplo = cuadruplos.get(indice);
-					//finEjecucion = true;
+    				cuadruplo = cuadruplos.get(indice);					
 					break;
 				case 23:
 					//GOSUB
     				//Meter la funcion actual a la pila
 					pilaFuncion.push(funcion);
+					
 					//Meter direccion de retorno en la pila de ejecucion
 					pilaEjecucion.push(indice);
+					
 					//Transferir el control de ejecucion a donde inicia el procedimiento
 					indice = cuadruplo.getOperando1();
+					
 					//Cargar la nueva estructura
 					funcion = funcionNueva;															
+					
 					cuadruplo = cuadruplos.get(indice);										
 					break;
-//				case 24:
-//					//RETURN
-//					
-//					break;
 				case 25:
+					//Fin de programa
 					finEjecucion = true;
 					break;
     			}
@@ -1112,20 +1082,47 @@ public class maquinaVirtual {
 	    }
 	}    			    		    
 	
+	/**
+	 * Funcion para obtener el tipo en base a la direccion de memoria virtual
+	 * 
+	 * @param direccion
+	 * @return 0-entero, 1-decimal, 2-texto, 3-booleano
+	 */
+	public static int obtenerTipo(int direccion) {
+
+		int baseMemoriaConstante = 13000;
+		int baseMemoriaTemp = 9000;
+		int baseMemoriaLocal = 5000;
+		int baseMemoriaGlobal = 1000;
+		int diferencia = 0;
+
+		if (direccion >= baseMemoriaConstante) {
+			diferencia = direccion - baseMemoriaConstante;
+		} else if (direccion < baseMemoriaConstante
+				&& direccion >= baseMemoriaTemp) {
+			diferencia = direccion - baseMemoriaTemp;
+		} else if (direccion < baseMemoriaTemp && direccion >= baseMemoriaLocal) {
+			diferencia = direccion - baseMemoriaLocal;
+		} else {
+			diferencia = direccion - baseMemoriaGlobal;
+		}
+		return diferencia / 1000;
+	}
 
 	/**
-	 * Funcion para obtener el tipo en base a la direccion de memoria 
+	 * Funcion para obtener el indice en base a la direccion de memoria 
 	 * virtual 
 	 * @param direccion
 	 * @return 0-entero, 1-decimal, 2-texto, 3-booleano 
 	 */
-	public static int obtenerTipo(int direccion){
+	public static int obtenerIndice(int direccion){
 		
 		int baseMemoriaConstante = 13000;
 		int baseMemoriaTemp = 9000;
 		int baseMemoriaLocal = 5000;
 		int baseMemoriaGlobal = 1000;
 		int diferencia=0;
+		int tipo = 0;
 		
 		if(direccion >= baseMemoriaConstante ){					
 			diferencia = direccion - baseMemoriaConstante;
@@ -1136,308 +1133,281 @@ public class maquinaVirtual {
 		} else {
 			diferencia = direccion - baseMemoriaGlobal;
 		}
-		return diferencia / 1000;						
+		tipo = diferencia / 1000;
+		return tipo;
 	}
-	
-/**
- * Funcion para obtener el indice en base a la direccion de memoria 
- * virtual 
- * @param direccion
- * @return 0-entero, 1-decimal, 2-texto, 3-booleano 
- */
-public static int obtenerIndice(int direccion){
-	
-	int baseMemoriaConstante = 13000;
-	int baseMemoriaTemp = 9000;
-	int baseMemoriaLocal = 5000;
-	int baseMemoriaGlobal = 1000;
-	int diferencia=0;
-	int tipo = 0;
-	
-	if(direccion >= baseMemoriaConstante ){					
-		diferencia = direccion - baseMemoriaConstante;
-	} else if(direccion < baseMemoriaConstante && direccion >= baseMemoriaTemp){
-		diferencia = direccion - baseMemoriaTemp;
-	} else if(direccion < baseMemoriaTemp && direccion >= baseMemoriaLocal){
-		diferencia = direccion - baseMemoriaLocal;
-	} else {
-		diferencia = direccion - baseMemoriaGlobal;
-	}
-	tipo = diferencia / 1000;
-	return tipo;
-}
-/**
- * Metodo para almacenar un registro entero en las estructuras de memoria
- * @param constantes
- * @param workspaceActual
- * @param funcion
- * @param bloque
- * @param direccionResultado
- * @param valor
- */
-public static void almacenaEntero(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado, int valor){
-//Agregar un registro nuevo  
-if(direccionResultado>=0 && direccionResultado<1000){ 
-	//Retornos  
-	workspaceActual.getRetornos().ingresaElementoEntero(direccionResultado, valor);    		    					  					    						
-}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
-//Espacio de globales    
-	bloque.inicializarBase(1000);
-	workspaceActual.getGlobales().ingresaElementoEntero(bloque.mapearDireccion(direccionResultado), valor);    		    					  					    						
-} else  if(direccionResultado>=5000 && direccionResultado<9000){      					    			
-//Espacio de locales 
-	bloque.inicializarBase(5000);
-	funcion.getLocales().ingresaElementoEntero(bloque.mapearDireccion(direccionResultado), valor);
-} else  if(direccionResultado>=9000 && direccionResultado<13000){      					    			
-//Espacio de temporales	
-	bloque.inicializarBase(9000);
-	funcion.getTemporales().ingresaElementoEntero(bloque.mapearDireccion(direccionResultado), valor); 
-} else  if(direccionResultado>=13000 && direccionResultado<17000){      					    			
-//Espacio de constantes		
-	bloque.inicializarBase(13000);
-	constantes.ingresaElementoEntero(bloque.mapearDireccion(direccionResultado), valor);  						
-}  
-}
-
-/**
- * Metodo para almacenar un registro decimal en las estructuras de memoria
- * @param constantes
- * @param workspaceActual
- * @param funcion
- * @param bloque
- * @param direccionResultado
- * @param valor
- */
-public static void almacenaDecimal(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado, double valor){
-//Agregar un registro nuevo  
-if(direccionResultado>=0 && direccionResultado<1000){ 
-	//Retornos  
-	workspaceActual.getRetornos().ingresaElementoDecimal(direccionResultado, valor);    		    					  					    						
-}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
-//Espacio de globales    
-	bloque.inicializarBase(1000);
-	workspaceActual.getGlobales().ingresaElementoDecimal(bloque.mapearDireccion(direccionResultado), valor);    		    					  					    						
-} else  if(direccionResultado>=5000 && direccionResultado<9000){      					    			
-//Espacio de locales 
-	bloque.inicializarBase(5000);
-	funcion.getLocales().ingresaElementoDecimal(bloque.mapearDireccion(direccionResultado), valor);
-} else  if(direccionResultado>=9000 && direccionResultado<13000){      					    			
-//Espacio de temporales	
-	bloque.inicializarBase(9000);
-	funcion.getTemporales().ingresaElementoDecimal(bloque.mapearDireccion(direccionResultado), valor); 
-} else  if(direccionResultado>=13000 && direccionResultado<17000){      					    			
-//Espacio de constantes		
-	bloque.inicializarBase(13000);
-	constantes.ingresaElementoDecimal(bloque.mapearDireccion(direccionResultado), valor);  						
-}  
-}
-
-/**
- * Metodo para almacenar un registro texto en las estructuras de memoria
- * @param constantes
- * @param workspaceActual
- * @param funcion
- * @param bloque
- * @param direccionResultado
- * @param valor
- */
-public static void almacenaTexto(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado, String valor){
-//Agregar un registro nuevo  
-if(direccionResultado>=0 && direccionResultado<1000){ 
-	//Retornos  
-	workspaceActual.getRetornos().ingresaElementoTexto(direccionResultado, valor);    		    					  					    						
-}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
-//Espacio de globales    
-	bloque.inicializarBase(1000);
-	workspaceActual.getGlobales().ingresaElementoTexto(bloque.mapearDireccion(direccionResultado), valor);    		    					  					    						
-} else  if(direccionResultado>=5000 && direccionResultado<9000){      					    			
-//Espacio de locales 
-	bloque.inicializarBase(5000);
-	funcion.getLocales().ingresaElementoTexto(bloque.mapearDireccion(direccionResultado), valor);
-} else  if(direccionResultado>=9000 && direccionResultado<13000){      					    			
-//Espacio de temporales	
-	bloque.inicializarBase(9000);
-	funcion.getTemporales().ingresaElementoTexto(bloque.mapearDireccion(direccionResultado), valor); 
-} else  if(direccionResultado>=13000 && direccionResultado<17000){      					    			
-//Espacio de constantes		
-	bloque.inicializarBase(13000);
-	constantes.ingresaElementoTexto(bloque.mapearDireccion(direccionResultado), valor);  						
-}  
-}
-
-/**
- * Metodo para almacenar un registro booleano en las estructuras de memoria
- * @param constantes
- * @param workspaceActual
- * @param funcion
- * @param bloque
- * @param direccionResultado
- * @param valor
- */
-public static void almacenaBooleano(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado, boolean valor){
-//Agregar un registro nuevo  
-if(direccionResultado>=0 && direccionResultado<1000){ 
-	//Retornos  
-	workspaceActual.getRetornos().ingresaElementoBooleano(direccionResultado, valor);    		    					  					    						
-}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
-//Espacio de globales    
-	bloque.inicializarBase(1000);
-	workspaceActual.getGlobales().ingresaElementoBooleano(bloque.mapearDireccion(direccionResultado), valor);    		    					  					    						
-} else  if(direccionResultado>=5000 && direccionResultado<9000){      					    			
-//Espacio de locales 
-	bloque.inicializarBase(5000);
-	funcion.getLocales().ingresaElementoBooleano(bloque.mapearDireccion(direccionResultado), valor);
-} else  if(direccionResultado>=9000 && direccionResultado<13000){      					    			
-//Espacio de temporales	
-	bloque.inicializarBase(9000);
-	funcion.getTemporales().ingresaElementoBooleano(bloque.mapearDireccion(direccionResultado), valor); 
-} else  if(direccionResultado>=13000 && direccionResultado<17000){      					    			
-//Espacio de constantes		
-	bloque.inicializarBase(13000);
-	constantes.ingresaElementoBooleano(bloque.mapearDireccion(direccionResultado), valor);  						
-}  
-}
-
-/**
- * Metodo para recuperar el valor de un registro en las estructuras de memoria
- * @param constantes
- * @param workspaceActual
- * @param funcion
- * @param bloque
- * @param direccionResultado
- * @param valor
- */
-public static int obtieneEntero(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado){
-	
-	int valor = -1;
-	
+	/**
+	 * Metodo para almacenar un registro entero en las estructuras de memoria
+	 * @param constantes
+	 * @param workspaceActual
+	 * @param funcion
+	 * @param bloque
+	 * @param direccionResultado
+	 * @param valor
+	 */
+	public static void almacenaEntero(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado, int valor){
+	//Agregar un registro nuevo  
 	if(direccionResultado>=0 && direccionResultado<1000){ 
-		//Retornos 
-		valor = workspaceActual.getRetornos().entero.get(direccionResultado);	    					  					    						
+		//Retornos  
+		workspaceActual.getRetornos().ingresaElementoEntero(direccionResultado, valor);    		    					  					    						
 	}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
 	//Espacio de globales    
 		bloque.inicializarBase(1000);
-		valor = workspaceActual.getGlobales().entero.get(bloque.mapearDireccion(direccionResultado));		    					  					    						
+		workspaceActual.getGlobales().ingresaElementoEntero(bloque.mapearDireccion(direccionResultado), valor);    		    					  					    						
 	} else  if(direccionResultado>=5000 && direccionResultado<9000){      					    			
 	//Espacio de locales 
 		bloque.inicializarBase(5000);
-		valor = funcion.getLocales().entero.get(bloque.mapearDireccion(direccionResultado));
+		funcion.getLocales().ingresaElementoEntero(bloque.mapearDireccion(direccionResultado), valor);
 	} else  if(direccionResultado>=9000 && direccionResultado<13000){      					    			
 	//Espacio de temporales	
 		bloque.inicializarBase(9000);
-		valor = funcion.getTemporales().entero.get(bloque.mapearDireccion(direccionResultado));
+		funcion.getTemporales().ingresaElementoEntero(bloque.mapearDireccion(direccionResultado), valor); 
 	} else  if(direccionResultado>=13000 && direccionResultado<17000){      					    			
 	//Espacio de constantes		
 		bloque.inicializarBase(13000);
-		valor = constantes.entero.get(bloque.mapearDireccion(direccionResultado));  						
+		constantes.ingresaElementoEntero(bloque.mapearDireccion(direccionResultado), valor);  						
+	}  
 	}
-	return valor;
-}
-
-/**
- * Metodo para obtener un registro decimal de las estructuras de memoria
- * @param constantes
- * @param workspaceActual
- * @param funcion
- * @param bloque
- * @param direccionResultado
- * @return
- */
-public static double obtieneDecimal(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado){
 	
-	double valor = -1;
-	
+	/**
+	 * Metodo para almacenar un registro decimal en las estructuras de memoria
+	 * @param constantes
+	 * @param workspaceActual
+	 * @param funcion
+	 * @param bloque
+	 * @param direccionResultado
+	 * @param valor
+	 */
+	public static void almacenaDecimal(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado, double valor){
+	//Agregar un registro nuevo  
 	if(direccionResultado>=0 && direccionResultado<1000){ 
-		//Retornos 
-		valor = workspaceActual.getRetornos().decimal.get(direccionResultado);	    					  					    						
+		//Retornos  
+		workspaceActual.getRetornos().ingresaElementoDecimal(direccionResultado, valor);    		    					  					    						
 	}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
 	//Espacio de globales    
 		bloque.inicializarBase(1000);
-		valor = workspaceActual.getGlobales().decimal.get(bloque.mapearDireccion(direccionResultado));		    					  					    						
+		workspaceActual.getGlobales().ingresaElementoDecimal(bloque.mapearDireccion(direccionResultado), valor);    		    					  					    						
 	} else  if(direccionResultado>=5000 && direccionResultado<9000){      					    			
 	//Espacio de locales 
 		bloque.inicializarBase(5000);
-		valor = funcion.getLocales().decimal.get(bloque.mapearDireccion(direccionResultado));
+		funcion.getLocales().ingresaElementoDecimal(bloque.mapearDireccion(direccionResultado), valor);
 	} else  if(direccionResultado>=9000 && direccionResultado<13000){      					    			
 	//Espacio de temporales	
 		bloque.inicializarBase(9000);
-		valor = funcion.getTemporales().decimal.get(bloque.mapearDireccion(direccionResultado));
+		funcion.getTemporales().ingresaElementoDecimal(bloque.mapearDireccion(direccionResultado), valor); 
 	} else  if(direccionResultado>=13000 && direccionResultado<17000){      					    			
 	//Espacio de constantes		
 		bloque.inicializarBase(13000);
-		valor = constantes.decimal.get(bloque.mapearDireccion(direccionResultado));  						
+		constantes.ingresaElementoDecimal(bloque.mapearDireccion(direccionResultado), valor);  						
+	}  
 	}
-	return valor;
-}
-
-/**
- * Metodo para obtener un registro texto de las estructuras de memoria
- * @param constantes
- * @param workspaceActual
- * @param funcion
- * @param bloque
- * @param direccionResultado
- * @return
- */
-public static String obtieneTexto(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado){
 	
-	String valor = "";
-	
+	/**
+	 * Metodo para almacenar un registro texto en las estructuras de memoria
+	 * @param constantes
+	 * @param workspaceActual
+	 * @param funcion
+	 * @param bloque
+	 * @param direccionResultado
+	 * @param valor
+	 */
+	public static void almacenaTexto(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado, String valor){
+	//Agregar un registro nuevo  
 	if(direccionResultado>=0 && direccionResultado<1000){ 
-		//Retornos 
-		valor = workspaceActual.getRetornos().texto.get(direccionResultado);	    					  					    						
+		//Retornos  
+		workspaceActual.getRetornos().ingresaElementoTexto(direccionResultado, valor);    		    					  					    						
 	}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
 	//Espacio de globales    
 		bloque.inicializarBase(1000);
-		valor = workspaceActual.getGlobales().texto.get(bloque.mapearDireccion(direccionResultado));		    					  					    						
+		workspaceActual.getGlobales().ingresaElementoTexto(bloque.mapearDireccion(direccionResultado), valor);    		    					  					    						
 	} else  if(direccionResultado>=5000 && direccionResultado<9000){      					    			
 	//Espacio de locales 
 		bloque.inicializarBase(5000);
-		valor = funcion.getLocales().texto.get(bloque.mapearDireccion(direccionResultado));
+		funcion.getLocales().ingresaElementoTexto(bloque.mapearDireccion(direccionResultado), valor);
 	} else  if(direccionResultado>=9000 && direccionResultado<13000){      					    			
 	//Espacio de temporales	
 		bloque.inicializarBase(9000);
-		valor = funcion.getTemporales().texto.get(bloque.mapearDireccion(direccionResultado));
+		funcion.getTemporales().ingresaElementoTexto(bloque.mapearDireccion(direccionResultado), valor); 
 	} else  if(direccionResultado>=13000 && direccionResultado<17000){      					    			
 	//Espacio de constantes		
 		bloque.inicializarBase(13000);
-		valor = constantes.texto.get(bloque.mapearDireccion(direccionResultado));  						
+		constantes.ingresaElementoTexto(bloque.mapearDireccion(direccionResultado), valor);  						
+	}  
 	}
-	return valor;
-}
-/**
- * Metodo para obtener un registro booleano de las estructuras de memoria
- * @param constantes
- * @param workspaceActual
- * @param funcion
- * @param bloque
- * @param direccionResultado
- * @return
- */
-public static boolean obtieneBooleano(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado){
 	
-	boolean valor = false;
-	
+	/**
+	 * Metodo para almacenar un registro booleano en las estructuras de memoria
+	 * @param constantes
+	 * @param workspaceActual
+	 * @param funcion
+	 * @param bloque
+	 * @param direccionResultado
+	 * @param valor
+	 */
+	public static void almacenaBooleano(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado, boolean valor){
+	//Agregar un registro nuevo  
 	if(direccionResultado>=0 && direccionResultado<1000){ 
-		//Retornos 
-		valor = workspaceActual.getRetornos().booleano.get(direccionResultado);	    					  					    						
+		//Retornos  
+		workspaceActual.getRetornos().ingresaElementoBooleano(direccionResultado, valor);    		    					  					    						
 	}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
 	//Espacio de globales    
 		bloque.inicializarBase(1000);
-		valor = workspaceActual.getGlobales().booleano.get(bloque.mapearDireccion(direccionResultado));		    					  					    						
+		workspaceActual.getGlobales().ingresaElementoBooleano(bloque.mapearDireccion(direccionResultado), valor);    		    					  					    						
 	} else  if(direccionResultado>=5000 && direccionResultado<9000){      					    			
 	//Espacio de locales 
 		bloque.inicializarBase(5000);
-		valor = funcion.getLocales().booleano.get(bloque.mapearDireccion(direccionResultado));
+		funcion.getLocales().ingresaElementoBooleano(bloque.mapearDireccion(direccionResultado), valor);
 	} else  if(direccionResultado>=9000 && direccionResultado<13000){      					    			
 	//Espacio de temporales	
 		bloque.inicializarBase(9000);
-		valor = funcion.getTemporales().booleano.get(bloque.mapearDireccion(direccionResultado));
+		funcion.getTemporales().ingresaElementoBooleano(bloque.mapearDireccion(direccionResultado), valor); 
 	} else  if(direccionResultado>=13000 && direccionResultado<17000){      					    			
 	//Espacio de constantes		
 		bloque.inicializarBase(13000);
-		valor = constantes.booleano.get(bloque.mapearDireccion(direccionResultado));  						
+		constantes.ingresaElementoBooleano(bloque.mapearDireccion(direccionResultado), valor);  						
+	}  
 	}
-	return valor;
-}
+	
+	/**
+	 * Metodo para recuperar el valor de un registro en las estructuras de memoria
+	 * @param constantes
+	 * @param workspaceActual
+	 * @param funcion
+	 * @param bloque
+	 * @param direccionResultado
+	 * @param valor
+	 */
+	public static int obtieneEntero(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado){
+		
+		int valor = -1;
+		
+		if(direccionResultado>=0 && direccionResultado<1000){ 
+			//Retornos 
+			valor = workspaceActual.getRetornos().entero.get(direccionResultado);	    					  					    						
+		}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
+		//Espacio de globales    
+			bloque.inicializarBase(1000);
+			valor = workspaceActual.getGlobales().entero.get(bloque.mapearDireccion(direccionResultado));		    					  					    						
+		} else  if(direccionResultado>=5000 && direccionResultado<9000){      					    			
+		//Espacio de locales 
+			bloque.inicializarBase(5000);
+			valor = funcion.getLocales().entero.get(bloque.mapearDireccion(direccionResultado));
+		} else  if(direccionResultado>=9000 && direccionResultado<13000){      					    			
+		//Espacio de temporales	
+			bloque.inicializarBase(9000);
+			valor = funcion.getTemporales().entero.get(bloque.mapearDireccion(direccionResultado));
+		} else  if(direccionResultado>=13000 && direccionResultado<17000){      					    			
+		//Espacio de constantes		
+			bloque.inicializarBase(13000);
+			valor = constantes.entero.get(bloque.mapearDireccion(direccionResultado));  						
+		}
+		return valor;
+	}
+	
+	/**
+	 * Metodo para obtener un registro decimal de las estructuras de memoria
+	 * @param constantes
+	 * @param workspaceActual
+	 * @param funcion
+	 * @param bloque
+	 * @param direccionResultado
+	 * @return
+	 */
+	public static double obtieneDecimal(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado){
+		
+		double valor = -1;
+		
+		if(direccionResultado>=0 && direccionResultado<1000){ 
+			//Retornos 
+			valor = workspaceActual.getRetornos().decimal.get(direccionResultado);	    					  					    						
+		}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
+		//Espacio de globales    
+			bloque.inicializarBase(1000);
+			valor = workspaceActual.getGlobales().decimal.get(bloque.mapearDireccion(direccionResultado));		    					  					    						
+		} else  if(direccionResultado>=5000 && direccionResultado<9000){      					    			
+		//Espacio de locales 
+			bloque.inicializarBase(5000);
+			valor = funcion.getLocales().decimal.get(bloque.mapearDireccion(direccionResultado));
+		} else  if(direccionResultado>=9000 && direccionResultado<13000){      					    			
+		//Espacio de temporales	
+			bloque.inicializarBase(9000);
+			valor = funcion.getTemporales().decimal.get(bloque.mapearDireccion(direccionResultado));
+		} else  if(direccionResultado>=13000 && direccionResultado<17000){      					    			
+		//Espacio de constantes		
+			bloque.inicializarBase(13000);
+			valor = constantes.decimal.get(bloque.mapearDireccion(direccionResultado));  						
+		}
+		return valor;
+	}
+	
+	/**
+	 * Metodo para obtener un registro texto de las estructuras de memoria
+	 * @param constantes
+	 * @param workspaceActual
+	 * @param funcion
+	 * @param bloque
+	 * @param direccionResultado
+	 * @return
+	 */
+	public static String obtieneTexto(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado){
+		
+		String valor = "";
+		
+		if(direccionResultado>=0 && direccionResultado<1000){ 
+			//Retornos 
+			valor = workspaceActual.getRetornos().texto.get(direccionResultado);	    					  					    						
+		}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
+		//Espacio de globales    
+			bloque.inicializarBase(1000);
+			valor = workspaceActual.getGlobales().texto.get(bloque.mapearDireccion(direccionResultado));		    					  					    						
+		} else  if(direccionResultado>=5000 && direccionResultado<9000){      					    			
+		//Espacio de locales 
+			bloque.inicializarBase(5000);
+			valor = funcion.getLocales().texto.get(bloque.mapearDireccion(direccionResultado));
+		} else  if(direccionResultado>=9000 && direccionResultado<13000){      					    			
+		//Espacio de temporales	
+			bloque.inicializarBase(9000);
+			valor = funcion.getTemporales().texto.get(bloque.mapearDireccion(direccionResultado));
+		} else  if(direccionResultado>=13000 && direccionResultado<17000){      					    			
+		//Espacio de constantes		
+			bloque.inicializarBase(13000);
+			valor = constantes.texto.get(bloque.mapearDireccion(direccionResultado));  						
+		}
+		return valor;
+	}
+	/**
+	 * Metodo para obtener un registro booleano de las estructuras de memoria
+	 * @param constantes
+	 * @param workspaceActual
+	 * @param funcion
+	 * @param bloque
+	 * @param direccionResultado
+	 * @return
+	 */
+	public static boolean obtieneBooleano(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado){
+		
+		boolean valor = false;
+		
+		if(direccionResultado>=0 && direccionResultado<1000){ 
+			//Retornos 
+			valor = workspaceActual.getRetornos().booleano.get(direccionResultado);	    					  					    						
+		}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
+		//Espacio de globales    
+			bloque.inicializarBase(1000);
+			valor = workspaceActual.getGlobales().booleano.get(bloque.mapearDireccion(direccionResultado));		    					  					    						
+		} else  if(direccionResultado>=5000 && direccionResultado<9000){      					    			
+		//Espacio de locales 
+			bloque.inicializarBase(5000);
+			valor = funcion.getLocales().booleano.get(bloque.mapearDireccion(direccionResultado));
+		} else  if(direccionResultado>=9000 && direccionResultado<13000){      					    			
+		//Espacio de temporales	
+			bloque.inicializarBase(9000);
+			valor = funcion.getTemporales().booleano.get(bloque.mapearDireccion(direccionResultado));
+		} else  if(direccionResultado>=13000 && direccionResultado<17000){      					    			
+		//Espacio de constantes		
+			bloque.inicializarBase(13000);
+			valor = constantes.booleano.get(bloque.mapearDireccion(direccionResultado));  						
+		}
+		return valor;
+	}
 }
