@@ -21,6 +21,10 @@ void yyerror( const char *str )
 	fprintf( stderr, "error: %s\n", str );
 }
 
+//Contador temporal de dimensiones
+int numeroDimensiones = 0;
+char nombreMatrizActual[25];
+
 //Contadores de temporales para las funciones
 int totalTempEntero = 0;
 int totalTempDecimal = 0;
@@ -251,6 +255,30 @@ void generarTemporalFuncion(){
 		printf("Error en funcion %s: No se puede usar en una expresion ya que no regresa ningun tipo de dato\n", nombreProcedimiento);
 		exit(1);
 	}
+}
+
+void generarVerifica(int dimension){	
+	if(dimension == 1){
+		listaCuadruplos = generaCuadruploVerifica(listaCuadruplos, operandos,  variable->lsuperior1, &contadorIndice );
+	} else if( dimension == 2) {
+		listaCuadruplos = generaCuadruploVerifica(listaCuadruplos, operandos,  variable->lsuperior2, &contadorIndice );
+	}
+}
+
+void generarDesplazamiento(int dimension){
+	variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
+	if (variable == NULL) {
+		variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
+	} 
+
+	if(variable->dimensionada == 1){
+		listaCuadruplos = generaCuadruploMATArreglo(listaCuadruplos, operandos, variable->direccion, availEntero, &contadorIndice);	
+	} else if(variable->dimensionada == 2 && dimension == 1) {
+
+	} else if(variable->dimensionada == 2 && dimension == 2) {
+
+	} 
+
 }
 //----------------------------------------Funciones de Control--------------------------------------------------
 
@@ -722,6 +750,17 @@ bloque_variables_rep:
 	/* empty */
 	| declara_variables 
 	{
+		
+	} 
+	bloque_variables_rep
+	;
+
+declara_variables:
+	ENTERO IDENTIFICADOR PUNTOYCOMA
+	{						
+		tipoVariable = $1;
+		strncpy(nombreVariable, $2, tamanioIdentificadores);
+		asignarMemoriaVariable();
 		//Checar la bandera de variables
 		if(seccVariablesGlobales == 1){
 			//Agregar a tabla de variables globales					
@@ -733,16 +772,6 @@ bloque_variables_rep:
 			objetos = agregarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual, nombreVariable, tipoVariable, direccionVariable);
 			tipoVariable = -1;
 		}
-	} 
-	bloque_variables_rep
-	;
-
-declara_variables:
-	ENTERO IDENTIFICADOR PUNTOYCOMA
-	{						
-		tipoVariable = $1;
-		strncpy(nombreVariable, $2, tamanioIdentificadores);
-		asignarMemoriaVariable();
 	}
 	|
 	DECIMAL IDENTIFICADOR PUNTOYCOMA
@@ -750,6 +779,17 @@ declara_variables:
 		tipoVariable = $1;
 		strncpy(nombreVariable, $2, tamanioIdentificadores);
 		asignarMemoriaVariable();
+		//Checar la bandera de variables
+		if(seccVariablesGlobales == 1){
+			//Agregar a tabla de variables globales					
+			objetos = agregarVariablesGlobales(objetos, nombreObjetoActual, nombreVariable, tipoVariable, direccionVariable);
+			tipoVariable = -1;
+
+		} else if(seccVariablesLocales == 1){	
+			//Agregar a tabla de variables locales de la funcion
+			objetos = agregarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual, nombreVariable, tipoVariable, direccionVariable);
+			tipoVariable = -1;
+		}
 	}
 	|
 	TEXTO IDENTIFICADOR PUNTOYCOMA
@@ -757,6 +797,17 @@ declara_variables:
 		tipoVariable = $1;
 		strncpy(nombreVariable, $2, tamanioIdentificadores);
 		asignarMemoriaVariable();
+		//Checar la bandera de variables
+		if(seccVariablesGlobales == 1){
+			//Agregar a tabla de variables globales					
+			objetos = agregarVariablesGlobales(objetos, nombreObjetoActual, nombreVariable, tipoVariable, direccionVariable);
+			tipoVariable = -1;
+
+		} else if(seccVariablesLocales == 1){	
+			//Agregar a tabla de variables locales de la funcion
+			objetos = agregarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual, nombreVariable, tipoVariable, direccionVariable);
+			tipoVariable = -1;
+		}
 	}
 	|
 	BOOLEANO IDENTIFICADOR PUNTOYCOMA
@@ -764,11 +815,52 @@ declara_variables:
 		tipoVariable = $1;
 		strncpy(nombreVariable, $2, tamanioIdentificadores);
 		asignarMemoriaVariable();
+		//Checar la bandera de variables
+		if(seccVariablesGlobales == 1){
+			//Agregar a tabla de variables globales					
+			objetos = agregarVariablesGlobales(objetos, nombreObjetoActual, nombreVariable, tipoVariable, direccionVariable);
+			tipoVariable = -1;
+
+		} else if(seccVariablesLocales == 1){	
+			//Agregar a tabla de variables locales de la funcion
+			objetos = agregarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual, nombreVariable, tipoVariable, direccionVariable);
+			tipoVariable = -1;
+		}
 	}
 	|
-	MATRIZDECIMAL IDENTIFICADOR dimensiones PUNTOYCOMA
+	MATRIZDECIMAL IDENTIFICADOR
 	{		
 		//Pendiente
+		tipoVariable = 1;
+		strncpy(nombreVariable, $2, tamanioIdentificadores);
+		asignarMemoriaVariable();
+		//Obtenemos los valores de las variables
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+
+		//La variable no se encontro
+		if (variable == NULL) {
+			//Si esta variable entonces la tomamos si no es asi marcaremos un error			
+			
+			objetos = agregarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual, nombreVariable, tipoVariable, direccionVariable);				
+			
+		} else {
+			printf("Error: La variable ya esta declarada\n");
+			exit(1);
+		}
+		numeroDimensiones = 0;
+		
+	}
+	dimensiones PUNTOYCOMA
+	{
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+		variable->tamanio = ((variable->lsuperior1 + 1) * (variable->lsuperior2 + 1));
+		variable->m1 = variable->tamanio / (variable->lsuperior1 + 1);
+
+		if (seccVariablesGlobales == 1) {
+			memoriaDecimalGlobal = memoriaDecimalGlobal + variable->tamanio;
+		} else if (seccVariablesLocales == 1) {
+			memoriaDecimalLocal = memoriaDecimalLocal + variable->tamanio;
+		}
 	}
 	|
 	MATRIZENTERA IDENTIFICADOR dimensiones PUNTOYCOMA
@@ -806,12 +898,60 @@ asignacion_matriz_valor1:
 	;
 
 dimensiones:
-	ACORCHETE serexpresion CCORCHETE dimensiones_rep
+	ACORCHETE CTEENTERA CCORCHETE
+	{
+		numeroDimensiones++;
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+		variable->dimensionada = numeroDimensiones;
+
+		variable->lsuperior1 = atoi($2);
+	}
+	dimensiones_rep
 	;
 
 dimensiones_rep:
 	/*empty*/
-	| ACORCHETE serexpresion CCORCHETE
+	| ACORCHETE CTEENTERA CCORCHETE
+	{
+		numeroDimensiones++;
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+		variable->dimensionada = numeroDimensiones;
+		
+		variable->lsuperior2 = atoi($2);	
+	}
+	;
+
+dimensiones2:
+	/*Empty*/
+	|
+	ACORCHETE 
+	{
+		
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
+		if (variable == NULL) {
+			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
+		} 
+
+		if(variable->dimensionada == 0 ){
+			printf("Error: la variable %s no es dimensionada",  nombreMatrizActual);
+			exit(1);
+		} else if(variable->dimensionada == 1){
+			printf("Error: la variable %s no es matriz", nombreMatrizActual);
+			exit(1);
+		}
+	} serexpresion2 
+	{
+		//nodoAuxiliar = pop(operandos);
+
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
+
+		if (variable == NULL) {
+			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
+		} 
+		generarVerifica(2);
+		generarDesplazamiento(2);
+	}
+	CCORCHETE
 	;
 
 serexpresion: 
@@ -1070,11 +1210,35 @@ opcionalFuncion:
 
 		//Aqui se debe generar el temporal y se mete en la pila
 		generarTemporalFuncion();
-		
-	
-		
-
+				
 	}
+	| ACORCHETE 
+	{
+		strncpy(nombreMatrizActual, nombreVariable, tamanioIdentificadores);
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
+
+		if (variable == NULL) {
+			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
+		} 
+
+		if(variable->dimensionada == 0){
+			printf("Error: la variable no es dimensionada");
+			exit(1);
+		}
+	} serexpresion2 
+	{
+		//nodoAuxiliar = pop(operandos);
+
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
+
+		if (variable == NULL) {
+			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
+		} 
+		generarVerifica(1);
+
+		generarDesplazamiento(1);
+	}
+	CCORCHETE dimensiones2
 	;
 
 

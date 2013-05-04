@@ -126,6 +126,14 @@ void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode) {
 				case 25:
 				strcpy(operacion, "ENDPROGRAM");
 				break;
+
+				case 26:
+				strcpy(operacion, "VERIFICA");
+				break;
+
+				case 27:
+				strcpy(operacion, "VERMAT");
+				break;
 			}
 			printf("Cuadruplo: %d | %s %s %s %s \n", temporal->indice, operacion, temporal->operando1->nombre, temporal->operando2->nombre, temporal->resultado->nombre);
 		}
@@ -254,6 +262,7 @@ void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode) {
 				case 25:
 				strcpy(operacion, "ENDPROGRAM");
 				break;
+
 			}
 			
 			printf("Cuadruplo: %d | %s %i %i %i \n", temporal->indice, operacion, temporal->operando1->direccion, temporal->operando2->direccion, temporal->resultado->direccion);
@@ -516,11 +525,15 @@ cuadruplos* generarCuadruploAsignacion(cuadruplos *listaCuadruplos, pila *operan
 
 		//Checamos si no hubo algun error en la generacion de los cuadruplos
 		if (listaCuadruplos != NULL) {
+			if(((nodoOperando*)(operando1->dato))->direccion > 100000){
+				((nodoOperando*)(operando1->dato))->direccion = ((nodoOperando*)(operando1->dato))->direccion - 100000;
+			}
 			//Obtenemos si el operando1 es un temporal
 			operando1Temp = ((nodoOperando*)(operando1->dato))->temp;
 
 			//Checamos que el operando1 sea temp
 			if (operando1Temp == 1) {
+
 				//Reciclamos la variable
 				reciclarVariable(operando1, availEntero, availDecimal, availTexto, availBoolean);
 			} 
@@ -1113,6 +1126,87 @@ cuadruplos* generarCuadruploEndProgram(cuadruplos *listaCuadruplos, int *contado
 	}
 }
 
+cuadruplos* generaCuadruploVerifica(cuadruplos *listaCuadruplos, pila *operandos,  int lsuperior, int *contadorIndice ){
+
+	//Apuntadores para el manejo del avail
+	nodo *operando;
+	cuadruplos *accederCuadruplo;
+
+	operando = pop(operandos);
+
+	if(((nodoOperando*)operando->dato)->tipo != 0){
+		printf("Error: el indice debe ser entero");
+		exit(1);
+	} else {
+
+		listaCuadruplos = generaCuadruplo(listaCuadruplos, operando, NULL, OP_VERIFICA, NULL , *contadorIndice);
+		//Buscamos el cuadruplo que acabamos de crear para darle los valores correspondientes
+		HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
+
+		//Rellenamos los datos del Goto para que apunte de nuevo a la evaluacion
+		if(accederCuadruplo != NULL){
+			
+			accederCuadruplo->operando2->direccion = 0;
+			accederCuadruplo->resultado->direccion = lsuperior;
+
+			sprintf(accederCuadruplo->resultado->nombre, "%d", lsuperior);
+			sprintf(accederCuadruplo->operando2->nombre, "%d", 0);
+
+		} else {
+			printf("Error en el acceso al cuadruplo\n");
+			exit(1);
+		}	
+		push(operandos, ((nodoOperando*)(operando->dato)));
+		//Tuvo exito la creacion del cuadruplo
+		*contadorIndice = *contadorIndice+1;
+
+		//Regresamos la lista
+		return listaCuadruplos;	
+	}
+}
+
+
+cuadruplos* generaCuadruploMATArreglo(cuadruplos *listaCuadruplos, pila *operandos, int direccionBase, pila *availEntero, int *contadorIndice){
+
+	//Apuntadores para el manejo del avail
+	nodo *operando;
+	cuadruplos *accederCuadruplo;
+	nodo *resultadoAvail;
+
+	resultadoAvail =  pop(availEntero);
+	operando = pop(operandos);
+
+	//Checamos si hay avail disponible para la variable, si no hay error en memoria	
+	if (resultadoAvail == NULL) {
+		printf("Error no hay memoria disponible\n");
+		exit(1);
+	}
+
+	listaCuadruplos = generaCuadruplo(listaCuadruplos, operando, NULL, OP_VERMAT, resultadoAvail , *contadorIndice);
+	//Buscamos el cuadruplo que acabamos de crear para darle los valores correspondientes
+	HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
+
+	//Rellenamos los datos del Goto para que apunte de nuevo a la evaluacion
+	if(accederCuadruplo != NULL){
+				
+		accederCuadruplo->operando2->direccion = direccionBase;
+
+		sprintf(accederCuadruplo->operando2->nombre, "%d", direccionBase);		
+
+	} else {
+		printf("Error en el acceso al cuadruplo\n");
+		exit(1);
+	}	
+	((nodoOperando*)resultadoAvail->dato)->direccion = ((nodoOperando*)resultadoAvail->dato)->direccion + 100000;
+	push(operandos, ((nodoOperando*)resultadoAvail->dato));
+	//Tuvo exito la creacion del cuadruplo
+	*contadorIndice = *contadorIndice+1;
+
+	//Regresamos la lista
+	return listaCuadruplos;	
+	
+}
+
 /*
 Funcion encargada de seleccionar que funcion se debera usar para generar cuadruplos secuenciales
 Util para control y para no confundir que parametros se deben usar
@@ -1197,6 +1291,8 @@ cuadruplos* generarCuadruploSequencial(int prioridad, cuadruplos *listaCuadruplo
 		return listaCuadruplos;
 	}
 }
+
+
 
 /*
 *generarObj

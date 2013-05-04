@@ -8,6 +8,11 @@ typedef struct directorio {
 	char nombre[25];              /* key */
 	int tipo;
 	unsigned long direccion;
+	int dimensionada;
+	int tamanio;
+	int lsuperior1;
+	int lsuperior2;
+	int m1;
 	UT_hash_handle hh;         /* makes this structure hashable */
 } directorio;
 
