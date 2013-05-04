@@ -1819,63 +1819,8 @@ escritura:
 	;
 
 escritura_valores:
-	valores escritura_concatena 
-	| IDENTIFICADOR
-	{
-		//Obtenemos el nombre de la variable que desamos usar
-		strncpy(nombreVariable, $1, tamanioIdentificadores);
-		
-		//Obtenemos los valores de las variables si no existen exit
-		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
-			
-		//La variable no se encontro
-		if (variable == NULL) {
-			//Si esta variable entonces la tomamos si no es asi marcaremos un error
-			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreVariable);
-		}
-
-		//crearemos un nodoOperando para agregarlo a la pila
-		pushPilaOperandos(variable);
-
-	} escritura_valores1
+	serexpresion escritura_valores1
 	;
-
-valores:
-	CTEENTERA 
-	{
-	 	//Obtenemos el valor de la constante
-		strncpy(nombreVariable, $1, tamanioIdentificadores);
-		agregarTablaConstantes(nombreVariable, 0);
-
-		variable = buscarConstante(constantes, nombreVariable);
-
-		//crearemos un nodoOperando para agregarlo a la pila
-		pushPilaOperandos(variable);
-
-	}
-	| CTEDECIMAL 
-	{
-	 //Obtenemos el valor de la constante
-		strncpy(nombreVariable, $1, tamanioIdentificadores);
-		agregarTablaConstantes(nombreVariable, 1);
-
-		variable = buscarConstante(constantes, nombreVariable);
-
-		//crearemos un nodoOperando para agregarlo a la pila
-		pushPilaOperandos(variable);
-	}
-	| CTETEXTO
-	{
-	 	//Obtenemos el valor de la constante
-		strncpy(nombreVariable, $1, tamanioIdentificadores);
-		agregarTablaConstantes(nombreVariable, 2);
-
-		variable = buscarConstante(constantes, nombreVariable);
-
-		//crearemos un nodoOperando para agregarlo a la pila
-		pushPilaOperandos(variable);
-	 }
-	 ;
 
 escritura_valores1:
 	/*Empty*/
@@ -1885,21 +1830,8 @@ escritura_valores1:
 
 		pushPilaOperadores(OP_ESCRITURA);
 
-	} escritura_valores 
-	| dimensiones escritura_concatena
+	} escritura_valores
 	;
-
-escritura_concatena:
-	/*Empty*/
-	| CONCATENA 
-	{
-		generarEscritura();
-
-		pushPilaOperadores(OP_ESCRITURA);
-	}
-	escritura_valores
-	;
-
 
 regresa:
 	REGRESA serexpresion
