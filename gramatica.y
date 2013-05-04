@@ -151,6 +151,39 @@ directorio *constantes = NULL;
 
 //---------------------------------WRAPPERS-------------------------------------------
 
+void pushPilaOperandos(directorio *variable){
+	//Creamos la nueva variable para agregar a la pila de variables
+	operando = (nodoOperando*)malloc(sizeof(nodoOperando));
+	if(variable == NULL){
+		operando->temp = -1;
+		operando->tipo = -1; 
+		strcpy(operando->nombre, "/n");
+		operando->direccion = -1;
+	} else {
+		operando->temp = 0;
+		operando->tipo = variable->tipo; 
+		strcpy(operando->nombre, variable->nombre);
+		operando->direccion = variable->direccion;
+	}
+	push(operandos,operando);
+}
+
+void pushPilaOperadores(int valor){
+	//Creamos el nodo operandor que se le hara push en la pila operadores
+	operador = (nodoOperador*)malloc(sizeof(nodoOperador));
+	operador->operador = valor;
+		
+	//Metemos la multiplicacion en la pila de operadores
+	push(operadores, operador);
+}
+
+void pushPilaSaltos(int valor){
+	salto = (nodoOperador*)malloc(sizeof(nodoOperador));
+	salto->operador = valor;
+	push(pilaSaltos, salto);
+}
+
+
 void  generarMultiplicacionDivision(){
 	listaCuadruplos = generarCuadruploSequencial(1 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
 }
@@ -273,11 +306,24 @@ void generarDesplazamiento(int dimension){
 	} 
 
 	if(variable->dimensionada == 1){
-		listaCuadruplos = generaCuadruploMATArreglo(listaCuadruplos, operandos, variable->direccion, availEntero, &contadorIndice);	
+
+		//Generacion de sumaMat para arreglo
+		listaCuadruplos = generaCuadruploSUMAarreglo(listaCuadruplos, operandos, variable->direccion, availEntero, &contadorIndice);
 	} else if(variable->dimensionada == 2 && dimension == 1) {
 
+		//Generar multimat = (S1 * m1)
+		listaCuadruplos = generarCuadruploMULTIarreglo(listaCuadruplos, operandos, variable->m1, availEntero, &contadorIndice);
 	} else if(variable->dimensionada == 2 && dimension == 2) {
 
+		//Segunda accion Matrices para acumular el cambio se realiza una simple suma
+		//Se agrega la operacion de Suma
+		pushPilaOperadores(OP_SUMA);
+
+		//Se realiza la acumulacion de valores
+		generarSumaResta();
+
+		//Ultima accion Matrices para obtener el direccion
+		listaCuadruplos = generaCuadruploSUMAarreglo(listaCuadruplos, operandos, variable->direccion, availEntero, &contadorIndice);
 	} 
 
 }
@@ -562,37 +608,7 @@ inicializarTemporales(){
 	inicializarAvail(availEntero, availDecimal, availTexto, availBoolean, &memoriaEnteroTemp, &memoriaDecimalTemp, &memoriaTextoTemp, &memoriaBooleanoTemp);
 }
 
-void pushPilaOperandos(directorio *variable){
-	//Creamos la nueva variable para agregar a la pila de variables
-	operando = (nodoOperando*)malloc(sizeof(nodoOperando));
-	if(variable == NULL){
-		operando->temp = -1;
-		operando->tipo = -1; 
-		strcpy(operando->nombre, "/n");
-		operando->direccion = -1;
-	} else {
-		operando->temp = 0;
-		operando->tipo = variable->tipo; 
-		strcpy(operando->nombre, variable->nombre);
-		operando->direccion = variable->direccion;
-	}
-	push(operandos,operando);
-}
 
-void pushPilaOperadores(int valor){
-	//Creamos el nodo operandor que se le hara push en la pila operadores
-	operador = (nodoOperador*)malloc(sizeof(nodoOperador));
-	operador->operador = valor;
-		
-	//Metemos la multiplicacion en la pila de operadores
-	push(operadores, operador);
-}
-
-void pushPilaSaltos(int valor){
-	salto = (nodoOperador*)malloc(sizeof(nodoOperador));
-	salto->operador = valor;
-	push(pilaSaltos, salto);
-}
 
 //----------------------------------MAIN--------------------------------------
 

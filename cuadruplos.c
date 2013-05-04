@@ -132,7 +132,11 @@ void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode) {
 				break;
 
 				case 27:
-				strcpy(operacion, "VERMAT");
+				strcpy(operacion, "SUMAMAT");
+				break;
+
+				case 28:
+				strcpy(operacion, "MULTIMAT");
 				break;
 			}
 			printf("Cuadruplo: %d | %s %s %s %s \n", temporal->indice, operacion, temporal->operando1->nombre, temporal->operando2->nombre, temporal->resultado->nombre);
@@ -268,7 +272,11 @@ void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode) {
 				break;
 
 				case 27:
-				strcpy(operacion, "VERMAT");
+				strcpy(operacion, "SUMAMAT");
+				break;
+
+				case 28:
+				strcpy(operacion, "MULTIMAT");
 				break;
 			}
 			printf("Cuadruplo: %d | %s %i %i %i \n", temporal->indice, operacion, temporal->operando1->direccion, temporal->operando2->direccion, temporal->resultado->direccion);
@@ -1183,7 +1191,7 @@ cuadruplos* generaCuadruploVerifica(cuadruplos *listaCuadruplos, pila *operandos
 }
 
 
-cuadruplos* generaCuadruploMATArreglo(cuadruplos *listaCuadruplos, pila *operandos, int direccionBase, pila *availEntero, int *contadorIndice){
+cuadruplos* generaCuadruploSUMAarreglo(cuadruplos *listaCuadruplos, pila *operandos, int direccionBase, pila *availEntero, int *contadorIndice){
 
 	//Apuntadores para el manejo del avail
 	nodo *operando;
@@ -1199,7 +1207,7 @@ cuadruplos* generaCuadruploMATArreglo(cuadruplos *listaCuadruplos, pila *operand
 		exit(1);
 	}
 
-	listaCuadruplos = generaCuadruplo(listaCuadruplos, operando, NULL, OP_VERMAT, resultadoAvail , *contadorIndice);
+	listaCuadruplos = generaCuadruplo(listaCuadruplos, operando, NULL, OP_SUMAMAT, resultadoAvail , *contadorIndice);
 	//Buscamos el cuadruplo que acabamos de crear para darle los valores correspondientes
 	HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
 
@@ -1216,6 +1224,50 @@ cuadruplos* generaCuadruploMATArreglo(cuadruplos *listaCuadruplos, pila *operand
 	}	
 	((nodoOperando*)resultadoAvail->dato)->direccion = ((nodoOperando*)resultadoAvail->dato)->direccion + 100000;
 	push(operandos, ((nodoOperando*)resultadoAvail->dato));
+	//Tuvo exito la creacion del cuadruplo
+	*contadorIndice = *contadorIndice+1;
+
+	//Regresamos la lista
+	return listaCuadruplos;	
+	
+}
+
+
+cuadruplos* generarCuadruploMULTIarreglo(cuadruplos *listaCuadruplos, pila *operandos, int m1, pila *availEntero, int *contadorIndice){
+
+	//Apuntadores para el manejo del avail
+	nodo *operando;
+	cuadruplos *accederCuadruplo;
+	nodo *resultadoAvail;
+
+	resultadoAvail =  pop(availEntero);
+	operando = pop(operandos);
+
+	//Checamos si hay avail disponible para la variable, si no hay error en memoria	
+	if (resultadoAvail == NULL) {
+		printf("Error no hay memoria disponible\n");
+		exit(1);
+	}
+
+	listaCuadruplos = generaCuadruplo(listaCuadruplos, operando, NULL, OP_MULTIMAT, resultadoAvail, *contadorIndice);
+	//Buscamos el cuadruplo que acabamos de crear para darle los valores correspondientes
+	HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
+
+	//Rellenamos los datos del Goto para que apunte de nuevo a la evaluacion
+	if(accederCuadruplo != NULL){
+				
+		accederCuadruplo->operando2->direccion = m1;
+
+		sprintf(accederCuadruplo->operando2->nombre, "%d", m1);
+
+	} else {
+		printf("Error en el acceso al cuadruplo\n");
+		exit(1);
+	}	
+
+	//Meter el resultado a la pila de operandos
+	push(operandos, ((nodoOperando*)resultadoAvail->dato));
+
 	//Tuvo exito la creacion del cuadruplo
 	*contadorIndice = *contadorIndice+1;
 

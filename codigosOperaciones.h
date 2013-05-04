@@ -29,7 +29,8 @@
 #define OP_RETURN			24
 #define OP_ENDPROGRAM		25
 #define OP_VERIFICA			26
-#define OP_VERMAT			27
+#define OP_SUMAMAT			27
+#define OP_MULTIMAT			28
 
 #define OP_ERROR			-1
 

@@ -67,7 +67,8 @@ cuadruplos* generarCuadruploReturn(cuadruplos *listaCuadruplos, pila *operandos,
 cuadruplos* generarCuadruploTemporalFuncion(cuadruplos *listaCuadruplos, pila *operandos, int tipo, long direccion, char *nombre, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean, int *contadorIndice);
 cuadruplos* generarCuadruploEndProgram(cuadruplos *listaCuadruplos, int *contadorIndice);
 cuadruplos* generaCuadruploVerifica(cuadruplos *listaCuadruplos, pila *operandos,  int lsuperior, int *contadorIndice );
-cuadruplos* generaCuadruploMATArreglo(cuadruplos *listaCuadruplos, pila *operandos, int direccionBase, pila *availEntero, int *contadorIndice);
+cuadruplos* generaCuadruploSUMAarreglo (cuadruplos *listaCuadruplos, pila *operandos, int direccionBase, pila *availEntero, int *contadorIndice);
+cuadruplos* generarCuadruploMULTIarreglo(cuadruplos *listaCuadruplos, pila *operandos, int m1, pila *availEntero, int *contadorIndice);
 cuadruplos* generarCuadruploSequencial(int prioridad, cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[4][4][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean);
 void generarObj(cuadruplos *listaCuadruplos); 
 #endif
