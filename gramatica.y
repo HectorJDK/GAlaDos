@@ -599,12 +599,13 @@ int main()
 {
 
 	yyparse();
-	generarObj(listaCuadruplos);
 	imprimirObjetos(objetos);
-	//imprimeCuadruplos(listaCuadruplos, 0);
-	//printf("\n");	
 	imprimeCuadruplos(listaCuadruplos, 0);
-	generarDatos(objetos, constantes);
+	printf("\n");	
+	printf("\n");	
+	imprimeCuadruplos(listaCuadruplos, 2);
+	//generarDatos(objetos, constantes);
+	//generarObj(listaCuadruplos);
 	return 0;
 }
 
@@ -1144,18 +1145,25 @@ identificadorOLlamadaAFuncion:
 	{	
 		//Verificamos que sea solo una variable y no un identificador
 		if (esFuncion == 0) {
-	
-			//Obtenemos los valores de las variables
-			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+			
+			//Aqui habra un posible error por no manejar lo de las funciones
+			//Debemos checar primero que ademas la variable no sea una constante
+			variable = buscarConstante(constantes, nombreVariable);
 
-			//La variable no se encontro
 			if (variable == NULL) {
-				//Si esta variable entonces la tomamos si no es asi marcaremos un error
-				variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreVariable);
-			}
+				//Obtenemos los valores de las variables
+				variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
 
-			//crearemos un nodoOperando para agregarlo a la pila
-			pushPilaOperandos(variable);
+				//La variable no se encontro
+				if (variable == NULL) {
+					//Si esta variable entonces la tomamos si no es asi marcaremos un error
+					variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreVariable);
+				}
+
+				//crearemos un nodoOperando para agregarlo a la pila
+				pushPilaOperandos(variable);	
+			}
+			
 		}
 
 		//Volvemos a inicializar

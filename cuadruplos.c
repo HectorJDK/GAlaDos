@@ -263,8 +263,14 @@ void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode) {
 				strcpy(operacion, "ENDPROGRAM");
 				break;
 
+				case 26:
+				strcpy(operacion, "VERIFICA");
+				break;
+
+				case 27:
+				strcpy(operacion, "VERMAT");
+				break;
 			}
-			
 			printf("Cuadruplo: %d | %s %i %i %i \n", temporal->indice, operacion, temporal->operando1->direccion, temporal->operando2->direccion, temporal->resultado->direccion);
 		}
 	} 
@@ -460,13 +466,22 @@ cuadruplos* generarCuadruploExpresion(cuadruplos *listaCuadruplos, pila *operand
 
 			//Si alguno de los operandos correspondia a un temporal ENTONCES lo regresamos al avail correspondiente
 			//Verificamos si el operando1 es temporal
+			
 			if (operando1Temp == 1) {
+				if(((nodoOperando*)(operando1->dato))->direccion > 100000){
+					((nodoOperando*)(operando1->dato))->direccion = ((nodoOperando*)(operando1->dato))->direccion - 100000;
+				}
+
 				//Reciclar la variable temporal
 				reciclarVariable(operando1, availEntero, availDecimal, availTexto, availBoolean);
 			}
 
 			//Verificamos si el operando2 es temporal
 			if (operando2Temp == 1) {
+				if(((nodoOperando*)(operando1->dato))->direccion > 100000){
+					((nodoOperando*)(operando1->dato))->direccion = ((nodoOperando*)(operando1->dato))->direccion - 100000;
+				}				
+
 				//Reciclar la variable temporal
 				reciclarVariable(operando2, availEntero, availDecimal, availTexto, availBoolean);
 			}
@@ -525,15 +540,17 @@ cuadruplos* generarCuadruploAsignacion(cuadruplos *listaCuadruplos, pila *operan
 
 		//Checamos si no hubo algun error en la generacion de los cuadruplos
 		if (listaCuadruplos != NULL) {
-			if(((nodoOperando*)(operando1->dato))->direccion > 100000){
-				((nodoOperando*)(operando1->dato))->direccion = ((nodoOperando*)(operando1->dato))->direccion - 100000;
-			}
+
+
 			//Obtenemos si el operando1 es un temporal
 			operando1Temp = ((nodoOperando*)(operando1->dato))->temp;
 
 			//Checamos que el operando1 sea temp
 			if (operando1Temp == 1) {
-
+				if(((nodoOperando*)(operando1->dato))->direccion > 100000){
+					((nodoOperando*)(operando1->dato))->direccion = ((nodoOperando*)(operando1->dato))->direccion - 100000;
+				}
+				
 				//Reciclamos la variable
 				reciclarVariable(operando1, availEntero, availDecimal, availTexto, availBoolean);
 			} 
