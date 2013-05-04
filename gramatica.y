@@ -766,11 +766,7 @@ bloque_variables:
 
 bloque_variables_rep:
 	/* empty */
-	| declara_variables 
-	{
-		
-	} 
-	bloque_variables_rep
+	| declara_variables bloque_variables_rep
 	;
 
 declara_variables:
@@ -847,36 +843,51 @@ declara_variables:
 	}
 	|
 	MATRIZDECIMAL IDENTIFICADOR
-	{		
-		//Pendiente
+	{
 		tipoVariable = 1;
 		strncpy(nombreVariable, $2, tamanioIdentificadores);
 		asignarMemoriaVariable();
-		//Obtenemos los valores de las variables
-		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
 
-		//La variable no se encontro
-		if (variable == NULL) {
-			//Si esta variable entonces la tomamos si no es asi marcaremos un error			
-			
-			objetos = agregarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual, nombreVariable, tipoVariable, direccionVariable);				
-			
-		} else {
-			printf("Error: La variable ya esta declarada\n");
-			exit(1);
+		//Obtenemos los valores de las variables
+		if (seccVariablesGlobales == 1) {
+			//Agregar la variable, si existe se marcara error
+			objetos = agregarVariablesGlobales(objetos, nombreObjetoActual, nombreVariable, tipoVariable, direccionVariable);
+		} else if (seccVariablesLocales == 1) {
+
+			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+
+			//La variable no se encontro
+			if (variable == NULL) {
+				//Si esta variable entonces la tomamos si no es asi marcaremos un error			
+				objetos = agregarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual, nombreVariable, tipoVariable, direccionVariable);
+			} else {
+				printf("Error: La variable ya esta declarada\n");
+				exit(1);
+			}
 		}
+
 		numeroDimensiones = 0;
 		
 	}
 	dimensiones PUNTOYCOMA
 	{
-		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+		//Obtener la variable recien creada y darle sus propiedades, tiene prioridad variables locales
+		if (seccVariablesGlobales == 1) {
+			//Accedemos a la variable recien creada
+			variable = buscarVariablesGlobales(objetos, nombreObjetoActual,  nombreVariable);
+		} else if (seccVariablesLocales == 1) {
+			//Accedemos a la variable recien creada
+			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+		}
+
 		variable->tamanio = ((variable->lsuperior1 + 1) * (variable->lsuperior2 + 1));
 		variable->m1 = variable->tamanio / (variable->lsuperior1 + 1);
 
 		if (seccVariablesGlobales == 1) {
+			//Aumento de las variables globales
 			memoriaDecimalGlobal = memoriaDecimalGlobal + variable->tamanio;
 		} else if (seccVariablesLocales == 1) {
+			//Aumento de las variables locales
 			memoriaDecimalLocal = memoriaDecimalLocal + variable->tamanio;
 		}
 	}
@@ -887,27 +898,43 @@ declara_variables:
 		tipoVariable = 0;
 		strncpy(nombreVariable, $2, tamanioIdentificadores);
 		asignarMemoriaVariable();
-		//Obtenemos los valores de las variables
-		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
 
-		//La variable no se encontro
-		if (variable == NULL) {
-			//Si esta variable entonces la tomamos si no es asi marcaremos un error			
-			
-			objetos = agregarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual, nombreVariable, tipoVariable, direccionVariable);				
-			
-		} else {
-			printf("Error: La variable ya esta declarada\n");
-			exit(1);
+		//Obtenemos los valores de las variables
+		if (seccVariablesGlobales == 1) {
+			//Agregar la variable, si existe se marcara error
+			objetos = agregarVariablesGlobales(objetos, nombreObjetoActual, nombreVariable, tipoVariable, direccionVariable);	
+		} else if (seccVariablesLocales == 1) {
+			//Buscamos si la variable local ya ha sido creada
+			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+
+			//La variable no se encontro
+			if (variable == NULL) {
+				//Si esta variable entonces la tomamos si no es asi marcaremos un error			
+				objetos = agregarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual, nombreVariable, tipoVariable, direccionVariable);
+			} else {
+				printf("Error: La variable ya esta declarada\n");
+				exit(1);
+			}
 		}
+
 		numeroDimensiones = 0;
 	}
 	dimensiones PUNTOYCOMA
-	{		
-		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+	{	
+		//Obtener la variable recien creada y darle sus propiedades, tiene prioridad variables locales
+		if (seccVariablesGlobales == 1) {
+			//Acceso a la variable global recien creada
+			variable = buscarVariablesGlobales(objetos, nombreObjetoActual,  nombreVariable);
+		} else if (seccVariablesLocales == 1) {
+			//Acceso a la variable local recien creada
+			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+		}
+
+		//Inicializacion de los datos
 		variable->tamanio = ((variable->lsuperior1 + 1) * (variable->lsuperior2 + 1));
 		variable->m1 = variable->tamanio / (variable->lsuperior1 + 1);
 
+		//Aumento de las respectivas memorias
 		if (seccVariablesGlobales == 1) {
 			memoriaEnteroGlobal = memoriaEnteroGlobal + variable->tamanio;
 		} else if (seccVariablesLocales == 1) {
@@ -948,7 +975,15 @@ dimensiones:
 	ACORCHETE CTEENTERA CCORCHETE
 	{
 		numeroDimensiones++;
-		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+
+		if (seccVariablesGlobales == 1) {
+			//Accedemos a la variable recien creada
+			variable = buscarVariablesGlobales(objetos, nombreObjetoActual,  nombreVariable);
+		} else if (seccVariablesLocales == 1) {
+			//Accedemos a la variable recien creada
+			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+		}
+
 		variable->dimensionada = numeroDimensiones;
 
 		variable->lsuperior1 = atoi($2);
@@ -961,9 +996,15 @@ dimensiones_rep:
 	| ACORCHETE CTEENTERA CCORCHETE
 	{
 		numeroDimensiones++;
-		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
-		variable->dimensionada = numeroDimensiones;
-		
+		if (seccVariablesGlobales == 1) {
+			//Accedemos a la variable recien creada
+			variable = buscarVariablesGlobales(objetos, nombreObjetoActual,  nombreVariable);
+		} else if (seccVariablesLocales == 1) {
+			//Accedemos a la variable recien creada
+			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+		}
+
+		variable->dimensionada = numeroDimensiones;		
 		variable->lsuperior2 = atoi($2);	
 	}
 	;
