@@ -498,6 +498,10 @@ void generarDatos(directorioObjetos *objetos, directorio *constantes ) {
 							fprintf(fp,  "<direccion>%lu</direccion>\n", p->direccion);
 							fprintf(fp,  "<nombre>%s</nombre>\n", p->nombre);
 							fprintf(fp,  "<tipo>%i</tipo>\n", p->tipo);
+							if( p->dimensionada > 0){
+								fprintf(fp,  "<dimensionada>%i</dimensionada>\n", p->dimensionada);
+								fprintf(fp,  "<tamanio>%i</tamanio>\n", p->tamanio);								
+							}
 							fprintf(fp,  "</variableGlobal>\n");
 				}
 				fprintf(fp,  "</variablesGlobales>\n");
@@ -533,6 +537,10 @@ void generarDatos(directorioObjetos *objetos, directorio *constantes ) {
 							fprintf(fp,  "<direccion>%lu</direccion>\n", p->direccion);
 							fprintf(fp,  "<nombre>%s</nombre>\n", p->nombre);
 							fprintf(fp,  "<tipo>%i</tipo>\n", p->tipo);
+							if( p->dimensionada > 0){
+								fprintf(fp,  "<dimensionada>%i</dimensionada>\n", p->dimensionada);
+								fprintf(fp,  "<tamanio>%i</tamanio>\n", p->tamanio);								
+							}
 							fprintf(fp,  "</variableLocal>\n");
 						}
 						fprintf(fp,  "</variablesLocales>\n");

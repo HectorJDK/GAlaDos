@@ -87,7 +87,55 @@ public class xmlParser {
 									int direccion = Integer.parseInt(eElement3
 											.getElementsByTagName("direccion")
 											.item(0).getTextContent());
-
+									
+									//Si es un arreglo o matriz generar su espacio correspondiente
+									if(eElement3.getElementsByTagName("dimensionada").item(0) != null){
+																					
+									int dimensionada = Integer
+											.parseInt(eElement3
+													.getElementsByTagName(
+															"dimensionada")
+													.item(0)
+													.getTextContent());
+									int tamanio = Integer
+											.parseInt(eElement3
+													.getElementsByTagName(
+															"tamanio")
+													.item(0)
+													.getTextContent());
+									switch (tipo) {
+									case 0:
+										for(int i = 0; i<=tamanio; i++){
+										bloque.ingresaElementoEntero(
+												bloque.mapearDireccion(direccion+i),
+												-1);
+										}
+										break;
+									case 1:
+										for(int i = 0; i<=tamanio; i++){
+										bloque.ingresaElementoDecimal(
+												bloque.mapearDireccion(direccion+i),
+												-1);
+										}
+										break;
+									case 2:
+										for(int i = 0; i<=tamanio; i++){
+										bloque.ingresaElementoTexto(
+												bloque.mapearDireccion(direccion+i),
+												"");
+										}
+										break;
+									case 3:
+										for(int i = 0; i<=tamanio; i++){
+										bloque.ingresaElementoBooleano(
+												bloque.mapearDireccion(direccion+i),
+												false);
+										}
+										break;
+									}
+									}
+									
+									//Guardar datos en memoria
 									switch (tipo) {
 									case 0:
 										bloque.ingresaElementoEntero(bloque
@@ -291,7 +339,55 @@ public class xmlParser {
 																			"direccion")
 																	.item(0)
 																	.getTextContent());
-
+													
+													//Si es un arreglo o matriz generar su espacio correspondiente
+													if(eElement5.getElementsByTagName("dimensionada").item(0) != null){
+																									
+													int dimensionada = Integer
+															.parseInt(eElement5
+																	.getElementsByTagName(
+																			"dimensionada")
+																	.item(0)
+																	.getTextContent());
+													int tamanio = Integer
+															.parseInt(eElement5
+																	.getElementsByTagName(
+																			"tamanio")
+																	.item(0)
+																	.getTextContent());
+													switch (tipo) {
+													case 0:
+														for(int i = 0; i<=tamanio; i++){
+														bloque.ingresaElementoEntero(
+																bloque.mapearDireccion(direccion+i),
+																-1);
+														}
+														break;
+													case 1:
+														for(int i = 0; i<=tamanio; i++){
+														bloque.ingresaElementoDecimal(
+																bloque.mapearDireccion(direccion+i),
+																-1);
+														}
+														break;
+													case 2:
+														for(int i = 0; i<=tamanio; i++){
+														bloque.ingresaElementoTexto(
+																bloque.mapearDireccion(direccion+i),
+																"");
+														}
+														break;
+													case 3:
+														for(int i = 0; i<=tamanio; i++){
+														bloque.ingresaElementoBooleano(
+																bloque.mapearDireccion(direccion+i),
+																false);
+														}
+														break;
+													}
+													
+													}
+													//Guardar en memoria
 													switch (tipo) {
 													case 0:
 														bloque.ingresaElementoEntero(

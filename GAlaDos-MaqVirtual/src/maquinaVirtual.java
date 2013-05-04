@@ -44,7 +44,7 @@ public class maquinaVirtual {
 	    try {
 			
 			//Inicializacion de variables y estructuras
-	    	 datos = new xmlParser();
+	    	datos = new xmlParser();
 			//registro = new registro();			
 			cuadruplo = new cuadruplos();
 			//Crear arraylist de objetos cuadruplos
@@ -136,8 +136,8 @@ public class maquinaVirtual {
     			String operando1T="", operando2T=""; 
     			boolean operando1B=false, operando2B=false;
     			
-
-    			if(operacion != 23 && operacion != 22){
+    			//Si es operacion de ERA, PARAM, VERIFICA, SUMAMAT no mapear los elementos del cuadruplo.
+    			if(operacion != 23 && operacion != 22 && operacion != 26 && operacion != 27){
     				
     				//Selector de memoria en base a la direccion
     				//Operando1
@@ -1010,9 +1010,7 @@ public class maquinaVirtual {
 					cuadruplo = cuadruplos.get(indice);					
 					break;
 				case 21:					
-					//ERA
-					
-					
+					//ERA										
 					//Obtener el nombre de la funcion
 					String nombreFuncion = cuadruplo.getOperando1S();
 
@@ -1030,7 +1028,6 @@ public class maquinaVirtual {
 					//Obtenemos la direccion del parametro y numero de parametro
 					int direccionParametro = cuadruplo.getOperando1();
 					int numeroParametro = cuadruplo.getResultado()-1;					
-					//System.out.println("temp9000-"+obtieneEntero(constantes, workspaceActual, funcion, bloque, direccionParametro));
 					//Asignamos el parametro en la funcion nueva
 					switch(tipoOperando1){
 					case 0:
@@ -1072,9 +1069,25 @@ public class maquinaVirtual {
 					cuadruplo = cuadruplos.get(indice);										
 					break;
 				case 25:
-					//Fin de programa
+					//FIN DE PROGRAMA
 					finEjecucion = true;
 					break;
+				case 26:
+					//VERIFICA
+					int s = obtieneEntero(constantes, workspaceActual, funcion, bloque, cuadruplo.getOperando1());
+
+					//Checar si S esta fuera de los indices del arreglo
+					if(s < cuadruplo.getOperando2() | s > cuadruplo.getResultado()){												
+						//Fin de programa
+						System.out.println("Error: El indice esta fuera de los limites del arreglo/matriz");
+						finEjecucion = true;
+					} else {
+						indice++;
+	    				cuadruplo = cuadruplos.get(indice);		
+					}					
+					break;	
+				case 27:
+					//SUMAMAT
     			}
     		}
 	    } finally {
