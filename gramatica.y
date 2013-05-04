@@ -37,6 +37,7 @@ int cantidadParametros = 0;
 int cantidadParametrosFuncion = 0;
 int permisoFuncion = 0;
 int esFuncion = 0;
+int esMatriz = 0;
 int esObjeto = 0;
 
 //Globales de control para validacion de parametros
@@ -864,9 +865,38 @@ declara_variables:
 		}
 	}
 	|
-	MATRIZENTERA IDENTIFICADOR dimensiones PUNTOYCOMA
-	{		
+	MATRIZENTERA IDENTIFICADOR
+	{
 		//Pendiente
+		tipoVariable = 0;
+		strncpy(nombreVariable, $2, tamanioIdentificadores);
+		asignarMemoriaVariable();
+		//Obtenemos los valores de las variables
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+
+		//La variable no se encontro
+		if (variable == NULL) {
+			//Si esta variable entonces la tomamos si no es asi marcaremos un error			
+			
+			objetos = agregarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual, nombreVariable, tipoVariable, direccionVariable);				
+			
+		} else {
+			printf("Error: La variable ya esta declarada\n");
+			exit(1);
+		}
+		numeroDimensiones = 0;
+	}
+	dimensiones PUNTOYCOMA
+	{		
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+		variable->tamanio = ((variable->lsuperior1 + 1) * (variable->lsuperior2 + 1));
+		variable->m1 = variable->tamanio / (variable->lsuperior1 + 1);
+
+		if (seccVariablesGlobales == 1) {
+			memoriaEnteroGlobal = memoriaEnteroGlobal + variable->tamanio;
+		} else if (seccVariablesLocales == 1) {
+			memoriaEnteroLocal = memoriaEnteroLocal + variable->tamanio;
+		}
 	}
 	|
 	CREAROBJETO IDENTIFICADOR ES IDENTIFICADOR PUNTOYCOMA
@@ -942,7 +972,6 @@ dimensiones2:
 		}
 	} serexpresion2 
 	{
-		//nodoAuxiliar = pop(operandos);
 
 		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
 
@@ -1140,17 +1169,17 @@ identificadorOLlamadaAFuncion:
 		//Obtenemos el nombre de la variable que desamos usar
 		strncpy(nombreVariable, $1, tamanioIdentificadores);
 		esFuncion = 0;
+		esMatriz = 0;
 	}  
 	opcionalFuncion
 	{	
 		//Verificamos que sea solo una variable y no un identificador
-		if (esFuncion == 0) {
+		if (esFuncion == 0 && esMatriz == 0) {
 			
 			//Aqui habra un posible error por no manejar lo de las funciones
 			//Debemos checar primero que ademas la variable no sea una constante
 			variable = buscarConstante(constantes, nombreVariable);
 
-			printf("Variable %s\n", nombreVariable);
 			if (variable == NULL) {
 				//Obtenemos los valores de las variables
 				variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
@@ -1169,6 +1198,7 @@ identificadorOLlamadaAFuncion:
 
 		//Volvemos a inicializar
 		esFuncion = 0;
+		esMatriz = 0;
 	}
 	;
 
@@ -1223,6 +1253,9 @@ opcionalFuncion:
 	}
 	| ACORCHETE 
 	{
+		//Inicializacion parametros
+		esMatriz = 1;
+
 		strncpy(nombreMatrizActual, nombreVariable, tamanioIdentificadores);
 		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
 
@@ -1231,12 +1264,11 @@ opcionalFuncion:
 		} 
 
 		if(variable->dimensionada == 0){
-			printf("Error: la variable no es dimensionada");
+			printf("Error: la variable no es dimensionada \n");
 			exit(1);
 		}
 	} serexpresion2 
 	{
-		//nodoAuxiliar = pop(operandos);
 
 		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
 
@@ -1644,6 +1676,7 @@ decideEstatuto:
 		//Obtenemos el nombre de la variable que desamos usar
 		strncpy(nombreVariable, $1, tamanioIdentificadores);
 		esFuncion = 0;
+		esMatriz = 0;
 	}  
 	estatutoOAsignacion
 	;
@@ -1665,24 +1698,59 @@ llama_funcion_opcional:
 	}
 	;
 
+
+
 asignacion1:
-	dimensiones IGUAL serexpresion
+	ACORCHETE 
+	{
+		//Inicializacion parametros
+		esMatriz = 1;
+
+		strncpy(nombreMatrizActual, nombreVariable, tamanioIdentificadores);
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
+
+		if (variable == NULL) {
+			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
+		} 
+
+		if(variable->dimensionada == 0){
+			printf("Error: la variable no es dimensionada \n");
+			exit(1);
+		}
+	} serexpresion2 
+	{
+
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
+
+		if (variable == NULL) {
+			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
+		} 
+		generarVerifica(1);
+
+		generarDesplazamiento(1);
+	}
+	CCORCHETE dimensiones2 IGUAL
+	{
+		pushPilaOperadores(OP_ASIGNACION);		 
+	}
+	serexpresion
+	{
+		//Funcion experimental solo funcionara con expresiones y id
+		generarAsignacion();
+	}
 	| IGUAL
 	{	
-		//Verificamos que sea solo una variable y no un identificador
-		if (esFuncion == 0) {
-			//Obtenemos los valores de las variables si no existen exit
-			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+		//Obtenemos los valores de las variables si no existen exit
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
 
-			//La variable no se encontro
-			if (variable == NULL) {
-				//Si esta variable entonces la tomamos si no es asi marcaremos un error
-				variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreVariable);
-			}
-
-			//crearemos un nodoOperando para agregarlo a la pila
-			pushPilaOperandos(variable);
+		//La variable no se encontro
+		if (variable == NULL) {
+			//Si esta variable entonces la tomamos si no es asi marcaremos un error
+			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreVariable);
 		}
+
+		//crearemos un nodoOperando para agregarlo a la pila
+		pushPilaOperandos(variable);
 
 		pushPilaOperadores(OP_ASIGNACION);
 	} 
