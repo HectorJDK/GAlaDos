@@ -1150,6 +1150,7 @@ identificadorOLlamadaAFuncion:
 			//Debemos checar primero que ademas la variable no sea una constante
 			variable = buscarConstante(constantes, nombreVariable);
 
+			printf("Variable %s\n", nombreVariable);
 			if (variable == NULL) {
 				//Obtenemos los valores de las variables
 				variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
