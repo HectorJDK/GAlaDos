@@ -65,7 +65,7 @@ public class bloque {
 	 * @param valor
 	 */
 	public void ingresaElementoEntero(int direccion, int valor){	
-			if(entero.size() < direccion){
+			if(entero.size() > direccion){
 				entero.set(direccion,valor);
 			} else {
 				entero.add(direccion, valor); 
@@ -78,7 +78,8 @@ public class bloque {
 	 * @param valor
 	 */
 	public void ingresaElementoDecimal(int direccion, double valor){	
-		if(decimal.size()<direccion){
+		//System.out.println(direccion);
+		if(decimal.size()>direccion){
 			decimal.set(direccion,valor);
 		} else {
 			decimal.add(direccion, valor); 
@@ -91,7 +92,7 @@ public class bloque {
 	 * @param valor
 	 */
 	public void ingresaElementoTexto(int direccion, String valor){	
-		if(texto.size()<direccion){
+		if(texto.size()>direccion){
 			texto.set(direccion,valor);
 		} else {
 			texto.add(direccion, valor); 
@@ -104,7 +105,7 @@ public class bloque {
 	 * @param valor
 	 */
 	public void ingresaElementoBooleano(int direccion, boolean valor){	
-		if(booleano.size()<direccion){
+		if(booleano.size()>direccion){
 			booleano.set(direccion,valor);
 		} else {
 			booleano.add(direccion, valor); 

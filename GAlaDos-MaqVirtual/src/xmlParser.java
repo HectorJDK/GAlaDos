@@ -8,18 +8,14 @@
  */
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
  
 public class xmlParser {
  
@@ -56,7 +52,7 @@ public class xmlParser {
 				if (auxiliar.getNodeType() == Node.ELEMENT_NODE) {
 					// Objeto elemento con los subnodos
 					Element eElement = (Element) auxiliar;
-					if (!eElement.getNodeName().equals("constantes")) {
+					if (!eElement.getNodeName().equals("constantes") && !eElement.getNodeName().equals("variablesRetornos")) {
 
 						// Guardar el nombre
 						objetoTemporal.setNombre(eElement.getNodeName());
@@ -90,13 +86,7 @@ public class xmlParser {
 									
 									//Si es un arreglo o matriz generar su espacio correspondiente
 									if(eElement3.getElementsByTagName("dimensionada").item(0) != null){
-																					
-									int dimensionada = Integer
-											.parseInt(eElement3
-													.getElementsByTagName(
-															"dimensionada")
-													.item(0)
-													.getTextContent());
+																													
 									int tamanio = Integer
 											.parseInt(eElement3
 													.getElementsByTagName(
@@ -105,28 +95,28 @@ public class xmlParser {
 													.getTextContent());
 									switch (tipo) {
 									case 0:
-										for(int i = 0; i<=tamanio; i++){
+										for(int i = 0; i<tamanio; i++){
 										bloque.ingresaElementoEntero(
 												bloque.mapearDireccion(direccion+i),
 												-1);
 										}
 										break;
 									case 1:
-										for(int i = 0; i<=tamanio; i++){
+										for(int i = 0; i<tamanio; i++){
 										bloque.ingresaElementoDecimal(
 												bloque.mapearDireccion(direccion+i),
 												-1);
 										}
 										break;
 									case 2:
-										for(int i = 0; i<=tamanio; i++){
+										for(int i = 0; i<tamanio; i++){
 										bloque.ingresaElementoTexto(
 												bloque.mapearDireccion(direccion+i),
 												"");
 										}
 										break;
 									case 3:
-										for(int i = 0; i<=tamanio; i++){
+										for(int i = 0; i<tamanio; i++){
 										bloque.ingresaElementoBooleano(
 												bloque.mapearDireccion(direccion+i),
 												false);
@@ -155,70 +145,16 @@ public class xmlParser {
 												false);
 										break;
 									}
-
 								}
 							}
 							objetoTemporal.setGlobales(bloque);
-							bloque = new bloque();
-
-						}
-						// Guardar retornos
-
-						NodeList auxiliarLista4 = eElement
-								.getElementsByTagName("variablesRetornos");
-						// System.out.println("auxLs"+auxiliarLista.getLength());
-						auxiliar = auxiliarLista4.item(0);
-						if (auxiliar.getNodeType() == Node.ELEMENT_NODE) {
-							// Objeto elemento con los subnodos
-							Element eElement2 = (Element) auxiliar;
-							NodeList auxiliarLista5 = eElement2
-									.getElementsByTagName("variableRetorno");
-							// System.out.println("auxLs"+auxiliarLista.getLength());
-
-							// Iterar la lista para agregar cada objeto
-							for (int temp2 = 0; temp2 < auxiliarLista5
-									.getLength(); temp2++) {
-								auxiliar = auxiliarLista5.item(temp2);
-								if (auxiliar.getNodeType() == Node.ELEMENT_NODE) {
-									// Obtener los datos de variables globales
-									Element eElement3 = (Element) auxiliar;
-									int tipo = Integer.parseInt(eElement3
-											.getElementsByTagName("tipo")
-											.item(0).getTextContent());
-									int direccion = Integer.parseInt(eElement3
-											.getElementsByTagName("direccion")
-											.item(0).getTextContent());
-
-									switch (tipo) {
-									case 0:
-										bloque.ingresaElementoEntero(direccion,
-												-1);
-										break;
-									case 1:
-										bloque.ingresaElementoDecimal(
-												direccion, -1);
-										break;
-									case 2:
-										bloque.ingresaElementoTexto(direccion,
-												"");
-										break;
-									case 3:
-										bloque.ingresaElementoBooleano(
-												direccion, false);
-										break;
-									}
-								}
-							}
-							objetoTemporal.setRetornos(bloque);
-							bloque = new bloque();
-
+							bloque = new bloque();								
 						}
 						// Agregar a workspace
 						objetos.add(objetoTemporal);
 						objetoTemporal = new objetos();
 					}
 				}
-
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -260,7 +196,7 @@ public class xmlParser {
 				if (auxiliar.getNodeType() == Node.ELEMENT_NODE) {
 					// Objeto elemento con los subnodos
 					Element eElement = (Element) auxiliar;
-					if (!eElement.getNodeName().equals("constantes")) {
+					if (!eElement.getNodeName().equals("constantes") && !eElement.getNodeName().equals("variablesRetornos")) {
 						// Guardar funciones
 
 						NodeList auxiliarLista3 = eElement
@@ -342,13 +278,7 @@ public class xmlParser {
 													
 													//Si es un arreglo o matriz generar su espacio correspondiente
 													if(eElement5.getElementsByTagName("dimensionada").item(0) != null){
-																									
-													int dimensionada = Integer
-															.parseInt(eElement5
-																	.getElementsByTagName(
-																			"dimensionada")
-																	.item(0)
-																	.getTextContent());
+																																						
 													int tamanio = Integer
 															.parseInt(eElement5
 																	.getElementsByTagName(
@@ -357,28 +287,28 @@ public class xmlParser {
 																	.getTextContent());
 													switch (tipo) {
 													case 0:
-														for(int i = 0; i<=tamanio; i++){
+														for(int i = 0; i<tamanio; i++){
 														bloque.ingresaElementoEntero(
 																bloque.mapearDireccion(direccion+i),
 																-1);
 														}
 														break;
 													case 1:
-														for(int i = 0; i<=tamanio; i++){
+														for(int i = 0; i<tamanio; i++){
 														bloque.ingresaElementoDecimal(
 																bloque.mapearDireccion(direccion+i),
 																-1);
 														}
 														break;
 													case 2:
-														for(int i = 0; i<=tamanio; i++){
+														for(int i = 0; i<tamanio; i++){
 														bloque.ingresaElementoTexto(
 																bloque.mapearDireccion(direccion+i),
 																"");
 														}
 														break;
 													case 3:
-														for(int i = 0; i<=tamanio; i++){
+														for(int i = 0; i<tamanio; i++){
 														bloque.ingresaElementoBooleano(
 																bloque.mapearDireccion(direccion+i),
 																false);
@@ -447,11 +377,10 @@ public class xmlParser {
 					.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
-			String valor, nombre;
+			String valor;
 			int direccion;
 			int tipo;
-			doc.getDocumentElement().normalize();
-			// registro registro = new registro();
+			doc.getDocumentElement().normalize();			
 
 			/**
 			 * Seccion para cargar tabla de constantes a memoria
@@ -514,6 +443,71 @@ public class xmlParser {
 		return bloque;
 	}
   
+	/**
+	 * Metodo que carga los retornos del archivo xml
+	 * @param bloque
+	 * @return bloque El bloque con los retornos cargados
+	 */
+	public bloque cargarRetornos(bloque bloque) {
+
+		try {
+
+			// Declaracion e inicializacion de estructuras y objetos
+			File fXmlFile = new File("obj/datos.txt");
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory
+					.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);	
+			int direccion;
+			int tipo;
+			doc.getDocumentElement().normalize();			
+
+			/**
+			 * Seccion para cargar tabla de retornos a memoria
+			 */
+
+			// Obtener la lista de nodos tipo retorno
+			NodeList nList = doc.getElementsByTagName("variablesRetornos");
+
+			// Iterar la lista para agregar cada nodo al bloque
+			for (int temp = 0; temp < nList.getLength(); temp++) {
+				// Nodo actual
+				Node nNode = nList.item(temp);
+				// Si el nodo tiene elementos internos
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+					// Objeto elemento con los subnodos
+					Element eElement = (Element) nNode;
+
+					// Obtener la direccion
+					direccion = Integer.parseInt(eElement
+							.getElementsByTagName("direccion").item(0)
+							.getTextContent());
+					// Obtener el tipo
+					tipo = Integer.parseInt(eElement
+							.getElementsByTagName("tipo").item(0)
+							.getTextContent());	
+					switch (tipo) {
+					case 0:
+						bloque.ingresaElementoEntero(direccion, -1);
+						break;
+					case 1:
+						bloque.ingresaElementoDecimal(direccion, -1);
+						break;
+					case 2:
+						bloque.ingresaElementoTexto(direccion, "");
+						break;
+					case 3:
+						bloque.ingresaElementoBooleano(direccion, false);
+						break;
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return bloque;
+	}
+  
   /**
    * Metodo para obtener el tipo de un registro retorno obtenido por el xml
    * @param objeto
@@ -529,29 +523,25 @@ public class xmlParser {
 					.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
-
-			// Obtener la lista de nodos del objeto
-			NodeList nodosObjeto = doc.getElementsByTagName(objeto);
-			// Obtener el nodo de procedimientos
-			Node main = nodosObjeto.item(0);
-
-			// Lista de nodos de funciones
-			NodeList nodosMain = main.getChildNodes();
-			Node retornosNode = nodosMain.item(3);
-			Element eElement2 = (Element) retornosNode;
-
-			NodeList variablesRetornos = eElement2
-					.getElementsByTagName("variableRetorno");
+			
+			// Obtener la lista de nodos tipo retorno
+			NodeList nList = doc.getElementsByTagName("variablesRetornos");
 
 			// Iterar la lista para agregar cada nodo al bloque
-			for (int temp = 0; temp < variablesRetornos.getLength(); temp++) {
-				Element eElement = (Element) variablesRetornos.item(temp);
-				// Cargar variables locales
-				if (eElement.getElementsByTagName("direccion").item(0)
-						.getTextContent() == direccion) {
-					return Integer.parseInt(eElement
-							.getElementsByTagName("tipo").item(0)
-							.getTextContent());
+			for (int temp = 0; temp < nList.getLength(); temp++) {
+				// Nodo actual
+				Node nNode = nList.item(temp);
+				// Si el nodo tiene elementos internos
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+					// Objeto elemento con los subnodos
+					Element eElement = (Element) nNode;				
+					// Cargar variables locales
+					if (eElement.getElementsByTagName("direccion").item(0)
+							.getTextContent() == direccion) {
+						return Integer.parseInt(eElement
+								.getElementsByTagName("tipo").item(0)
+								.getTextContent());
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -559,302 +549,4 @@ public class xmlParser {
 		}
 		return tipo;
 	}
-}
-	/**
-	 * Seccion para cargar tabla de Locales de ejecutar programa a memoria
-	 */
-	//Obtener la lista de nodos 
-	//Obtener la lista de nodos del objeto	
-	/*
-	NodeList nodosObjeto = doc.getElementsByTagName("main"); 
-	//Obtener el nodo de procedimientos
-	Node main = nodosObjeto.item(0); 	
-	NodeList nodosMain = main.getChildNodes();
-		Node procedimientosNode = nodosMain.item(5);	
-		Element eElement2 = (Element) procedimientosNode;
-		NodeList funciones = eElement2.getElementsByTagName("ejecutarProgama");
-		Node nNode = funciones.item(0); 
-
-		Element eElement = (Element) nNode; 
-		//Cargar variables locales
-		NodeList variablesLocales = eElement.getElementsByTagName("variableLocal");
-	
-	//Iterar la lista para agregar cada nodo al bloque
-	for (int temp = 0; temp < variablesLocales.getLength(); temp++) { 
-		//Nodo actual
-		Node nNodeL = variablesLocales.item(temp); 
-		//Si el nodo tiene elementos internos
-		if (nNodeL.getNodeType() == Node.ELEMENT_NODE) { 
-			//Objeto elemento con los subnodos
-			Element eElementL = (Element) nNodeL; 					
-			
-			//Obtener la direccion
-			direccion = eElementL.getElementsByTagName("direccion").item(0).getTextContent();
-			registro.setDireccion(Integer.parseInt(direccion));
-			//Obtener el tipo
-			tipo = Integer.parseInt(eElementL.getElementsByTagName("tipo").item(0).getTextContent());												
-
-			//Ingresarlo al bloque de memoria
-			bloque.put(Integer.parseInt(direccion), registro);
-			//Reinicializar la estructura
-			registro = new registro();
-		}
-	}	
-    } catch (Exception e) {
-    	e.printStackTrace();
-    }
-	return bloque;
-  }
-  
-  public  HashMap<Integer, registro> cargarDatosRetorno(registro registro, HashMap<Integer, registro> bloqueRetornos) {
-	  
-	    try {
-	    	 //Declaracion e inicializacion de estructuras y objetos	
-	    	File fXmlFile = new File("obj/datos.txt");			
-	    	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-	    	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-	    	Document doc = dBuilder.parse(fXmlFile);	
-	    	String direccion, valor, nombre;
-	    	int tipo;
-	    	doc.getDocumentElement().normalize(); 
-	    	/**
-	    	 * Seccion para cargar tabla de Retornos a memoria
-	    	 */
-	    	//Obtener la lista de nodos 
-	    	//Obtener la lista de nodos del objeto
-	/*    	
-	NodeList nodosObjeto = doc.getElementsByTagName("main"); 
-	    		//Obtener el nodo de procedimientos
-	    		Node main = nodosObjeto.item(0); 	
-	    		NodeList nodosMain = main.getChildNodes();
-	    		Node retornos = nodosMain.item(3);	
-	    		Element eElementR = (Element) retornos;
-	    		//Cargar variables locales
-	    		NodeList variablesRetornos= eElementR.getElementsByTagName("variableRetorno");
-	    	
-	    	//Iterar la lista para agregar cada nodo al bloque
-	    	for (int temp = 0; temp < variablesRetornos.getLength(); temp++) { 
-	    		//Nodo actual
-	    		Node nNodeL = variablesRetornos.item(temp); 
-	    		//Si el nodo tiene elementos internos
-	    		if (nNodeL.getNodeType() == Node.ELEMENT_NODE) { 
-	    			//Objeto elemento con los subnodos
-	    			Element eElementL = (Element) nNodeL; 					
-	    			
-	    			//Obtener la direccion
-	    			direccion = eElementL.getElementsByTagName("direccion").item(0).getTextContent();
-	    			registro.setDireccion(Integer.parseInt(direccion));
-	    			//Obtener el tipo
-	    			tipo = Integer.parseInt(eElementL.getElementsByTagName("tipo").item(0).getTextContent());												
-	    			
-	    			//Ingresarlo al bloque de memoria
-	    			bloqueRetornos.put(Integer.parseInt(direccion), registro);
-	    			//Reinicializar la estructura
-	    			registro = new registro();
-	    		}
-	    	}
-	    } catch (Exception e) {
-	    	e.printStackTrace();
-	    }
-		return bloqueRetornos;
-	  }
-  
-  /**
-   * TAmanio de variables locales  de una funcion dada como parametro
-   * @param objeto
-   * @param funcion
-   * @return
-   */
-	/*
-  public int tamanioFuncion(String objeto, String funcion) {
-	  int tamanio = 0; 
-	  try {
-	  //Declaracion e inicializacion de estructuras y objetos	
-	File fXmlFile = new File("obj/datos.txt");			
-	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-	Document doc = dBuilder.parse(fXmlFile);
-	
-	//Obtener la lista de nodos del objeto
-	NodeList nodosObjeto = doc.getElementsByTagName(objeto); 
-	//Obtener el nodo de procedimientos
-	Node main = nodosObjeto.item(0); 	
-	
-	//Lista de nodos de funciones
-	NodeList nodosMain = main.getChildNodes();
-	Node procedimientosNode = nodosMain.item(5);	
-	Element eElement2 = (Element) procedimientosNode;
-	NodeList funciones = eElement2.getElementsByTagName(funcion);
-	
-	Node nNode = funciones.item(0); 
-
-	Element eElement = (Element) nNode; 
-	//Cargar variables locales
-	NodeList variablesLocales = eElement.getElementsByTagName("variableLocal");
-	
-	 tamanio =  variablesLocales.getLength();
-	    } catch (Exception e) {
-	    	e.printStackTrace();
-	    }
-	    return tamanio;
-  }
-  
-  */
-  
-  
-  
-  /*
-   * Metodo para recuperar la informacion de la funcion desde el archivo xml
-   * @param registro
-   * @param objeto
-   * @param funcion
-   * @return
-   */
-	/*
-  public funcion cargarDatosFuncion( registro registro, String objeto, funcion funcion, HashMap<Integer, registro> bloque) {
-	  
-	    try {
-	    	
-	    //Declaracion e inicializacion de estructuras y objetos	
-		File fXmlFile = new File("obj/datos.txt");			
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(fXmlFile);	
-		String regresa, permiso, direccionCuadruplo;		
-		doc.getDocumentElement().normalize(); 
-
-		/**
-		 * Seccion para cargar datos de funciones
-		 */
-		//Obtener la lista de nodos del objeto
-	/*
-		NodeList nodosObjeto = doc.getElementsByTagName(objeto); 
-		//Obtener el nodo de main
-		Node main = nodosObjeto.item(0); 
-		
-		//Lista de nodos de funciones
-		NodeList nodosMain = main.getChildNodes();
-		
-		Node procedimientosNode = nodosMain.item(5);	
-	
-		Element eElement2 = (Element) procedimientosNode;
-		//System.out.println("name2-"+eElement2.getNodeName());
-		
-		NodeList funciones = eElement2.getElementsByTagName(funcion.getNombre());
-		
-		Node nNode = funciones.item(0); 
-	
-		//Si el nodo tiene elementos internos
-		if (nNode.getNodeType() == Node.ELEMENT_NODE) { 
-			//Objeto elemento con los subnodos
-			Element eElement = (Element) nNode; 				
-			//Obtener regresa
-			regresa = eElement.getElementsByTagName("regresa").item(0).getTextContent();
-			funcion.setRegresa(Integer.parseInt(regresa));
-			//Obtener el permiso
-			permiso = eElement.getElementsByTagName("permiso").item(0).getTextContent();
-			funcion.setPermiso(Integer.parseInt(permiso));
-			//Obtener la direccion del cuadruplo
-			direccionCuadruplo = eElement.getElementsByTagName("direccionCuadruplo").item(0).getTextContent();														
-			funcion.setDireccionCuadruplo(Integer.parseInt(direccionCuadruplo));
-
-			//Cargar variables locales
-			NodeList variablesLocales = eElement.getElementsByTagName("variableLocal");
-			//Iterar la lista para agregar cada variable al objeto funcion
-			for (int tempV = 0; tempV < variablesLocales.getLength(); tempV++) { 
-				Node nNodeV = variablesLocales.item(tempV); 
-				//Si el nodo tiene elementos internos
-				if (nNodeV.getNodeType() == Node.ELEMENT_NODE) { 
-					//Objeto elemento con los subnodos
-					Element eElementV = (Element) nNodeV; 					
-					registro.setDireccion(Integer.parseInt(eElementV.getElementsByTagName("direccion").item(0).getTextContent()));						
-					//bloque.put(Integer.parseInt(eElementV.getElementsByTagName("direccion").item(0).getTextContent()), registro);
-					funcion.locales[tempV]=registro;
-					registro = new registro();
-				}
-			}
-		}	
-	    } catch (Exception e) {
-	    	e.printStackTrace();
-	    }
-		return funcion;
-	  }
-  
-  /**
-   * Metodo para recuperar la informacion de la funcion desde el archivo xml
-   * @param registro
-   * @param objeto
-   * @param funcion
-   * @return
-   */
-	/*
-  public HashMap<Integer, registro> cargarDatosFuncionLocales( registro registro, String objeto, funcion funcion, HashMap<Integer, registro> bloque) {
-	  
-	    try {
-	    	
-	    //Declaracion e inicializacion de estructuras y objetos	
-		File fXmlFile = new File("obj/datos.txt");			
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(fXmlFile);	
-		String regresa, permiso, direccionCuadruplo;		
-		doc.getDocumentElement().normalize(); 
-
-		/**
-		 * Seccion para cargar datos de funciones
-		 */
-		//Obtener la lista de nodos del objeto
-	/*
-		NodeList nodosObjeto = doc.getElementsByTagName(objeto); 
-		//Obtener el nodo de main
-		Node main = nodosObjeto.item(0); 
-		
-		//Lista de nodos de funciones
-		NodeList nodosMain = main.getChildNodes();
-		
-		Node procedimientosNode = nodosMain.item(5);	
-	
-		Element eElement2 = (Element) procedimientosNode;
-		//System.out.println("name2-"+eElement2.getNodeName());
-		
-		NodeList funciones = eElement2.getElementsByTagName(funcion.getNombre());
-		
-		Node nNode = funciones.item(0); 
-	
-		//Si el nodo tiene elementos internos
-		if (nNode.getNodeType() == Node.ELEMENT_NODE) { 
-			//Objeto elemento con los subnodos
-			Element eElement = (Element) nNode; 				
-			//Obtener regresa
-			regresa = eElement.getElementsByTagName("regresa").item(0).getTextContent();
-			funcion.setRegresa(Integer.parseInt(regresa));
-			//Obtener el permiso
-			permiso = eElement.getElementsByTagName("permiso").item(0).getTextContent();
-			funcion.setPermiso(Integer.parseInt(permiso));
-			//Obtener la direccion del cuadruplo
-			direccionCuadruplo = eElement.getElementsByTagName("direccionCuadruplo").item(0).getTextContent();														
-			funcion.setDireccionCuadruplo(Integer.parseInt(direccionCuadruplo));
-
-			//Cargar variables locales
-			NodeList variablesLocales = eElement.getElementsByTagName("variableLocal");
-			//Iterar la lista para agregar cada variable al objeto funcion
-			for (int tempV = 0; tempV < variablesLocales.getLength(); tempV++) { 
-				Node nNodeV = variablesLocales.item(tempV); 
-				//Si el nodo tiene elementos internos
-				if (nNodeV.getNodeType() == Node.ELEMENT_NODE) { 
-					//Objeto elemento con los subnodos
-					Element eElementV = (Element) nNodeV; 					
-					registro.setDireccion(Integer.parseInt(eElementV.getElementsByTagName("direccion").item(0).getTextContent()));						
-					bloque.put(Integer.parseInt(eElementV.getElementsByTagName("direccion").item(0).getTextContent()), registro);
-					//funcion.locales[tempV]=registro;
-					registro = new registro();
-				}
-			}
-		}	
-	    } catch (Exception e) {
-	    	e.printStackTrace();
-	    }
-		return bloque;
-	  }
-	  */
-		
+}		

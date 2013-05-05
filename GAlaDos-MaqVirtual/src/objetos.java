@@ -12,7 +12,6 @@ public class objetos {
 	//Atributos de objetos
 	String nombre;
 	bloque globales;
-	bloque retornos;
 	
 	//Constructor
 	public objetos(){
@@ -35,11 +34,5 @@ public class objetos {
 		this.globales = globales;
 	}
 	
-	public bloque getRetornos(){
-		return this.retornos;
-	}
 	
-	public void setRetornos(bloque retornos){
-		this.retornos = retornos;
-	}
 }

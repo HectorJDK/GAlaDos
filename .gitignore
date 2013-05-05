@@ -7,6 +7,7 @@
 *.yy.c
 *.class
 test
+*.log
 
 ######################
 # Folders  Ignored	 #
