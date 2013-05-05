@@ -224,62 +224,45 @@ directorio* buscarVariablesGlobales(directorioObjetos *objetos, char *objeto, ch
 }
 
 /*
-* Funcion para agregar las variables globales (retorno) al directorio de objetos.
+* Funcion para agregar las variables globales (retorno) al directorio de retornos
 */
-directorioObjetos* agregarVariablesRetorno(directorioObjetos *objetos, char *objeto, char *nombre, int tipo, unsigned long direccion) {
-		//Variables auxiliares
-		directorioObjetos *existe;
+directorio* agregarVariablesRetorno(directorio *retornos, char *nombre, unsigned short tipo, int direccion){
+		
+		//Variable ausxiliar
 		directorio *temp;
 
-		//Buscar el objeto en el directorio
-		HASH_FIND_STR(objetos, objeto, existe); 
-		if (existe) {
-				//Checar si la variable ya existe
-				HASH_FIND_STR(existe->variablesRetorno, nombre, temp);
-				if (temp==NULL) {
-						//Agregar la nueva variable al directorio
-						temp = (directorio*)malloc(sizeof(directorio));
-						strcpy(temp->nombre, nombre);
-						temp->tipo = tipo;
-						temp->direccion = direccion;
-						HASH_ADD_STR(existe->variablesRetorno, nombre, temp);  
-						return objetos;   
-				} else {
-						printf("Error Variable %s ya esta delcarada \n", nombre);
-						exit(1);
-				}
-		} else {
-				printf("Error Clase %s no se encuentra declarada \n", objeto);
-				exit(1);
+		//Buscar la constante en el directorio
+		HASH_FIND_STR(retornos, nombre, temp);  
+		if (temp==NULL) {
+				//Agregar la nueva constante al directorio
+				temp = (directorio*)malloc(sizeof(directorio));
+				strcpy(temp->nombre, nombre);
+				temp->direccion = direccion;
+				temp->tipo = tipo;
+				HASH_ADD_STR(retornos, nombre, temp);  
+				return retornos;    
+		}else {
+			//No hacer nada, porque ya esta grabada
+			return retornos;
 		}
 }
 
 /*
 * Funcion para buscar en la tabla de retorno globales de funcion, solo regresa el directorio de la variable para ser usada
 */
-directorio* buscarVariablesRetorno(directorioObjetos *objetos, char *objeto, char *nombre) {
-		
-		//Variables auxiliares
-		directorioObjetos *existe;
+directorio* buscarVariablesRetorno(directorio *retornos, char *nombre){	
+		//Variable auxiliar
 		directorio *temp;
 
 		//Buscar el objeto en el directorio
-		HASH_FIND_STR(objetos, objeto, existe); 
-		if (existe) {
-				//Checar si la variable ya existe
-				HASH_FIND_STR(existe->variablesRetorno, nombre, temp);
-				//Si ya existe manejar el error y terminar compilacion
-				if (temp == NULL) {
-					printf("Error Variable %s no esta delcarada \n", nombre);
-					exit(1);
-				} else {
-					//Si la variable existe regresar el directorio de la variable
-					return temp;
-				}
+		HASH_FIND_STR(retornos, nombre, temp);  
+		if (temp==NULL) {
+			//SI no existe solo regresamos NULL
+			return NULL;
 		} else {
-			printf("Error Clase %s no se encuentra declarada \n", objeto);
-			exit(1);
-		}
+			//Regresamos al apuntador al directorio del objeto
+			return temp;
+		}       
 }
 
 /*
@@ -434,14 +417,33 @@ directorio* buscarConstante(directorio *constantes, char *nombre){
 * Funcion para desplegar los elementos del directorio de objetos asi como los 
 * elementos del directorio de funciones y variables que esten asociados
 */
-void imprimirObjetos(directorioObjetos *objetos) {
+void imprimirObjetos(directorioObjetos *objetos, directorio *constantes, directorio *retornos) {
 			
 			directorioObjetos *o;
 			directorioProcedimientos *s;
 			directorio *p;
 
+			printf("\n");
+
+			//Imprimir variables constantes
+			printf("Variable constantes\n");
+			for(p=constantes; p!= NULL; p=(struct directorio*)(p->hh.next)) {
+					printf("Nombre de la variable: %s , tipo: %i , direccion: %lu \n", p->nombre, p->tipo, p->direccion);
+			}
+
+			printf("\n");
+
+			//Imprimir variables retorno
+			printf("Variable retorno\n");
+			for(p=retornos; p!= NULL; p=(struct directorio*)(p->hh.next)) {
+					printf("Nombre de la variable: %s , tipo: %i , direccion: %lu \n", p->nombre, p->tipo, p->direccion);
+			}
+
+			
+
 			//Imprimir tabla de objetos
 			for(o = objetos; o != NULL; o=(directorioObjetos*)(o->hh.next)){
+				printf("\n");
 				printf("Nombre del objeto: %s \n", o->nombre);
 				//Imprimir variables globales (main)
 				for(p=o->variablesGlobales; p!= NULL; p=(struct directorio*)(p->hh.next)) {
@@ -449,12 +451,8 @@ void imprimirObjetos(directorioObjetos *objetos) {
 						printf("Nombre de la variable: %s , tipo: %i , direccion: %lu \n", p->nombre, p->tipo, p->direccion);
 				}
 
-				for(p=o->variablesRetorno; p!= NULL; p=(struct directorio*)(p->hh.next)) {
-						printf("Sus variables de funciones son \n");
-						printf("Nombre de la variable: %s , tipo: %i , direccion: %lu \n", p->nombre, p->tipo, p->direccion);
-				}
-
 				//Imprimir procedimientos del objeto y sus tablas de variables
+				printf("\n");
 				printf("Sus procedimientos son: \n");
 				for(s=o->procedimientos; s!= NULL; s=(directorioProcedimientos*)(s->hh.next)) {
 						printf("Nombre del procedimiento: %s \n", s->nombre);
@@ -471,9 +469,9 @@ void imprimirObjetos(directorioObjetos *objetos) {
 * elementos del directorio de funciones y variables que esten asociados.
 * El archivo se almacenará en disco.
 */
-void generarDatos(directorioObjetos *objetos, directorio *constantes ) {
+void generarDatos(directorioObjetos *objetos, directorio *constantes, directorio *retornos) {
 	
-	//Estructuras auxiliares		
+	//Estructuras auxiliares
 	directorioObjetos *o;
 	directorioProcedimientos *s;
 	directorio *p;
@@ -505,16 +503,7 @@ void generarDatos(directorioObjetos *objetos, directorio *constantes ) {
 							fprintf(fp,  "</variableGlobal>\n");
 				}
 				fprintf(fp,  "</variablesGlobales>\n");
-				//Imprimir retornos (main)
-				fprintf(fp,  "<variablesRetornos>\n");
-				for(p=o->variablesRetorno; p!= NULL; p=(struct directorio*)(p->hh.next)) {						
-							fprintf(fp,  "<variableRetorno>\n");
-							fprintf(fp,  "<direccion>%lu</direccion>\n", p->direccion);
-							fprintf(fp,  "<nombre>%s</nombre>\n", p->nombre);
-							fprintf(fp,  "<tipo>%i</tipo>\n", p->tipo);
-							fprintf(fp,  "</variableRetorno>\n");
-				}
-				fprintf(fp,  "</variablesRetornos>\n");
+				
 
 				//Imprimir procedimientos del objeto y sus tablas de variables
 				fprintf(fp,  "<procedimientos>\n");
@@ -558,7 +547,19 @@ void generarDatos(directorioObjetos *objetos, directorio *constantes ) {
 							fprintf(fp,  "<tipo>%i</tipo>\n", c->tipo);
 							fprintf(fp,  "</constante>\n");
 						}
-						fprintf(fp,  "</constantes>\n");		
+						fprintf(fp,  "</constantes>\n");
+
+			//Imprimir variables retornos para todos los metodos
+			fprintf(fp,  "<variablesRetornos>\n");
+				for(p=retornos; p!= NULL; p=(struct directorio*)(p->hh.next)) {						
+							fprintf(fp,  "<variableRetorno>\n");
+							fprintf(fp,  "<direccion>%lu</direccion>\n", p->direccion);
+							fprintf(fp,  "<nombre>%s</nombre>\n", p->nombre);
+							fprintf(fp,  "<tipo>%i</tipo>\n", p->tipo);
+							fprintf(fp,  "</variableRetorno>\n");
+				}
+			fprintf(fp,  "</variablesRetornos>\n");
+
 		fprintf(fp,  "</GALaDos>\n");
 	}
 	

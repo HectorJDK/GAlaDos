@@ -38,7 +38,6 @@ typedef struct directorioProcedimientos {
 //Estructura Objetos uthash-------------------------------------------------------
 typedef struct directorioObjetos {
 	char nombre[25];
-	directorio *variablesRetorno;
 	directorio *variablesGlobales;
 	directorioProcedimientos *procedimientos;
 	UT_hash_handle hh;
@@ -50,13 +49,13 @@ directorioObjetos* agregarParametros(directorioObjetos *objetos, char *objeto, c
 int checarParametro(directorioObjetos *objetos, char *objeto, char *funcion, int numeroParametro, int tipo);
 directorioObjetos* agregarVariablesGlobales(directorioObjetos *objetos, char *objeto, char *nombre, unsigned short tipo, unsigned long direccion);
 directorio* buscarVariablesGlobales(directorioObjetos *objetos, char *objeto, char *nombre);
-directorioObjetos* agregarVariablesRetorno(directorioObjetos *objetos, char *objeto, char *nombre, int tipo, unsigned long direccion);
-directorio* buscarVariablesRetorno(directorioObjetos *objetos, char *objeto, char *nombre);
+directorio* agregarVariablesRetorno(directorio *retornos, char *nombre, unsigned short tipo, int direccion);
+directorio* buscarVariablesRetorno(directorio *retornos, char *nombre);
 directorioObjetos* agregarFuncion(directorioObjetos *objetos, char *objeto, char *nombre);
 directorioProcedimientos* buscarFuncion(directorioObjetos *objetos, char *objeto, char *nombre);
 directorioObjetos* agregarObjeto(directorioObjetos *objetos, char *nombre);
 directorioObjetos* buscarObjeto(directorioObjetos *objetos, char *nombre);
 directorio* agregarConstante(directorio *constantes, char *nombre, unsigned short tipo, int direccion);
 directorio* buscarConstante(directorio *constantes, char *nombre);
-void imprimirObjetos(directorioObjetos *objetos);
-void generarDatos(directorioObjetos *objetos, directorio *constantes );
+void imprimirObjetos(directorioObjetos *objetos, directorio *constantes, directorio *retornos);
+void generarDatos(directorioObjetos *objetos, directorio *constantes, directorio *retornos);

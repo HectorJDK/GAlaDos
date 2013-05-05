@@ -24,7 +24,7 @@ typedef struct nodoOperador
 typedef struct nodoOperando
 {	
 	/*Key*/
-	char nombre[25];
+	char nombre[50];
 	int temp;
 	int tipo;
 	int reciclada;

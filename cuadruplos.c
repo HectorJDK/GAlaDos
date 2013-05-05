@@ -486,8 +486,8 @@ cuadruplos* generarCuadruploExpresion(cuadruplos *listaCuadruplos, pila *operand
 
 			//Verificamos si el operando2 es temporal
 			if (operando2Temp == 1) {
-				if(((nodoOperando*)(operando1->dato))->direccion > 100000){
-					((nodoOperando*)(operando1->dato))->direccion = ((nodoOperando*)(operando1->dato))->direccion - 100000;
+				if(((nodoOperando*)(operando2->dato))->direccion > 100000){
+					((nodoOperando*)(operando2->dato))->direccion = ((nodoOperando*)(operando2->dato))->direccion - 100000;
 				}				
 
 				//Reciclar la variable temporal
