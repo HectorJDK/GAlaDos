@@ -53,6 +53,7 @@ directorio* agregarVariablesRetorno(directorio *retornos, char *nombre, unsigned
 directorio* buscarVariablesRetorno(directorio *retornos, char *nombre);
 directorioObjetos* agregarFuncion(directorioObjetos *objetos, char *objeto, char *nombre);
 directorioProcedimientos* buscarFuncion(directorioObjetos *objetos, char *objeto, char *nombre);
+directorioObjetos* herenciaObjetos(directorioObjetos *objetos, char *nombreHijo, char *nombrePadre);
 directorioObjetos* agregarObjeto(directorioObjetos *objetos, char *nombre);
 directorioObjetos* buscarObjeto(directorioObjetos *objetos, char *nombre);
 directorio* agregarConstante(directorio *constantes, char *nombre, unsigned short tipo, int direccion);

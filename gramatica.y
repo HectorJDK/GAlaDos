@@ -39,6 +39,7 @@ int permisoFuncion = 0;
 int esFuncion = 0;
 int esMatriz = 0;
 int esObjeto = 0;
+int herenciaActiva = 0;
 
 //Globales de control para validacion de parametros
 int seccVariablesLocales = 0;
@@ -146,6 +147,9 @@ cuadruplos *listaCuadruplos = NULL;
 
 //Declaracion e inicializacion de la estructura objetos
 directorioObjetos *objetos = NULL;
+
+//Variables directorio objetos para manipulacion de herencia
+directorioObjetos *objetoHeredado = NULL;
 
 //Declaracion para la tabla de constates
 directorio *constantes = NULL;
@@ -344,6 +348,66 @@ void generarDesplazamiento(int dimension){
 
 }
 //----------------------------------------Funciones de Control--------------------------------------------------
+
+void calcularMemoriaHeredada(){
+	//Cargamos los datos del objeto heredado en el hijo
+	objetoHeredado = buscarObjeto(objetos, nombreObjetoActual);
+	
+	for(variable = objetoHeredado->variablesGlobales; variable!= NULL; variable=(struct directorio*)(variable->hh.next)) {
+
+		//Dependiendo el tipo de la variable la igualaremos a la memoria para que las nuevas variables no se sobrescriban en memoria
+		switch(variable->tipo){
+
+			//Variables Enteras Globales
+			case 0:
+				//Checamos si la variable es dimensionada para que aumentarle los datos correspondientes
+				if (variable->dimensionada != 0) {
+					//Es Dimensionada, direccion base más tamaño
+					memoriaEnteroGlobal = variable->direccion + variable->tamanio;
+				} else{
+						//No es Dimensionada, direccion base
+					memoriaEnteroGlobal = variable->direccion;
+				}	
+				break;
+
+			//Variables Decimales Globales
+			case 1:
+				//Checamos si la variable es dimensionada para que aumentarle los datos correspondientes
+				if (variable->dimensionada != 0) {
+					//Es Dimensionada, direccion base más tamaño
+					memoriaDecimalGlobal = variable->direccion + variable->tamanio;
+				} else{
+					//No es Dimensionada, direccion base
+					memoriaDecimalGlobal = variable->direccion;
+				}	
+				break;
+
+			//Variables Texto Globales
+			case 2:
+				//Checamos si la variable es dimensionada para que aumentarle los datos correspondientes
+				if (variable->dimensionada != 0) {
+					//Es Dimensionada, direccion base más tamaño
+					memoriaTextoGlobal = variable->direccion + variable->tamanio;
+				} else{
+					//No es Dimensionada, direccion base
+					memoriaTextoGlobal = variable->direccion;
+				}	
+				break;
+
+			//Variables Booleano Globales
+			case 3:
+				//Checamos si la variable es dimensionada para que aumentarle los datos correspondientes
+				if (variable->dimensionada != 0) {
+					//Es Dimensionada, direccion base más tamaño
+					memoriaBooleanoGlobal = variable->direccion + variable->tamanio;
+				} else{
+					//No es Dimensionada, direccion base
+					memoriaBooleanoGlobal = variable->direccion;
+				}	
+				break;
+		}
+	}
+}
 
 void asignarMemoriaVariable(){
 	//Checamos en que seccion nos encontramos al momento de crear una variable
@@ -639,8 +703,8 @@ int main()
 	printf("\n");
 	printf("\n");
 	imprimeCuadruplos(listaCuadruplos, 2);
-	//generarDatos(objetos, constantes);
-	//generarObj(listaCuadruplos);
+	generarDatos(objetos, constantes, retornos);
+	generarObj(listaCuadruplos);
 	return 0;
 }
 
@@ -1444,21 +1508,43 @@ declara_objetos_rep:
 
 objeto:
 	CLASE IDENTIFICADOR
-	{
+	{	
+		//Reseteamos la herencia
+		herenciaActiva = 0;
+
 		//Reiniciar el calculo de las memoria global
 		calcularMemoriaGlobal();
 		
 		//Obtenemos el nombre de la clase para guardalo
 		strncpy(nombreObjetoActual, $2, tamanioIdentificadores);
-
-		//Esta funcion se encargara de agregar la nueva clase si esta ya se encuentra declarada marcara un error
-		objetos = agregarObjeto(objetos, nombreObjetoActual);
+	} 
+	objeto_herencia
+	{
+		//Checamos que se haya tenido una herencia si es asi debemos recalcular las variables globales
+		if (herenciaActiva == 1) {
 			
-	} objeto_herencia ALLAVE atributos_globales declara_funciones implementa_funciones CLLAVE;
+			//Calculamos la memoria respecto a los valores antiguos de las variables globales heredadas
+			calcularMemoriaHeredada();
+		} else {
+			//Esta funcion se encargara de agregar la nueva clase si esta ya se encuentra declarada marcara un error
+			objetos = agregarObjeto(objetos, nombreObjetoActual);
+		}
+	} 
+	ALLAVE atributos_globales declara_funciones implementa_funciones CLLAVE;
 
 objeto_herencia:
 	/*Empty*/
 	| HIJODE IDENTIFICADOR
+	{
+		//Activamos la herencia
+		herenciaActiva = 1;
+
+		//Nombramos el objeto padre
+		strncpy(nombreObjeto, $2, tamanioIdentificadores);
+
+		//Activamos la herencia del objetoactual = hijo, con el objeto padre = objetos
+		objetos = herenciaObjetos(objetos, nombreObjetoActual, nombreObjeto);
+	}
 	;
 
 atributos_globales:

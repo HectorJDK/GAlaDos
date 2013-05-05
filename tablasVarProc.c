@@ -325,10 +325,123 @@ directorioProcedimientos* buscarFuncion(directorioObjetos *objetos, char *objeto
 }
 
 /*
+* Funcion para heredar la estructura y variables de objetos
+*/
+directorioObjetos* herenciaObjetos(directorioObjetos *objetos, char *nombreHijo, char *nombrePadre){
+	//Variable auxiliar
+	directorioObjetos *objetoPadre;
+	directorioObjetos *objetoHijo;
+	directorio *globalesHeredadas;
+	directorioProcedimientos *funcionesHeredadas;
+
+	//variables para el recorrido de las funciones
+	directorioObjetos *objetosTemp;
+	directorioProcedimientos *funcionesTemp;
+	directorio *variablesTemp;
+	directorioParametros *parametrosNew;
+
+	//Variables nuevas para herencia
+	directorioObjetos *objetosNew;
+	directorioProcedimientos *funcionesNew;
+	directorio *variablesNew;
+	directorioParametros *parametrosTemp;
+
+	//Obtenemos la clase padre de la que hereda el objeto
+	objetoPadre = buscarObjeto(objetos, nombrePadre);
+
+	//Creamos el objetoHijo y rellenamos sus datos
+	objetoHijo = (directorioObjetos*)malloc(sizeof(directorioObjetos));
+	strcpy(objetoHijo->nombre, nombreHijo);
+
+	//Agregamos las variables decimales
+	for(variablesTemp = objetoPadre->variablesGlobales; variablesTemp != NULL; variablesTemp=(directorio*)(variablesTemp->hh.next)){
+
+		//Agregar la nueva variable al directorio
+		variablesNew = (directorio*)malloc(sizeof(directorio));
+
+		strcpy(variablesNew->nombre, variablesTemp->nombre);
+		variablesNew->tipo = variablesTemp->tipo;
+		variablesNew->direccion = variablesTemp->direccion;
+
+		if (variablesTemp->dimensionada != 0) {
+			variablesNew->dimensionada = variablesTemp->dimensionada;
+			variablesNew->m1 = variablesTemp->m1;
+			variablesNew->tamanio = variablesTemp->tamanio;
+			variablesNew->lsuperior1 = variablesTemp->lsuperior1;
+			variablesNew->lsuperior2 = variablesTemp->lsuperior2;
+		}
+
+		HASH_ADD_STR(objetoHijo->variablesGlobales, nombre, variablesNew);
+	}
+
+	//Agregamos las funciones
+	for(funcionesTemp = objetoPadre->procedimientos; funcionesTemp != NULL; funcionesTemp=(directorioProcedimientos*)(funcionesTemp->hh.next)){
+
+		//Cramos la nueva funcion para agregar
+		funcionesNew = (directorioProcedimientos*)malloc(sizeof(directorioProcedimientos));
+
+		//Rellenaremos de la funcion sus locales
+		for(variablesTemp = funcionesTemp->variablesLocales; variablesTemp != NULL; variablesTemp=(directorio*)(variablesTemp->hh.next)){
+
+			//Agregar la nueva variable al directorio
+			variablesNew = (directorio*)malloc(sizeof(directorio));
+
+			//Copiado de datos
+			strcpy(variablesNew->nombre, variablesTemp->nombre);
+			variablesNew->tipo = variablesTemp->tipo;
+			variablesNew->direccion = variablesTemp->direccion;
+
+			if (variablesTemp->dimensionada != 0) {
+				variablesNew->dimensionada = variablesTemp->dimensionada;
+				variablesNew->m1 = variablesTemp->m1;
+				variablesNew->tamanio = variablesTemp->tamanio;
+				variablesNew->lsuperior1 = variablesTemp->lsuperior1;
+				variablesNew->lsuperior2 = variablesTemp->lsuperior2;
+			}
+
+			//Agregarlo a la nueva estructura
+			HASH_ADD_STR(funcionesNew->variablesLocales, nombre, variablesNew);
+		}
+
+		//Rellenamos la funcion sus parametros
+		for(parametrosTemp = funcionesTemp->parametros; parametrosTemp != NULL; parametrosTemp=(directorioParametros*)(parametrosTemp->hh.next)){
+
+			//Agregar la nueva variable al directorio
+			parametrosNew = (directorioParametros*)malloc(sizeof(directorioParametros));
+
+			//Copiado de datos
+			parametrosNew->numeroParametro = parametrosTemp->numeroParametro;
+			parametrosNew->tipo = parametrosTemp->tipo;
+
+			//Agregarlo a la nueva estructura
+			HASH_ADD_INT(funcionesNew->parametros, numeroParametro, parametrosNew);
+		}
+		
+		//LLenamos los datos
+		strcpy(funcionesNew->nombre, funcionesTemp->nombre);
+		funcionesNew->regresa = funcionesTemp->regresa;
+		funcionesNew->permiso = funcionesTemp->permiso;
+		funcionesNew->direccionCuadruplo = funcionesTemp->direccionCuadruplo;
+
+		//Agregamos los datos a las funciones 
+		//Copiado de funciones completado
+		HASH_ADD_STR(objetoHijo->procedimientos, nombre, funcionesNew);
+	}
+
+	//Agregamos el nuevo objeto con sus variables
+	HASH_ADD_STR(objetos, nombre, objetoHijo);
+
+	//Validamos que se haya hecho una insercion correcta si no marcar error
+	buscarObjeto(objetos, nombreHijo);
+
+	return objetos;
+}
+
+
+/*
 * Funcion para agregar objetos (main y clases) al directorio de objetos.
 */
 directorioObjetos* agregarObjeto(directorioObjetos *objetos, char *nombre){
-		
 		//Variable auxiliar
 		directorioObjetos *temp;
 
@@ -422,29 +535,23 @@ void imprimirObjetos(directorioObjetos *objetos, directorio *constantes, directo
 			directorioObjetos *o;
 			directorioProcedimientos *s;
 			directorio *p;
-
-			printf("\n");
+			directorioParametros *param;
 
 			//Imprimir variables constantes
-			printf("Variable constantes\n");
+			printf("\nVariable constantes\n");
 			for(p=constantes; p!= NULL; p=(struct directorio*)(p->hh.next)) {
 					printf("Nombre de la variable: %s , tipo: %i , direccion: %lu \n", p->nombre, p->tipo, p->direccion);
 			}
 
-			printf("\n");
-
 			//Imprimir variables retorno
-			printf("Variable retorno\n");
+			printf("\nVariable retorno\n");
 			for(p=retornos; p!= NULL; p=(struct directorio*)(p->hh.next)) {
 					printf("Nombre de la variable: %s , tipo: %i , direccion: %lu \n", p->nombre, p->tipo, p->direccion);
 			}
 
-			
-
 			//Imprimir tabla de objetos
 			for(o = objetos; o != NULL; o=(directorioObjetos*)(o->hh.next)){
-				printf("\n");
-				printf("Nombre del objeto: %s \n", o->nombre);
+				printf("\nNombre del objeto: %s \n", o->nombre);
 				//Imprimir variables globales (main)
 				for(p=o->variablesGlobales; p!= NULL; p=(struct directorio*)(p->hh.next)) {
 						printf("Sus variables globales son \n");
@@ -452,15 +559,20 @@ void imprimirObjetos(directorioObjetos *objetos, directorio *constantes, directo
 				}
 
 				//Imprimir procedimientos del objeto y sus tablas de variables
-				printf("\n");
-				printf("Sus procedimientos son: \n");
+				printf("\nSus procedimientos son: \n");
 				for(s=o->procedimientos; s!= NULL; s=(directorioProcedimientos*)(s->hh.next)) {
 						printf("Nombre del procedimiento: %s \n", s->nombre);
+
+						printf("Sus parametros son \n");
+						for(param = s->parametros; param != NULL; param =(struct directorioParametros*)(param->hh.next)) {
+							printf("Numero de parametro: %i , tipo: %i \n", param->numeroParametro, param->tipo);
+						}
+
 						printf("Sus variables son \n");
 						for(p=s->variablesLocales; p!= NULL; p=(struct directorio*)(p->hh.next)) {
 								printf("Nombre de la variable: %s , tipo: %i , direccion: %lu \n", p->nombre, p->tipo, p->direccion);
 						}
-				}		        
+				}
 			}
 	}
 
