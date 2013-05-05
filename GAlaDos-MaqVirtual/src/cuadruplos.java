@@ -13,6 +13,7 @@ public class cuadruplos {
 	public int operando1;
 	public int operando2;
 	public int resultado;
+	public String resultadoS;
 	
 	//Constructor
 	public cuadruplos(){
@@ -23,11 +24,11 @@ public class cuadruplos {
 	}
 	
 	//Constructor especial para ERA
-	public cuadruplos(String operando1S){
+	public cuadruplos(String operando1S , String resultadoS){
 		this.operacion=-1;
 		this.operando1S=operando1S;
 		this.operando2=-1;
-		this.resultado=-1;
+		this.resultadoS=resultadoS;
 	}
 	
 	//Getters y setters
@@ -69,5 +70,13 @@ public class cuadruplos {
 	
 	public void setResultado(int resultado){
 		this.resultado = resultado;
+	}
+	
+	public String getResultadoS(){
+		return this.resultadoS;
+	}
+	
+	public void setResultadoS(String resultadoS){
+		this.resultadoS = resultadoS;
 	}
 }
