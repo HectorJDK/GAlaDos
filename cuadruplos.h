@@ -49,8 +49,8 @@ typedef struct cuadruplos
 void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode);
 void reciclarVariable(nodo *variable, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean);
 cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *operando1, nodo *operando2, int operador, nodo *resultado, int indice);
-cuadruplos* generarCuadruploExpresion(cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[4][4][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean);
-cuadruplos* generarCuadruploAsignacion(cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[4][4][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean);
+cuadruplos* generarCuadruploExpresion(cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[5][5][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean);
+cuadruplos* generarCuadruploAsignacion(cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[5][5][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean);
 cuadruplos* generarCuadruploLectura(cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int *contadorIndice);
 cuadruplos* generarCuadruploEscritura(cuadruplos *listaCuadruplos,  pila *operandos, pila *operadores,  int *contadorIndice);
 cuadruplos* generarCuadruploAccion1(cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice);
@@ -69,6 +69,6 @@ cuadruplos* generarCuadruploEndProgram(cuadruplos *listaCuadruplos, int *contado
 cuadruplos* generaCuadruploVerifica(cuadruplos *listaCuadruplos, pila *operandos,  int lsuperior, int *contadorIndice );
 cuadruplos* generaCuadruploSUMAarreglo (cuadruplos *listaCuadruplos, pila *operandos, int direccionBase, pila *availEntero, int *contadorIndice);
 cuadruplos* generarCuadruploMULTIarreglo(cuadruplos *listaCuadruplos, pila *operandos, int m1, pila *availEntero, int *contadorIndice);
-cuadruplos* generarCuadruploSequencial(int prioridad, cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[4][4][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean);
+cuadruplos* generarCuadruploSequencial(int prioridad, cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[5][5][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean);
 void generarObj(cuadruplos *listaCuadruplos); 
 #endif

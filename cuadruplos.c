@@ -405,7 +405,7 @@ cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *operando1, nodo *
 Funcion encargada de generar el cuadruplo de cualquier expresion simple 
 (Esta funcion no incluye el los pasos para realizar un cuadruplo de llama a funcion)
 */
-cuadruplos* generarCuadruploExpresion(cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[4][4][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean){
+cuadruplos* generarCuadruploExpresion(cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[5][5][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean){
 	//Variables para facilitar el manjeo de datos
 	int operando1Tipo;
 	int operando2Tipo;
@@ -513,7 +513,7 @@ cuadruplos* generarCuadruploExpresion(cuadruplos *listaCuadruplos, pila *operand
 /*
 Funcion encargada de generar el cuadruplo de la asignacion, ademas de reciclar la variable temporal para su uso posterior
 */
-cuadruplos* generarCuadruploAsignacion(cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[4][4][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean){
+cuadruplos* generarCuadruploAsignacion(cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[5][5][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean){
 	//Variables auxiliares Enteras
 	int operando1Tipo;
 	int resultadoTipo;
@@ -1281,7 +1281,7 @@ cuadruplos* generarCuadruploMULTIarreglo(cuadruplos *listaCuadruplos, pila *oper
 Funcion encargada de seleccionar que funcion se debera usar para generar cuadruplos secuenciales
 Util para control y para no confundir que parametros se deben usar
 */
-cuadruplos* generarCuadruploSequencial(int prioridad, cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[4][4][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean){
+cuadruplos* generarCuadruploSequencial(int prioridad, cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[5][5][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean){
 	//Variables auxiliares Enteras
 	int operadorInt;
 

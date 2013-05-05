@@ -140,7 +140,7 @@ int memoriaBooleanoGlobal;
 int memoriaVariablesRetorno;
 
 //cuboSemantico
-static int cuboSemantico[4][4][14];
+static int cuboSemantico[5][5][14];
 
 //Lista de cuadruplos
 cuadruplos *listaCuadruplos = NULL;

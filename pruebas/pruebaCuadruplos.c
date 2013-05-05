@@ -42,7 +42,7 @@ int memoriaBooleanoLocal = 8000;
 cuadruplos *listaCuadruplos = NULL;
 
 //cuboSemantico
-static int cuboSemantico[4][4][14];
+static int cuboSemantico[5][5][14];
 
 //Esto va en nuestro main
 void  generarMultiplicacionDivision(){

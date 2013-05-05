@@ -1,7 +1,7 @@
 #include "cuboSemantico.h"
 #include <stdio.h>
 
-static int cuboSemantico[4][4][14];
+static int cuboSemantico[5][5][14];
 
 int main(int argc, char const *argv[])
 {

@@ -10,8 +10,9 @@
 #define TIPO_DECIMAL 		1 
 #define TIPO_TEXTO 			2
 #define TIPO_BOOLEANO 		3
+#define TIPO_OBJETO 		4
 
 #define OP_ERROR 			-1
 
-void inicializarSemantica(int cuboSemantico[4][4][14]);
+void inicializarSemantica(int cuboSemantico[5][5][14]);
 void inicializarAvail(pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean,int *memoriaEnteroTemp, int *memoriaDecimalTemp, int *memoriaTextoTemp, int *memoriaBooleanoTemp);

@@ -33,7 +33,7 @@
 #include "utilerias.h"
 #include <stdio.h>
 
-void inicializarSemantica(int cuboSemantico[4][4][14]){
+void inicializarSemantica(int cuboSemantico[5][5][14]){
 	//************************************************************************************************************
 	//************************************************************************************************************
 	//************************************************************************************************************
@@ -101,6 +101,22 @@ void inicializarSemantica(int cuboSemantico[4][4][14]){
 	cuboSemantico[TIPO_ENTERO][TIPO_BOOLEANO][OP_OR] = OP_ERROR;
 	cuboSemantico[TIPO_ENTERO][TIPO_BOOLEANO][OP_ASIGNACION] = OP_ERROR;
 	cuboSemantico[TIPO_ENTERO][TIPO_BOOLEANO][OP_CONCATENA] = OP_ERROR;
+
+	//Operaciones Op1: TIPO_ENTERO, Op2:TIPO_OBJETO
+	cuboSemantico[TIPO_ENTERO][TIPO_OBJETO][OP_SUMA] = OP_ERROR;
+	cuboSemantico[TIPO_ENTERO][TIPO_OBJETO][OP_RESTA] = OP_ERROR;
+	cuboSemantico[TIPO_ENTERO][TIPO_OBJETO][OP_DIVISION] = OP_ERROR;
+	cuboSemantico[TIPO_ENTERO][TIPO_OBJETO][OP_MULTIPLICACION] = OP_ERROR;
+	cuboSemantico[TIPO_ENTERO][TIPO_OBJETO][OP_MAYORQUE] = OP_ERROR;
+	cuboSemantico[TIPO_ENTERO][TIPO_OBJETO][OP_MENORQUE] = OP_ERROR;
+	cuboSemantico[TIPO_ENTERO][TIPO_OBJETO][OP_MAYORIGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_ENTERO][TIPO_OBJETO][OP_MENORIGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_ENTERO][TIPO_OBJETO][OP_IGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_ENTERO][TIPO_OBJETO][OP_DIFERENTE] = OP_ERROR;
+	cuboSemantico[TIPO_ENTERO][TIPO_OBJETO][OP_AND] = OP_ERROR;
+	cuboSemantico[TIPO_ENTERO][TIPO_OBJETO][OP_OR] = OP_ERROR;
+	cuboSemantico[TIPO_ENTERO][TIPO_OBJETO][OP_ASIGNACION] = OP_ERROR;
+	cuboSemantico[TIPO_ENTERO][TIPO_OBJETO][OP_CONCATENA] = OP_ERROR;
 
 	//************************************************************************************************************
 	//************************************************************************************************************
@@ -171,6 +187,22 @@ void inicializarSemantica(int cuboSemantico[4][4][14]){
 	cuboSemantico[TIPO_DECIMAL][TIPO_BOOLEANO][OP_ASIGNACION] = OP_ERROR;
 	cuboSemantico[TIPO_DECIMAL][TIPO_BOOLEANO][OP_CONCATENA] = OP_ERROR;
 
+	//Operaciones Op1: Decimal, Op2:TIPO_OBJETO
+	cuboSemantico[TIPO_DECIMAL][TIPO_OBJETO][OP_SUMA] = OP_ERROR;
+	cuboSemantico[TIPO_DECIMAL][TIPO_OBJETO][OP_RESTA] = OP_ERROR;
+	cuboSemantico[TIPO_DECIMAL][TIPO_OBJETO][OP_DIVISION] = OP_ERROR;
+	cuboSemantico[TIPO_DECIMAL][TIPO_OBJETO][OP_MULTIPLICACION] = OP_ERROR;
+	cuboSemantico[TIPO_DECIMAL][TIPO_OBJETO][OP_MAYORQUE] = OP_ERROR;
+	cuboSemantico[TIPO_DECIMAL][TIPO_OBJETO][OP_MENORQUE] = OP_ERROR;
+	cuboSemantico[TIPO_DECIMAL][TIPO_OBJETO][OP_MAYORIGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_DECIMAL][TIPO_OBJETO][OP_MENORIGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_DECIMAL][TIPO_OBJETO][OP_IGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_DECIMAL][TIPO_OBJETO][OP_DIFERENTE] = OP_ERROR;
+	cuboSemantico[TIPO_DECIMAL][TIPO_OBJETO][OP_AND] = OP_ERROR;
+	cuboSemantico[TIPO_DECIMAL][TIPO_OBJETO][OP_OR] = OP_ERROR;
+	cuboSemantico[TIPO_DECIMAL][TIPO_OBJETO][OP_ASIGNACION] = OP_ERROR;
+	cuboSemantico[TIPO_DECIMAL][TIPO_OBJETO][OP_CONCATENA] = OP_ERROR;
+
 	//************************************************************************************************************
 	//************************************************************************************************************
 	//************************************************************************************************************
@@ -240,6 +272,22 @@ void inicializarSemantica(int cuboSemantico[4][4][14]){
 	cuboSemantico[TIPO_TEXTO][TIPO_BOOLEANO][OP_ASIGNACION] = OP_ERROR;
 	cuboSemantico[TIPO_TEXTO][TIPO_BOOLEANO][OP_CONCATENA] = OP_ERROR;
 
+	//Operaciones Op1: TIPO_TEXTO, Op2:TIPO_BOOLEANO
+	cuboSemantico[TIPO_TEXTO][TIPO_OBJETO][OP_SUMA] = OP_ERROR;
+	cuboSemantico[TIPO_TEXTO][TIPO_OBJETO][OP_RESTA] = OP_ERROR;
+	cuboSemantico[TIPO_TEXTO][TIPO_OBJETO][OP_DIVISION] = OP_ERROR;
+	cuboSemantico[TIPO_TEXTO][TIPO_OBJETO][OP_MULTIPLICACION] = OP_ERROR;
+	cuboSemantico[TIPO_TEXTO][TIPO_OBJETO][OP_MAYORQUE] = OP_ERROR;
+	cuboSemantico[TIPO_TEXTO][TIPO_OBJETO][OP_MENORQUE] = OP_ERROR;
+	cuboSemantico[TIPO_TEXTO][TIPO_OBJETO][OP_MAYORIGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_TEXTO][TIPO_OBJETO][OP_MENORIGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_TEXTO][TIPO_OBJETO][OP_IGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_TEXTO][TIPO_OBJETO][OP_DIFERENTE] = OP_ERROR;
+	cuboSemantico[TIPO_TEXTO][TIPO_OBJETO][OP_AND] = OP_ERROR;
+	cuboSemantico[TIPO_TEXTO][TIPO_OBJETO][OP_OR] = OP_ERROR;
+	cuboSemantico[TIPO_TEXTO][TIPO_OBJETO][OP_ASIGNACION] = OP_ERROR;
+	cuboSemantico[TIPO_TEXTO][TIPO_OBJETO][OP_CONCATENA] = OP_ERROR;
+
 	//************************************************************************************************************
 	//************************************************************************************************************
 	//************************************************************************************************************
@@ -308,6 +356,107 @@ void inicializarSemantica(int cuboSemantico[4][4][14]){
 	cuboSemantico[TIPO_BOOLEANO][TIPO_BOOLEANO][OP_OR] = TIPO_BOOLEANO;
 	cuboSemantico[TIPO_BOOLEANO][TIPO_BOOLEANO][OP_ASIGNACION] = TIPO_BOOLEANO;
 	cuboSemantico[TIPO_BOOLEANO][TIPO_BOOLEANO][OP_CONCATENA] = OP_ERROR;
+
+	//Operaciones Op1: TIPO_bOOLEANO, Op2: TIPO_OBJETO
+	cuboSemantico[TIPO_BOOLEANO][TIPO_OBJETO][OP_SUMA] = OP_ERROR;
+	cuboSemantico[TIPO_BOOLEANO][TIPO_OBJETO][OP_RESTA] = OP_ERROR;
+	cuboSemantico[TIPO_BOOLEANO][TIPO_OBJETO][OP_DIVISION] = OP_ERROR;
+	cuboSemantico[TIPO_BOOLEANO][TIPO_OBJETO][OP_MULTIPLICACION] = OP_ERROR;
+	cuboSemantico[TIPO_BOOLEANO][TIPO_OBJETO][OP_MAYORQUE] = OP_ERROR;
+	cuboSemantico[TIPO_BOOLEANO][TIPO_OBJETO][OP_MENORQUE] = OP_ERROR;
+	cuboSemantico[TIPO_BOOLEANO][TIPO_OBJETO][OP_MAYORIGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_BOOLEANO][TIPO_OBJETO][OP_MENORIGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_BOOLEANO][TIPO_OBJETO][OP_IGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_BOOLEANO][TIPO_OBJETO][OP_DIFERENTE] = OP_ERROR;
+	cuboSemantico[TIPO_BOOLEANO][TIPO_OBJETO][OP_AND] = OP_ERROR;
+	cuboSemantico[TIPO_BOOLEANO][TIPO_OBJETO][OP_OR] = OP_ERROR;
+	cuboSemantico[TIPO_BOOLEANO][TIPO_OBJETO][OP_ASIGNACION] = OP_ERROR;
+	cuboSemantico[TIPO_BOOLEANO][TIPO_OBJETO][OP_CONCATENA] = OP_ERROR;
+
+	//************************************************************************************************************
+	//************************************************************************************************************
+	//************************************************************************************************************
+	//Seccion TIPO_OBJETO op1
+	
+	//Operaciones Op1: TIPO_OBJETO, Op2:TIPO_ENTERO
+	cuboSemantico[TIPO_OBJETO][TIPO_ENTERO][OP_SUMA] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_ENTERO][OP_RESTA] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_ENTERO][OP_DIVISION] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_ENTERO][OP_MULTIPLICACION] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_ENTERO][OP_MAYORQUE] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_ENTERO][OP_MENORQUE] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_ENTERO][OP_MAYORIGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_ENTERO][OP_MENORIGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_ENTERO][OP_IGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_ENTERO][OP_DIFERENTE] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_ENTERO][OP_AND] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_ENTERO][OP_OR] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_ENTERO][OP_ASIGNACION] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_ENTERO][OP_CONCATENA] = OP_ERROR;
+
+	//Operaciones Op1: TIPO_OBJETO, Op2:TIPO_DECIMAL
+	cuboSemantico[TIPO_OBJETO][TIPO_DECIMAL][OP_SUMA] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_DECIMAL][OP_RESTA] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_DECIMAL][OP_DIVISION] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_DECIMAL][OP_MULTIPLICACION] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_DECIMAL][OP_MAYORQUE] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_DECIMAL][OP_MENORQUE] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_DECIMAL][OP_MAYORIGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_DECIMAL][OP_MENORIGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_DECIMAL][OP_IGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_DECIMAL][OP_DIFERENTE] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_DECIMAL][OP_AND] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_DECIMAL][OP_OR] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_DECIMAL][OP_ASIGNACION] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_DECIMAL][OP_CONCATENA] = OP_ERROR;
+
+	//Operaciones Op1: TIPO_OBJETO, Op2:TIPO_TEXTO
+	cuboSemantico[TIPO_OBJETO][TIPO_TEXTO][OP_SUMA] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_TEXTO][OP_RESTA] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_TEXTO][OP_DIVISION] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_TEXTO][OP_MULTIPLICACION] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_TEXTO][OP_MAYORQUE] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_TEXTO][OP_MENORQUE] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_TEXTO][OP_MAYORIGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_TEXTO][OP_MENORIGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_TEXTO][OP_IGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_TEXTO][OP_DIFERENTE] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_TEXTO][OP_AND] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_TEXTO][OP_OR] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_TEXTO][OP_ASIGNACION] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_TEXTO][OP_CONCATENA] = OP_ERROR;
+
+	//Operaciones Op1: TIPO_OBJETO, Op2:TIPO_BOOLEANO
+	cuboSemantico[TIPO_OBJETO][TIPO_BOOLEANO][OP_SUMA] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_BOOLEANO][OP_RESTA] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_BOOLEANO][OP_DIVISION] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_BOOLEANO][OP_MULTIPLICACION] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_BOOLEANO][OP_MAYORQUE] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_BOOLEANO][OP_MENORQUE] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_BOOLEANO][OP_MAYORIGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_BOOLEANO][OP_MENORIGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_BOOLEANO][OP_IGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_BOOLEANO][OP_DIFERENTE] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_BOOLEANO][OP_AND] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_BOOLEANO][OP_OR] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_BOOLEANO][OP_ASIGNACION] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_BOOLEANO][OP_CONCATENA] = OP_ERROR;
+
+	//Operaciones Op1: TIPO_OBJETO, Op2: TIPO_OBJETO
+	cuboSemantico[TIPO_OBJETO][TIPO_OBJETO][OP_SUMA] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_OBJETO][OP_RESTA] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_OBJETO][OP_DIVISION] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_OBJETO][OP_MULTIPLICACION] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_OBJETO][OP_MAYORQUE] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_OBJETO][OP_MENORQUE] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_OBJETO][OP_MAYORIGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_OBJETO][OP_MENORIGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_OBJETO][OP_IGUAL] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_OBJETO][OP_DIFERENTE] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_OBJETO][OP_AND] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_OBJETO][OP_OR] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_OBJETO][OP_ASIGNACION] = OP_ERROR;
+	cuboSemantico[TIPO_OBJETO][TIPO_OBJETO][OP_CONCATENA] = OP_ERROR;
 }
 
 
