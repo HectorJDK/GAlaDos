@@ -52,6 +52,7 @@ int direccionVariable;
 char nombreObjeto[25];
 char nombreVariable[25];
 char nombreObjetoActual[25];
+char nombreVariableRetorno[25];
 unsigned short tipoVariable;
 char nombreProcedimiento[25];
 char nombreProcedimientoActual[25];
@@ -148,6 +149,9 @@ directorioObjetos *objetos = NULL;
 
 //Declaracion para la tabla de constates
 directorio *constantes = NULL;
+
+//Decalracion para la tabla de retorno
+directorio *retornos = NULL;
 
 //---------------------------------WRAPPERS-------------------------------------------
 
@@ -260,12 +264,18 @@ void generarEra(){
 
 void generarReturn(){
 	//Buscamos el dato de la variable de retorno de la funcion
-	variable = buscarVariablesRetorno(objetos, nombreObjetoActual, nombreProcedimientoActual);
+	funcion = buscarFuncion(objetos, nombreObjetoActual, nombreProcedimientoActual);
 
 	//Verificamos que la funcion pueda regresar alguna dato de funcion
-	if (variable->tipo != -1) {
+	if (funcion->regresa != -1) {
+		//Obtenemos el nombre de la variable de retorno
+		sprintf(nombreVariableRetorno, "%s%i", nombreProcedimientoActual, funcion->regresa);
+
+		//Buscamos la variable de retorno
+		variable = buscarVariablesRetorno(retornos, nombreVariableRetorno);
+
 		//Generamos el return del cuadruplo aqui se checara si es posible realizarlo o no
-		listaCuadruplos = generarCuadruploReturn(listaCuadruplos, operandos, variable->tipo, variable->direccion, variable->nombre ,&contadorIndice);	
+		listaCuadruplos = generarCuadruploReturn(listaCuadruplos, operandos, variable->tipo, variable->direccion, variable->nombre ,&contadorIndice);
 	} else {
 		printf("Error en funcion %s: No se puede regresar un dato cuando se especifica como nada\n", nombreProcedimientoActual);
 		exit(1);
@@ -278,11 +288,17 @@ void generarFinPrograma(){
 
 //Esta funcion probablemente se deba cambiar
 void generarTemporalFuncion(){
-	//Acedemos el dato de retorno basados en la forma de objeto->funcion()
-	variable = buscarVariablesRetorno(objetos, nombreObjeto, nombreProcedimiento);
+	//obtenemos el tipo de variable que regresa la funcion la forma de objeto->funcion()
+	funcion = buscarFuncion(objetos, nombreObjeto, nombreProcedimiento);
 
 	//Verificamos que la funcion sea adecuada para una expresion
-	if (variable->tipo != -1) {
+	if (funcion->regresa != -1) {
+		//Obtenemos el nombre de la variable de retorno
+		sprintf(nombreVariableRetorno, "%s%i", nombreProcedimiento, funcion->regresa);
+
+		//Buscamos la variable de retorno
+		variable = buscarVariablesRetorno(retornos, nombreVariableRetorno);
+
 		//Generamos el cuadruplo de la variable
 		listaCuadruplos = generarCuadruploTemporalFuncion(listaCuadruplos, operandos, variable->tipo, variable->direccion, variable->nombre , availEntero, availDecimal, availTexto, availBoolean, &contadorIndice);
 	} else {
@@ -616,10 +632,12 @@ int main()
 {
 
 	yyparse();
-	imprimirObjetos(objetos);
+	imprimirObjetos(objetos, constantes, retornos);
+	printf("\n");
+	printf("\n");
 	imprimeCuadruplos(listaCuadruplos, 0);
-	printf("\n");	
-	printf("\n");	
+	printf("\n");
+	printf("\n");
 	imprimeCuadruplos(listaCuadruplos, 2);
 	//generarDatos(objetos, constantes);
 	//generarObj(listaCuadruplos);
@@ -714,9 +732,6 @@ programa:
 		//Reiniciar el calculo de las memoria global
 		calcularMemoriaGlobal();
 
-		//Reiniciar el calculo de las memoria de retorno
-		calcularMemoriaRetorno();
-
 		//Agregar main a tabla de objetos, siempre habra que haber un main
 		strncpy(nombreObjetoActual, "main", tamanioIdentificadores);
 		objetos = agregarObjeto(objetos, nombreObjetoActual);
@@ -744,7 +759,7 @@ programa:
 		generarFinPrograma();
 
 		//Desplegar mensaje de terminacion de compilacion
-		printf("Programa Compilado\n\n");
+		printf("Programa Compilado\n");
 	}
 	;
 
@@ -885,10 +900,10 @@ declara_variables:
 
 		if (seccVariablesGlobales == 1) {
 			//Aumento de las variables globales
-			memoriaDecimalGlobal = memoriaDecimalGlobal + variable->tamanio;
+			memoriaDecimalGlobal = memoriaDecimalGlobal + variable->tamanio - 1;
 		} else if (seccVariablesLocales == 1) {
 			//Aumento de las variables locales
-			memoriaDecimalLocal = memoriaDecimalLocal + variable->tamanio;
+			memoriaDecimalLocal = memoriaDecimalLocal + variable->tamanio - 1;
 		}
 	}
 	|
@@ -936,9 +951,9 @@ declara_variables:
 
 		//Aumento de las respectivas memorias
 		if (seccVariablesGlobales == 1) {
-			memoriaEnteroGlobal = memoriaEnteroGlobal + variable->tamanio;
+			memoriaEnteroGlobal = memoriaEnteroGlobal + variable->tamanio - 1;
 		} else if (seccVariablesLocales == 1) {
-			memoriaEnteroLocal = memoriaEnteroLocal + variable->tamanio;
+			memoriaEnteroLocal = memoriaEnteroLocal + variable->tamanio - 1;
 		}
 	}
 	|
@@ -1428,7 +1443,18 @@ declara_objetos_rep:
 	;
 
 objeto:
-	CLASE IDENTIFICADOR objeto_herencia ALLAVE atributos_globales declara_funciones implementa_funciones CLLAVE;
+	CLASE IDENTIFICADOR
+	{
+		//Reiniciar el calculo de las memoria global
+		calcularMemoriaGlobal();
+		
+		//Obtenemos el nombre de la clase para guardalo
+		strncpy(nombreObjetoActual, $2, tamanioIdentificadores);
+
+		//Esta funcion se encargara de agregar la nueva clase si esta ya se encuentra declarada marcara un error
+		objetos = agregarObjeto(objetos, nombreObjetoActual);
+			
+	} objeto_herencia ALLAVE atributos_globales declara_funciones implementa_funciones CLLAVE;
 
 objeto_herencia:
 	/*Empty*/
@@ -1436,7 +1462,16 @@ objeto_herencia:
 	;
 
 atributos_globales:
-	ATRIBUTOS_GLOBALES bloque_variables
+	ATRIBUTOS_GLOBALES
+	{
+		//Prendemos la bandera de variablesGLobales
+		seccVariablesGlobales=1;
+	} 
+	bloque_variables
+	{
+		//Al salir del bloque apagamos la bandera de variables globales
+		seccVariablesGlobales=0;
+	}
 	;
 
 declara_funciones:
@@ -1490,12 +1525,22 @@ declaracion_prototipos:
 
 			//Salimos de la seccion de variables locales
 			seccVariablesLocales = 0;
+			
+			//Obtenemos el id unico para la variable de retorno que usaremos
+			sprintf(nombreVariableRetorno, "%s%i", nombreProcedimientoActual, funcion->regresa);
 
-			//Calculamos la direccion de la variable de retorno a usar
-			asignarMemoriaVariableRetorno();
+			//Buscamos en las constantes
+			variable = buscarVariablesRetorno(retornos, nombreVariableRetorno);
 
-			//Agregamos la variable de retorno al directorio de datos
-			objetos = agregarVariablesRetorno(objetos, nombreObjetoActual, nombreProcedimientoActual, funcion->regresa, direccionVariable);
+
+			if (variable == NULL) {
+				//Calculamos la direccion de la variable de retorno a usar
+				asignarMemoriaVariableRetorno();
+
+				//Agregamos la variable de retorno al directorio de datos
+				retornos = agregarVariablesRetorno(retornos, nombreVariableRetorno, funcion->regresa, direccionVariable);
+			}
+			
 		}
 	}
 	;
@@ -1679,9 +1724,8 @@ funciones:
 			//Asignarle a la funcion actual el tipo de dato que regresara en este caso nada
 			funcion->direccionCuadruplo = contadorIndice;
 
-			variable = buscarVariablesRetorno(objetos, nombreObjetoActual, nombreProcedimientoActual);
-
-			if (variable->tipo == -1) {
+			//Asegurarnos que la funcion regrese un valor
+			if (funcion->regresa == -1) {
 				regresoNecesario = 0;
 			} else {
 				regresoNecesario = 1;
