@@ -886,7 +886,7 @@ cuadruplos* generarCuadruploGotoFalso(cuadruplos *listaCuadruplos, nodo *operand
 /*
 Funcion encargada de generar el cuadruplo de ENDPROC y aumentar en 1 el contador de indices
 */
-cuadruplos* generarCuadruploEra(cuadruplos *listaCuadruplos, char *nombre, int *contadorIndice){
+cuadruplos* generarCuadruploEra(cuadruplos *listaCuadruplos, char *nombreFuncion, char *nombreObjeto,int *contadorIndice){
 	//Variables auxiliares Apuntadores
 	cuadruplos *accederCuadruplo;
 
@@ -904,7 +904,8 @@ cuadruplos* generarCuadruploEra(cuadruplos *listaCuadruplos, char *nombre, int *
 
 		//Rellenamos los datos del Goto para que apunte de nuevo a la evaluacion
 		if(accederCuadruplo != NULL){
-			sprintf(accederCuadruplo->operando1->nombre, "%s", nombre);
+			sprintf(accederCuadruplo->operando1->nombre, "%s", nombreFuncion);
+			sprintf(accederCuadruplo->resultado->nombre, "%s", nombreObjeto);
 		} else {
 			printf("Error en el acceso al cuadruplo\n");
 			exit(1);
@@ -1361,12 +1362,11 @@ cuadruplos* generarCuadruploSequencial(int prioridad, cuadruplos *listaCuadruplo
 	}
 }
 
-
-
 /*
 *generarObj
 *Crea el archivo obj de traduccion del lenguaje
-*/	
+*/
+
 void generarObj(cuadruplos *listaCuadruplos) {
 	
 	//Crear el archivo y guardarlo en carpeta raiz
@@ -1378,7 +1378,7 @@ void generarObj(cuadruplos *listaCuadruplos) {
 		for(temporal = listaCuadruplos; temporal != NULL; temporal=(cuadruplos*)(temporal->hh.next)) {
 			char operacion[10];					
 			if(temporal->operador == 21){
-				fprintf(fp,  "%i, %s, %i, %i\n", temporal->operador, temporal->operando1->nombre, temporal->operando2->direccion, temporal->resultado->direccion);							
+				fprintf(fp,  "%i, %s, %i, %s\n", temporal->operador, temporal->operando1->nombre, temporal->operando2->direccion, temporal->resultado->nombre);
 			} else {
 				fprintf(fp,  "%i, %i, %i, %i\n", temporal->operador, temporal->operando1->direccion, temporal->operando2->direccion, temporal->resultado->direccion);			
 			}

@@ -59,7 +59,7 @@ cuadruplos* generarCuadruploAccion2If(cuadruplos *listaCuadruplos,  pila *operan
 cuadruplos* generarCuadruploAccion3If(cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice);
 cuadruplos* generarCuadruploGoto(cuadruplos *listaCuadruplos, int *contadorIndice);
 cuadruplos* generarCuadruploGotoFalso(cuadruplos *listaCuadruplos, nodo *operando1, int *contadorIndice);
-cuadruplos* generarCuadruploEra(cuadruplos *listaCuadruplos, char *nombre, int *contadorIndice);
+cuadruplos* generarCuadruploEra(cuadruplos *listaCuadruplos, char *nombreFuncion, char *nombreObjeto,int *contadorIndice);
 cuadruplos* generarCuadruploEndProc(cuadruplos *listaCuadruplos, int *contadorIndice);
 cuadruplos* generarCuadruploParam(cuadruplos *listaCuadruplos, int *cantidadParametros, pila *operandos, int *contadorIndice);
 cuadruplos* generarCuadruploGosub(cuadruplos *listaCuadruplos, int direccionFuncion, int *contadorIndice);

@@ -263,7 +263,17 @@ void generarGosub(){
 }
 
 void generarEra(){
-	listaCuadruplos = generarCuadruploEra(listaCuadruplos, nombreProcedimiento, &contadorIndice);
+
+	if (esObjeto == 0) {
+		listaCuadruplos = generarCuadruploEra(listaCuadruplos, nombreProcedimiento, nombreObjetoActual, &contadorIndice);	
+	} else if (esObjeto == 1){
+		listaCuadruplos = generarCuadruploEra(listaCuadruplos, nombreProcedimiento, nombreObjeto,&contadorIndice);
+	} else {
+		printf("Error critico de control de llamadas a objetos\n");
+		exit(1);
+	}
+	
+
 }
 
 void generarReturn(){
