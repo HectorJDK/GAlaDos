@@ -8,18 +8,14 @@
  */
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
  
 public class xmlParser {
  
@@ -90,13 +86,7 @@ public class xmlParser {
 									
 									//Si es un arreglo o matriz generar su espacio correspondiente
 									if(eElement3.getElementsByTagName("dimensionada").item(0) != null){
-																					
-									int dimensionada = Integer
-											.parseInt(eElement3
-													.getElementsByTagName(
-															"dimensionada")
-													.item(0)
-													.getTextContent());
+																													
 									int tamanio = Integer
 											.parseInt(eElement3
 													.getElementsByTagName(
@@ -105,28 +95,28 @@ public class xmlParser {
 													.getTextContent());
 									switch (tipo) {
 									case 0:
-										for(int i = 0; i<=tamanio; i++){
+										for(int i = 0; i<tamanio; i++){
 										bloque.ingresaElementoEntero(
 												bloque.mapearDireccion(direccion+i),
 												-1);
 										}
 										break;
 									case 1:
-										for(int i = 0; i<=tamanio; i++){
+										for(int i = 0; i<tamanio; i++){
 										bloque.ingresaElementoDecimal(
 												bloque.mapearDireccion(direccion+i),
 												-1);
 										}
 										break;
 									case 2:
-										for(int i = 0; i<=tamanio; i++){
+										for(int i = 0; i<tamanio; i++){
 										bloque.ingresaElementoTexto(
 												bloque.mapearDireccion(direccion+i),
 												"");
 										}
 										break;
 									case 3:
-										for(int i = 0; i<=tamanio; i++){
+										for(int i = 0; i<tamanio; i++){
 										bloque.ingresaElementoBooleano(
 												bloque.mapearDireccion(direccion+i),
 												false);
@@ -155,7 +145,6 @@ public class xmlParser {
 												false);
 										break;
 									}
-
 								}
 							}
 							objetoTemporal.setGlobales(bloque);
@@ -342,13 +331,7 @@ public class xmlParser {
 													
 													//Si es un arreglo o matriz generar su espacio correspondiente
 													if(eElement5.getElementsByTagName("dimensionada").item(0) != null){
-																									
-													int dimensionada = Integer
-															.parseInt(eElement5
-																	.getElementsByTagName(
-																			"dimensionada")
-																	.item(0)
-																	.getTextContent());
+																																						
 													int tamanio = Integer
 															.parseInt(eElement5
 																	.getElementsByTagName(
@@ -357,28 +340,28 @@ public class xmlParser {
 																	.getTextContent());
 													switch (tipo) {
 													case 0:
-														for(int i = 0; i<=tamanio; i++){
+														for(int i = 0; i<tamanio; i++){
 														bloque.ingresaElementoEntero(
 																bloque.mapearDireccion(direccion+i),
 																-1);
 														}
 														break;
 													case 1:
-														for(int i = 0; i<=tamanio; i++){
+														for(int i = 0; i<tamanio; i++){
 														bloque.ingresaElementoDecimal(
 																bloque.mapearDireccion(direccion+i),
 																-1);
 														}
 														break;
 													case 2:
-														for(int i = 0; i<=tamanio; i++){
+														for(int i = 0; i<tamanio; i++){
 														bloque.ingresaElementoTexto(
 																bloque.mapearDireccion(direccion+i),
 																"");
 														}
 														break;
 													case 3:
-														for(int i = 0; i<=tamanio; i++){
+														for(int i = 0; i<tamanio; i++){
 														bloque.ingresaElementoBooleano(
 																bloque.mapearDireccion(direccion+i),
 																false);
@@ -447,11 +430,10 @@ public class xmlParser {
 					.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
-			String valor, nombre;
+			String valor;
 			int direccion;
 			int tipo;
-			doc.getDocumentElement().normalize();
-			// registro registro = new registro();
+			doc.getDocumentElement().normalize();			
 
 			/**
 			 * Seccion para cargar tabla de constantes a memoria

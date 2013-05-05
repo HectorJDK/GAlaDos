@@ -65,15 +65,13 @@ public class maquinaVirtual {
 	        //Constantes
 	        constantes = new bloque();
 	        constantes = datos.cargarConstantes(constantes);
-	        
-	        //Ejecucion
+	       //Ejecucion
 	        line = br.readLine();
 	        indice = 0;
 	        finEjecucion = false; 	
 	        pilaEjecucion = new Stack<Integer>();
 	        pilaFuncion = new Stack<funcion>();
-	        funcionNueva = new funcion();	        	       
-	      
+	        funcionNueva = new funcion();
 	        /**
 	         * Seccion para cargar los cuadruplos de archivo a la estructura arraylist
 	         */
@@ -110,7 +108,7 @@ public class maquinaVirtual {
     		
 	       // Iniciar ejecucion    		
     		while(!finEjecucion){
-    			    			 			    			
+    			
     			//Obtener la operacion a ejecutar
     			operacion = cuadruplo.getOperacion(); 
     			
@@ -120,7 +118,25 @@ public class maquinaVirtual {
     			direccionOperando1 = cuadruplo.getOperando1();
 				direccionOperando2 = cuadruplo.getOperando2();    			
 				direccionResultado= cuadruplo.getResultado();
-    				
+			
+				//Ajuste de direcciones para indexamiento de matrices y arreglos
+				if(direccionOperando1 >= 100000){
+					//Obtener la direccion del elemento del arreglo						
+					direccionOperando1 = direccionOperando1 - 100000;						
+					//Entero					
+					direccionOperando1 = obtieneEntero(constantes, workspaceActual, funcion, bloque, direccionOperando1);
+				
+				}
+				if(direccionOperando2 >= 100000){
+					//Obtener la direccion del elemento del arreglo						
+					direccionOperando2 = direccionOperando2 - 100000;						
+					//Entero
+					direccionOperando2 = obtieneEntero(constantes, workspaceActual, funcion, bloque, direccionOperando2);						
+				}
+				if(direccionResultado >= 100000){
+					direccionResultado = direccionResultado - 100000;
+					direccionResultado = obtieneEntero(constantes, workspaceActual, funcion, bloque, direccionResultado);										
+				}
 				//Tipos de operandos y resultado
     			tipoOperando1 = obtenerTipo(direccionOperando1);
     			tipoOperando2 = obtenerTipo(direccionOperando2);
@@ -137,15 +153,15 @@ public class maquinaVirtual {
     			boolean operando1B=false, operando2B=false;
     			
     			//Si es operacion de ERA, PARAM, VERIFICA, SUMAMAT no mapear los elementos del cuadruplo.
-    			if(operacion != 23 && operacion != 22 && operacion != 26 && operacion != 27){
-    				
+    			if(operacion != 23 && operacion != 22 && operacion != 26 && operacion != 27 && operacion != 28){
+    			
     				//Selector de memoria en base a la direccion
     				//Operando1
     				//Memoria especial de retornos
     				if(direccionOperando1>=0 && direccionOperando1<1000){  
     					tipoOperando1 = datos.tipoRetorno(workspaceActual.getNombre(), ""+direccionOperando1);    				    					    					
     					switch(tipoOperando1){
-    					case 0:    						
+    					case 0:     						    						
     						operando1E = workspaceActual.getRetornos().entero.get(direccionOperando1);     							
     					break;
     					case 1:    		
@@ -326,11 +342,23 @@ public class maquinaVirtual {
     			}
     			//Para mapeo correcto en memoria
     			direccionOperando1 = cuadruplo.getOperando1();
+    			//Ajuste de direcciones para indexamiento de matrices y arreglos
+				if(direccionOperando1 >= 100000){
+					//Obtener la direccion del elemento del arreglo						
+					direccionOperando1 = direccionOperando1 - 100000;						
+					//Entero
+					direccionOperando1 = obtieneEntero(constantes, workspaceActual, funcion, bloque, direccionOperando1);						
+				}
 				direccionOperando2 = cuadruplo.getOperando2();  
-    			
-    			switch (operacion){
-    			//Suma    		
-    			case (0):    			    		     				    			    				
+				if(direccionOperando2 >= 100000){
+					//Obtener la direccion del elemento del arreglo						
+					direccionOperando2 = direccionOperando2 - 100000;						
+					//Entero
+					direccionOperando2 = obtieneEntero(constantes, workspaceActual, funcion, bloque, direccionOperando2);						
+				}
+    			switch (operacion){    		
+    			case (0):
+    			//Suma    				    		
     				if(tipoOperando1 == 0){
     					if(tipoOperando2 == 0){
     						//Suma de dos enteros
@@ -371,7 +399,8 @@ public class maquinaVirtual {
     							almacenaDecimal(constantes, workspaceActual, funcion, bloque, direccionResultado, operando1D + operando2D);	    					     	    								        						
     						}
     					}
-    				}	    						
+    				}	 
+    				
     				indice++;
     				cuadruplo = cuadruplos.get(indice);       				
     			break;    				
@@ -825,14 +854,16 @@ public class maquinaVirtual {
     				cuadruplo = cuadruplos.get(indice);					
 					break;
 				case 12:
-					//Asignacion					
-				switch(tipoOperando1){						
+					//Asignacion	
+					   					
+				switch(tipoOperando1){
+				
 					case 0:					
 						//Entero
 						if(tipoResultado == 0){
 							almacenaEntero(constantes, workspaceActual, funcion, bloque, direccionResultado, obtieneEntero(constantes, workspaceActual, funcion, bloque, direccionOperando1));	    					     	    								        						    							    																											
 						} else {
-							almacenaDecimal(constantes, workspaceActual, funcion, bloque, direccionResultado, obtieneEntero(constantes, workspaceActual, funcion, bloque, direccionOperando1));
+							almacenaDecimal(constantes, workspaceActual, funcion, bloque, direccionResultado, obtieneEntero(constantes, workspaceActual, funcion, bloque, direccionOperando1));						
 						}	
 						break;
 					case 1:
@@ -854,7 +885,8 @@ public class maquinaVirtual {
 						if(tipoResultado == 3){
 							almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, obtieneBooleano(constantes, workspaceActual, funcion, bloque, direccionOperando1));	    					     	    								        						    							    																																		
 						}
-					}							
+					}
+			   
 					indice++;
     				cuadruplo = cuadruplos.get(indice);
     				//finEjecucion = true;
@@ -1070,14 +1102,16 @@ public class maquinaVirtual {
 					break;
 				case 25:
 					//FIN DE PROGRAMA
+					
 					finEjecucion = true;
 					break;
 				case 26:
 					//VERIFICA
-					int s = obtieneEntero(constantes, workspaceActual, funcion, bloque, cuadruplo.getOperando1());
-
-					//Checar si S esta fuera de los indices del arreglo
-					if(s < cuadruplo.getOperando2() | s > cuadruplo.getResultado()){												
+					//Obtener el indice del arreglo que se quiere acceder
+					int indiceMatriz = obtieneEntero(constantes, workspaceActual, funcion, bloque, cuadruplo.getOperando1());
+					
+					//Checar si el indice esta fuera de los limites del arreglo
+					if(indiceMatriz < cuadruplo.getOperando2() | indiceMatriz > cuadruplo.getResultado()){												
 						//Fin de programa
 						System.out.println("Error: El indice esta fuera de los limites del arreglo/matriz");
 						finEjecucion = true;
@@ -1088,6 +1122,28 @@ public class maquinaVirtual {
 					break;	
 				case 27:
 					//SUMAMAT
+					
+					//Obtener S (el desplazamiento)
+					int indiceSumar = obtieneEntero(constantes, workspaceActual, funcion, bloque, cuadruplo.getOperando1());
+				
+					//Sumar la base y almacenarlo en memoria
+					almacenaEntero(constantes, workspaceActual, funcion, bloque, cuadruplo.getResultado(), indiceSumar + cuadruplo.getOperando2());																									
+					
+					indice++;
+    				cuadruplo = cuadruplos.get(indice);		
+    				break;
+				case 28:
+					//MULTIMAT
+					
+					//Obtener S (el desplazamiento)
+					int indiceMultiplicar = obtieneEntero(constantes, workspaceActual, funcion, bloque, cuadruplo.getOperando1());
+					
+					//Multiplicar por m1 y almacenarlo en memoria
+					almacenaEntero(constantes, workspaceActual, funcion, bloque, cuadruplo.getResultado(), indiceMultiplicar * cuadruplo.getOperando2());																									
+					
+					indice++;
+    				cuadruplo = cuadruplos.get(indice);		
+    				break;
     			}
     		}
 	    } finally {
@@ -1159,7 +1215,7 @@ public class maquinaVirtual {
 	 * @param valor
 	 */
 	public static void almacenaEntero(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado, int valor){
-	//Agregar un registro nuevo  
+		//Agregar un registro nuevo  
 	if(direccionResultado>=0 && direccionResultado<1000){ 
 		//Retornos  
 		workspaceActual.getRetornos().ingresaElementoEntero(direccionResultado, valor);    		    					  					    						
@@ -1179,7 +1235,8 @@ public class maquinaVirtual {
 	//Espacio de constantes		
 		bloque.inicializarBase(13000);
 		constantes.ingresaElementoEntero(bloque.mapearDireccion(direccionResultado), valor);  						
-	}  
+	} 
+
 	}
 	
 	/**
@@ -1212,7 +1269,7 @@ public class maquinaVirtual {
 	//Espacio de constantes		
 		bloque.inicializarBase(13000);
 		constantes.ingresaElementoDecimal(bloque.mapearDireccion(direccionResultado), valor);  						
-	}  
+	}
 	}
 	
 	/**
