@@ -16,6 +16,7 @@ import org.w3c.dom.Element;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.*;
  
 public class xmlParser {
  
@@ -24,7 +25,7 @@ public class xmlParser {
 	 * @param objetos
 	 * @return La lista de objetos con sus datos
 	 */
-	public ArrayList<objetos> cargarObjetos(ArrayList<objetos> objetos) {
+	public HashMap<String, objetos> cargarObjetos(HashMap<String,objetos> objetos, String llave, String objeto) {
 
 		try {
 			// Declaracion e inicializacion de estructuras y objetos
@@ -41,14 +42,14 @@ public class xmlParser {
 
 			doc.getDocumentElement().normalize();
 			// Obtener el nodo principal
-			NodeList principal = doc.getElementsByTagName("GALaDos");
+			NodeList principal = doc.getElementsByTagName(objeto);
 			auxiliar = principal.item(0);
-			auxiliarLista = auxiliar.getChildNodes();
+			//auxiliarLista = auxiliar.getChildNodes();
 
 			// Iterar la lista para agregar cada objeto
-			for (int temp = 0; temp < auxiliarLista.getLength(); temp++) {
+			//for (int temp = 0; temp < auxiliarLista.getLength(); temp++) {
 				// Nodo actual
-				auxiliar = auxiliarLista.item(temp);
+				//auxiliar = auxiliarLista.item(temp);
 				if (auxiliar.getNodeType() == Node.ELEMENT_NODE) {
 					// Objeto elemento con los subnodos
 					Element eElement = (Element) auxiliar;
@@ -151,10 +152,9 @@ public class xmlParser {
 							bloque = new bloque();								
 						}
 						// Agregar a workspace
-						objetos.add(objetoTemporal);
+						objetos.put(llave,objetoTemporal);
 						objetoTemporal = new objetos();
-					}
-				}
+					}				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -164,13 +164,14 @@ public class xmlParser {
 	
 	/**
 	 * Metodo para cargar los datos de la funcion del xml
+	 * 
 	 * @param objeto
 	 * @param nombre
 	 * @param funcion
 	 * @return La funcion con los datos
 	 */
 	public funcion cargarFunciones(objetos objeto, String nombre,
-			funcion funcion) {
+			funcion funcion, String nombreObjeto) {
 
 		try {
 			// Declaracion e inicializacion de estructuras y objetos
@@ -185,11 +186,12 @@ public class xmlParser {
 
 			doc.getDocumentElement().normalize();
 			// Obtener el nodo principal
-			NodeList principal = doc.getElementsByTagName("GALaDos");
-			auxiliar = principal.item(0);
-			auxiliarLista = auxiliar.getChildNodes();
-
-			// Iterar la lista para agregar cada objeto
+			//NodeList principal = doc.getElementsByTagName("GALaDos");
+			auxiliarLista = doc.getElementsByTagName("main");
+						
+			//auxiliar = principal.item(0);
+			//auxiliarLista = auxiliar.getChildNodes();			
+			// Iterar la lista para agregar cada procedimiento
 			for (int temp = 0; temp < auxiliarLista.getLength(); temp++) {
 				// Nodo actual
 				auxiliar = auxiliarLista.item(temp);
@@ -214,7 +216,7 @@ public class xmlParser {
 									.getLength(); temp2++) {
 								auxiliar = auxiliarLista4.item(temp2);
 								if (auxiliar.getNodeType() == Node.ELEMENT_NODE) {
-									// Obtener los datos de variables globales
+									// Obtener los datos de procedimientos
 									Element eElement3 = (Element) auxiliar;
 									if (eElement3.getNodeName().equals(nombre)) {
 										funcion.setNombre(eElement3
@@ -269,6 +271,7 @@ public class xmlParser {
 																			"tipo")
 																	.item(0)
 																	.getTextContent());
+													if(tipo != 4){
 													int direccion = Integer
 															.parseInt(eElement5
 																	.getElementsByTagName(
@@ -340,7 +343,7 @@ public class xmlParser {
 																false);
 														break;
 													}
-
+													}
 												}
 											}
 											funcion.setLocales(bloque);
@@ -364,6 +367,7 @@ public class xmlParser {
 
 	/**
 	 * Metodo que carga las constantes del archivo xml
+	 * 
 	 * @param bloque
 	 * @return bloque El bloque con las constantes cargadas
 	 */
@@ -397,43 +401,45 @@ public class xmlParser {
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					// Objeto elemento con los subnodos
 					Element eElement = (Element) nNode;
-
-					// Obtener la direccion
-					direccion = Integer.parseInt(eElement
-							.getElementsByTagName("direccion").item(0)
-							.getTextContent());
-					// Obtener el tipo
-					tipo = Integer.parseInt(eElement
-							.getElementsByTagName("tipo").item(0)
-							.getTextContent());
-					// Obtener el valor
-					valor = eElement.getElementsByTagName("valor").item(0)
-							.getTextContent();
-					bloque.inicializarBase(13000);
-					switch (tipo) {
-					case 0:
-						bloque.ingresaElementoEntero(
-								bloque.mapearDireccion(direccion),
-								Integer.parseInt(valor));
-						break;
-					case 1:
-						bloque.ingresaElementoDecimal(
-								bloque.mapearDireccion(direccion),
-								Double.parseDouble(valor));
-						break;
-					case 2:
-						bloque.ingresaElementoTexto(
-								bloque.mapearDireccion(direccion), valor);
-						break;
-					case 3:
-						if (valor.equals("falso")) {
-							bloque.ingresaElementoBooleano(
-									bloque.mapearDireccion(direccion), false);
-						} else {
-							bloque.ingresaElementoBooleano(
-									bloque.mapearDireccion(direccion), true);
+					
+					if(eElement.getElementsByTagName("direccion").item(0) != null){
+						// Obtener la direccion
+						direccion = Integer.parseInt(eElement
+								.getElementsByTagName("direccion").item(0)
+								.getTextContent());
+						// Obtener el tipo
+						tipo = Integer.parseInt(eElement
+								.getElementsByTagName("tipo").item(0)
+								.getTextContent());
+						// Obtener el valor
+						valor = eElement.getElementsByTagName("valor").item(0)
+								.getTextContent();
+						bloque.inicializarBase(13000);
+						switch (tipo) {
+						case 0:
+							bloque.ingresaElementoEntero(
+									bloque.mapearDireccion(direccion),
+									Integer.parseInt(valor));
+							break;
+						case 1:
+							bloque.ingresaElementoDecimal(
+									bloque.mapearDireccion(direccion),
+									Double.parseDouble(valor));
+							break;
+						case 2:
+							bloque.ingresaElementoTexto(
+									bloque.mapearDireccion(direccion), valor);
+							break;
+						case 3:
+							if (valor.equals("falso")) {
+								bloque.ingresaElementoBooleano(
+										bloque.mapearDireccion(direccion), false);
+							} else {
+								bloque.ingresaElementoBooleano(
+										bloque.mapearDireccion(direccion), true);
+							}
+							break;
 						}
-						break;
 					}
 				}
 			}
@@ -445,6 +451,7 @@ public class xmlParser {
   
 	/**
 	 * Metodo que carga los retornos del archivo xml
+	 * 
 	 * @param bloque
 	 * @return bloque El bloque con los retornos cargados
 	 */
@@ -477,28 +484,29 @@ public class xmlParser {
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					// Objeto elemento con los subnodos
 					Element eElement = (Element) nNode;
-
-					// Obtener la direccion
-					direccion = Integer.parseInt(eElement
-							.getElementsByTagName("direccion").item(0)
-							.getTextContent());
-					// Obtener el tipo
-					tipo = Integer.parseInt(eElement
-							.getElementsByTagName("tipo").item(0)
-							.getTextContent());	
-					switch (tipo) {
-					case 0:
-						bloque.ingresaElementoEntero(direccion, -1);
-						break;
-					case 1:
-						bloque.ingresaElementoDecimal(direccion, -1);
-						break;
-					case 2:
-						bloque.ingresaElementoTexto(direccion, "");
-						break;
-					case 3:
-						bloque.ingresaElementoBooleano(direccion, false);
-						break;
+					if(eElement.getElementsByTagName("direccion").item(0) != null){
+						// Obtener la direccion
+						direccion = Integer.parseInt(eElement
+								.getElementsByTagName("direccion").item(0)
+								.getTextContent());
+						// Obtener el tipo
+						tipo = Integer.parseInt(eElement
+								.getElementsByTagName("tipo").item(0)
+								.getTextContent());	
+						switch (tipo) {
+						case 0:
+							bloque.ingresaElementoEntero(direccion, -1);
+							break;
+						case 1:
+							bloque.ingresaElementoDecimal(direccion, -1);
+							break;
+						case 2:
+							bloque.ingresaElementoTexto(direccion, "");
+							break;
+						case 3:
+							bloque.ingresaElementoBooleano(direccion, false);
+							break;
+						}
 					}
 				}
 			}
@@ -510,6 +518,7 @@ public class xmlParser {
   
   /**
    * Metodo para obtener el tipo de un registro retorno obtenido por el xml
+   * 
    * @param objeto
    * @param direccion
    * @return int tipo

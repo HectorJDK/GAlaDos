@@ -2,6 +2,7 @@
  * Clase cuadruplos
  * 
  * Estructura especial para manipulacion de los cuadruplos
+ * 
  * @author Oziel Garza, Hector De la Garza
  *
  */
@@ -12,6 +13,7 @@ public class cuadruplos {
 	public String operando1S;
 	public int operando1;
 	public int operando2;
+	public String operando2S;
 	public int resultado;
 	public String resultadoS;
 	
@@ -31,6 +33,14 @@ public class cuadruplos {
 		this.resultadoS=resultadoS;
 	}
 	
+	//Constructor especial para ORO
+	public cuadruplos(String operando1S , String operando2S, String resultadoS){
+		this.operacion=-1;
+		this.operando1S=operando1S;
+		this.operando1S=operando2S;
+		this.resultadoS=resultadoS;
+	}
+		
 	//Getters y setters
 	public int getOperacion(){
 		return this.operacion;
@@ -62,6 +72,14 @@ public class cuadruplos {
 	
 	public void setOperando2(int operando2){
 		this.operando2 = operando2;
+	}
+	
+	public void setOperando2S(String operando2S){
+		this.operando2S = operando2S;
+	}
+	
+	public String getOperando2S(){
+		return this.operando2S;
 	}
 	
 	public int getResultado(){

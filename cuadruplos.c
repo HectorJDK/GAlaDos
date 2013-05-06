@@ -1505,6 +1505,8 @@ void generarObj(cuadruplos *listaCuadruplos) {
 			fprintf(fp,  "%i, %s, %s, %s\n", temporal->operador, temporal->operando1->nombre, temporal->operando2->nombre, temporal->resultado->nombre);
 		} else if (temporal->operador == 30) {
 			fprintf(fp,  "%i, %s, %s, %s\n", temporal->operador, temporal->operando1->nombre, temporal->operando2->nombre, temporal->resultado->nombre);
+		} else {
+			fprintf(fp,  "%i, %i, %i, %i\n", temporal->operador, temporal->operando1->direccion, temporal->operando2->direccion, temporal->resultado->direccion);		
 		}
 	}
 }
