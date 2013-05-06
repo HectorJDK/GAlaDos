@@ -411,7 +411,7 @@ public class xmlParser {
 						// Obtener el tipo
 						tipo = Integer.parseInt(eElement
 								.getElementsByTagName("tipo").item(0)
-								.getTextContent());
+								.getTextContent());					
 						// Obtener el valor
 						valor = eElement.getElementsByTagName("valor").item(0)
 								.getTextContent();
@@ -456,7 +456,7 @@ public class xmlParser {
 	 * @param bloque
 	 * @return bloque El bloque con los retornos cargados
 	 */
-	public bloque cargarRetornos(bloque bloque) {
+	public HashMap<Integer,retorno> cargarRetornos(HashMap<Integer,retorno> retornos) {
 
 		try {
 
@@ -465,17 +465,18 @@ public class xmlParser {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory
 					.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(fXmlFile);	
-			int direccion;
+			Document doc = dBuilder.parse(fXmlFile);
+			int direccion = 0;
 			int tipo;
+			retorno retornoAuxiliar = new retorno();
 			doc.getDocumentElement().normalize();			
 
 			/**
-			 * Seccion para cargar tabla de retornos a memoria
+			 * Seccion para cargar tabla de constantes a memoria
 			 */
 
-			// Obtener la lista de nodos tipo retorno
-			NodeList nList = doc.getElementsByTagName("variablesRetornos");
+			// Obtener la lista de nodos tipo constante
+			NodeList nList = doc.getElementsByTagName("variableRetorno");
 
 			// Iterar la lista para agregar cada nodo al bloque
 			for (int temp = 0; temp < nList.getLength(); temp++) {
@@ -485,6 +486,7 @@ public class xmlParser {
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					// Objeto elemento con los subnodos
 					Element eElement = (Element) nNode;
+					
 					if(eElement.getElementsByTagName("direccion").item(0) != null){
 						// Obtener la direccion
 						direccion = Integer.parseInt(eElement
@@ -493,28 +495,30 @@ public class xmlParser {
 						// Obtener el tipo
 						tipo = Integer.parseInt(eElement
 								.getElementsByTagName("tipo").item(0)
-								.getTextContent());	
+								.getTextContent());		
 						switch (tipo) {
 						case 0:
-							bloque.ingresaElementoEntero(direccion, -1);
+							retornoAuxiliar.entero = 0;
 							break;
 						case 1:
-							bloque.ingresaElementoDecimal(direccion, -1);
+							retornoAuxiliar.decimal = 0.0;
 							break;
 						case 2:
-							bloque.ingresaElementoTexto(direccion, "");
+							retornoAuxiliar.texto = "";
 							break;
 						case 3:
-							bloque.ingresaElementoBooleano(direccion, false);
+							retornoAuxiliar.booleano = false;						
 							break;
 						}
 					}
 				}
+				retornos.put(direccion, retornoAuxiliar);
+				retornoAuxiliar = new retorno();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return bloque;
+		return retornos;
 	}
   
   /**
@@ -536,7 +540,6 @@ public class xmlParser {
 			
 			// Obtener la lista de nodos tipo retorno
 			NodeList nList = doc.getElementsByTagName("variablesRetornos");
-
 			// Iterar la lista para agregar cada nodo al bloque
 			for (int temp = 0; temp < nList.getLength(); temp++) {
 				// Nodo actual
@@ -546,9 +549,10 @@ public class xmlParser {
 					// Objeto elemento con los subnodos
 					Element eElement = (Element) nNode;				
 					// Cargar variables locales
+					
 					if (eElement.getElementsByTagName("direccion").item(0)
 							.getTextContent() == direccion) {
-						return Integer.parseInt(eElement
+						tipo = Integer.parseInt(eElement
 								.getElementsByTagName("tipo").item(0)
 								.getTextContent());
 					}

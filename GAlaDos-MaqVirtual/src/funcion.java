@@ -8,13 +8,11 @@ public class funcion {
 	int direccionCuadruplo;
 	bloque locales;
 	bloque temporales;
-	HashMap<Integer,Integer> parametros;
 	
 	//Constructor
 	public funcion(){
 		locales = new bloque();
 		temporales = new bloque();
-		parametros = new HashMap<Integer,Integer>();
 	}
 	
 	public bloque getLocales(){

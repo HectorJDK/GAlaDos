@@ -151,7 +151,7 @@ directorioObjetos* agregarParametros(directorioObjetos *objetos, char *objeto, c
 							HASH_ADD_INT(existeProcedimiento->parametros, numeroParametro, temp);
 							return objetos;   
 					} else {
-							printf("Error al momento de grabar contadores erroneo");
+							printf("Error al momento de grabar contadores erroneo\n");
 							exit(1);
 					}
 				} else {
@@ -355,10 +355,8 @@ directorioProcedimientos* buscarFuncion(directorioObjetos *objetos, char *objeto
 				//Checar si la funcion ya existe
 				HASH_FIND_STR(existe->procedimientos, nombre, temp);
 				if (temp == NULL) {
-					printf("%s\n",objeto);
-					printf("%s\n",nombre);
 					//La funcion no esta declarada en el objeto
-					printf("Error Funcion %s no declarada", nombre);
+					printf("Error Funcion %s no declarada\n", nombre);
 					exit(1);
 				} else {
 					//Si existe regresamos el directorioProcedmientos

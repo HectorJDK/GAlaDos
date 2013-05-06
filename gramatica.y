@@ -367,6 +367,20 @@ void generarDesplazamiento(int dimension){
 }
 //----------------------------------------Funciones de Control--------------------------------------------------
 
+void limpiarString(){
+	int indice = 1;
+	char stringLimpio[25];
+
+	while(nombreVariable[indice] != '"'){
+		stringLimpio[indice - 1] = nombreVariable[indice];
+		indice = indice + 1;
+	}
+
+	stringLimpio[indice - 1] = '\0';
+
+	strncpy(nombreVariable, stringLimpio, tamanioIdentificadores);
+}
+
 void calcularMemoriaHeredada(){
 	//Cargamos los datos del objeto heredado en el hijo
 	objetoHeredado = buscarObjeto(objetos, nombreObjetoActual);
@@ -1316,8 +1330,13 @@ var_cte:
 	} 
 	| CTETEXTO
 	{
+
 		//Obtenemos el valor de la constante
 		strncpy(nombreVariable, $1, tamanioIdentificadores);
+
+		//Limpia el string de cualquir caracter no deseado
+		limpiarString();
+
 		agregarTablaConstantes(nombreVariable, 2);
 		variable = buscarConstante(constantes, nombreVariable);
 
@@ -1687,11 +1706,16 @@ declaracion_prototipos:
 
 
 			if (variable == NULL) {
-				//Calculamos la direccion de la variable de retorno a usar
-				asignarMemoriaVariableRetorno();
+				
+				//Si la funcion no regresa nada no es necesario que ocupe espacio
+				if (funcion->regresa != -1) {
+					//Calculamos la direccion de la variable de retorno a usar
+					asignarMemoriaVariableRetorno();
 
-				//Agregamos la variable de retorno al directorio de datos
-				retornos = agregarVariablesRetorno(retornos, nombreVariableRetorno, funcion->regresa, direccionVariable);
+					//Agregamos la variable de retorno al directorio de datos
+					retornos = agregarVariablesRetorno(retornos, nombreVariableRetorno, funcion->regresa, direccionVariable);
+				}
+				
 			}
 			
 		}
@@ -2349,8 +2373,13 @@ var_cte2:
 	} 
 	| CTETEXTO
 	{
+
 		//Obtenemos el valor de la constante
 		strncpy(nombreVariable, $1, tamanioIdentificadores);
+
+		//Limpia el string de cualquir caracter no deseado
+		limpiarString();
+
 		agregarTablaConstantes(nombreVariable, 2);
 		variable = buscarConstante(constantes, nombreVariable);
 
