@@ -1163,27 +1163,28 @@ public class maquinaVirtual {
 					//PARAM				
 					//Asignar cada parametro con su valor a la estructura de la funcion
 					
-					//Obtenemos la direccion del parametro y numero de parametro
-					int direccionParametro = cuadruplo.getOperando1();
-					int numeroParametro = cuadruplo.getResultado()-1;					
-					
+					//Obtenemos la direccion del valor a asignar y numero de parametro
+					int direccionAsignar = cuadruplo.getOperando1();
+					int numeroParametro = cuadruplo.getResultado();	
+					System.out.println("numParam"+numeroParametro);					
+					int direccionParametro = funcion.parametros.get(numeroParametro);
 					//Asignamos el parametro en la funcion nueva
 					switch(tipoOperando1){
 					case 0:
 						//Asociar un parametro tipo entero
-						funcionNueva.locales.ingresaElementoEntero(numeroParametro, obtieneEntero(constantes, workspaceActual, funcion, bloque, direccionParametro));						
+						funcionNueva.locales.ingresaElementoEntero(direccionParametro, obtieneEntero(constantes, workspaceActual, funcion, bloque, direccionAsignar));						
 						break;
 					case 1:
 						//Asociar un parametro tipo decimal
-						funcionNueva.locales.ingresaElementoDecimal(numeroParametro, obtieneDecimal(constantes, workspaceActual, funcion, bloque, direccionParametro));
+						funcionNueva.locales.ingresaElementoDecimal(direccionParametro, obtieneDecimal(constantes, workspaceActual, funcion, bloque, direccionAsignar));
 						break;
 					case 2:
 						//Asociar un parametro tipo texto
-						funcionNueva.locales.ingresaElementoTexto(numeroParametro, obtieneTexto(constantes, workspaceActual, funcion, bloque, direccionParametro));
+						funcionNueva.locales.ingresaElementoTexto(direccionParametro, obtieneTexto(constantes, workspaceActual, funcion, bloque, direccionAsignar));
 						break;
 					case 3:
 						//Asociar un parametro tipo booleano
-						funcionNueva.locales.ingresaElementoBooleano(numeroParametro, obtieneBooleano(constantes, workspaceActual, funcion, bloque, direccionParametro));
+						funcionNueva.locales.ingresaElementoBooleano(direccionParametro, obtieneBooleano(constantes, workspaceActual, funcion, bloque, direccionAsignar));
 						break;
 					}
 					
@@ -1267,18 +1268,25 @@ public class maquinaVirtual {
     				break;
 				case 29:
 					//ORO
+					//Carga datos del objeto para tener acceso posteriormente
+					//Establece una llave unica 
 					String llave = cuadruplo.getOperando1S()+cuadruplo.getOperando2S()+cuadruplo.getResultadoS();					
 					
-					//Cargar los datos de la clase
+					//Cargar los datos de la clase y lo carga en la estructura
 					workspaces = datos.cargarObjetos(workspaces, llave, cuadruplo.getOperando2S());
+					
+					//Continuar con el siguiente cuadruplo
 					indice++;
     				cuadruplo = cuadruplos.get(indice);
 					break;
 				case 30:
 					//ACCESS
+					//Se detecta necesidad de acceso a una clase
+					
 					accederAClase = true;
 					nombreClaseAcceder = cuadruplo.getOperando1S()+cuadruplo.getOperando2S()+cuadruplo.getResultadoS();	
 					
+					//Continuar con el siguiente cuadruplo
 					indice++;
     				cuadruplo = cuadruplos.get(indice);	
 					break;
@@ -1287,6 +1295,8 @@ public class maquinaVirtual {
 					accederAClase = false;
 					nombreClaseAcceder = "";
 					workspaceActual = pilaObjetos.pop();
+					
+					//Continuar con el siguiente cuadruplo
 					indice++;
     				cuadruplo = cuadruplos.get(indice);
 					break;

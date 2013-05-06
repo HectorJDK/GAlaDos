@@ -51,8 +51,9 @@ int regresoNecesario = 0;
 //Variables para la creacion de variables en la tabla
 int direccionVariable;
 char nombreObjeto[25];
-char nombreVariable[25];
 char nombreObjetoActual[25];
+char nombreVariable[25];
+char nombreVariableActual[25];
 char nombreVariableRetorno[25];
 unsigned short tipoVariable;
 char nombreProcedimiento[25];
@@ -314,10 +315,11 @@ void generarFinPrograma(){
 }
 
 //Esta funcion probablemente se deba cambiar
-void generarTemporalFuncion(){
+void generarTemporalFuncion(char *objetoABuscar){
+	
 	//obtenemos el tipo de variable que regresa la funcion la forma de objeto->funcion()
-	funcion = buscarFuncion(objetos, nombreObjeto, nombreProcedimiento);
-
+	funcion = buscarFuncion(objetos, objetoABuscar, nombreProcedimiento);
+	
 	//Verificamos que la funcion sea adecuada para una expresion
 	if (funcion->regresa != -1) {
 		//Obtenemos el nombre de la variable de retorno
@@ -328,10 +330,7 @@ void generarTemporalFuncion(){
 
 		//Generamos el cuadruplo de la variable
 		listaCuadruplos = generarCuadruploTemporalFuncion(listaCuadruplos, operandos, variable->tipo, variable->direccion, variable->nombre , availEntero, availDecimal, availTexto, availBoolean, &contadorIndice);
-	} else {
-		printf("Error en funcion %s: No se puede usar en una expresion ya que no regresa ningun tipo de dato\n", nombreProcedimiento);
-		exit(1);
-	}
+	} 
 }
 
 void generarVerifica(int dimension){	
@@ -720,11 +719,9 @@ int main()
 
 	yyparse();
 	imprimirObjetos(objetos, constantes, retornos);
-	printf("\n");
-	printf("\n");
+	printf("\n\n");
 	imprimeCuadruplos(listaCuadruplos, 0);
-	printf("\n");
-	printf("\n");
+	printf("\n\n");
 	imprimeCuadruplos(listaCuadruplos, 2);
 	generarDatos(objetos, constantes, retornos);
 	generarObj(listaCuadruplos);
@@ -1396,104 +1393,11 @@ opcionalFuncion:
 		if (esObjeto == 0) {
 			strncpy(nombreProcedimiento, nombreVariable, tamanioIdentificadores);
 			//Se debe verificar que exista (Se busca en el objeto actual)
+
 			funcion = buscarFuncion(objetos, nombreObjetoActual, nombreProcedimiento);
 
 		} else if (esObjeto == 1){
-
-			//Buscar que la variable sea un objeto
-			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
-			if (variable == NULL) {
-				printf("La variable %s no es un objeto \n", nombreVariable);
-				exit(1);
-			} 
-
-			//Buscar que la funcion este especificada en la clase
-			funcion = buscarFuncion(objetos, variable->clase, nombreProcedimiento);
-
-			//Generacion del access
-			generarAccess();
-		}
-
-		//Verificamos que exista, si no marcamos un error
-		if (funcion == NULL){
-			printf("Error no existe la funcion %s \n", nombreProcedimiento);
-			exit(1);
-		}		
-
-		//Creacion del ERA
-		generarEra();
-		
-
-	} parametros_funcion CPARENTESIS
-	{
-		//en caso de que no hubiera parametros checar
-		if (cantidadParametros == 0) {
-			if(funcion->parametros != NULL){
-				printf("Se esperaban voleres en la funcion %s", nombreProcedimiento);
-				exit(1);
-			}
-		}
-
-		//Generar el Gosub
-		generarGosub();
-
-		//Llamada a ENDACCES despues de las asignaciones para volver al estado actual solo si es objeto se hara esta funcion
-		if (esObjeto == 1){
-			generarEndAccess();
-		}
-
-		//Aqui se debe generar el temporal y se mete en la pila
-		generarTemporalFuncion();
-		
-		//apagamos la bandera
-		esObjeto = 0;
-	}
-	| ACORCHETE 
-	{
-		//Inicializacion parametros
-		esMatriz = 1;
-
-		strncpy(nombreMatrizActual, nombreVariable, tamanioIdentificadores);
-		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
-
-		if (variable == NULL) {
-			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
-		} 
-
-		if(variable->dimensionada == 0){
-			printf("Error: la variable no es dimensionada \n");
-			exit(1);
-		}
-	} serexpresion2 
-	{
-
-		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
-
-		if (variable == NULL) {
-			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
-		} 
-		generarVerifica(1);
-
-		generarDesplazamiento(1);
-	}
-	CCORCHETE dimensiones2
-	;
-
-
-opcionalFuncion2:
-	llama_funcion_opcional APARENTESIS 
-	{	
-		//Inicializacion de los datos
-		esFuncion = 1;
-		cantidadParametros = 0;
-
-		//Si no esta en formato de objeto->funcion el primer identificador es de la funcion
-		if (esObjeto == 0) {
-			strncpy(nombreProcedimiento, nombreVariable, tamanioIdentificadores);
-			//Se debe verificar que exista (Se busca en el objeto actual)
-			funcion = buscarFuncion(objetos, nombreObjetoActual, nombreProcedimiento);
-		} else if (esObjeto == 1){
-			
+	
 			//Buscar que la variable sea un objeto
 			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
 			if (variable == NULL) {
@@ -1501,7 +1405,7 @@ opcionalFuncion2:
 				printf("La variable %s no es un objeto \n", nombreVariable);
 				exit(1);
 			} 
-			
+
 			//Buscar que la funcion este especificada en la clase
 			funcion = buscarFuncion(objetos, variable->clase, nombreProcedimiento);
 			
@@ -1518,10 +1422,11 @@ opcionalFuncion2:
 
 		//Creacion del ERA
 		generarEra();
-		
 
-	} parametros_funcion CPARENTESIS
+	}
+	parametros_funcion CPARENTESIS
 	{
+
 		//en caso de que no hubiera parametros checar
 		if (cantidadParametros == 0) {
 			if(funcion->parametros != NULL){
@@ -1535,12 +1440,96 @@ opcionalFuncion2:
 
 		//Llamada a ENDACCES despues de las asignaciones para volver al estado actual solo si es objeto se hara esta funcion
 		if (esObjeto == 1){
+
 			generarEndAccess();
+
+			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariableActual);
+
+			generarTemporalFuncion(variable->clase);
+
+		} else {
+			//Aqui se debe generar el temporal y se mete en la pila
+			//Caso si no es una obejto
+			generarTemporalFuncion(nombreObjetoActual);
 		}
 
-		//Aqui se debe generar el temporal y se mete en la pila
-		generarTemporalFuncion();
-		
+		//apagamos la bandera
+		esObjeto = 0;
+	}
+	;
+
+
+opcionalFuncion2:
+	llama_funcion_opcional APARENTESIS 
+	{	
+		//Inicializacion de los datos
+		esFuncion = 1;
+		cantidadParametros = 0;
+
+		//Si no esta en formato de objeto->funcion el primer identificador es de la funcion
+		if (esObjeto == 0) {
+			strncpy(nombreProcedimiento, nombreVariable, tamanioIdentificadores);
+			//Se debe verificar que exista (Se busca en el objeto actual)
+
+			funcion = buscarFuncion(objetos, nombreObjetoActual, nombreProcedimiento);
+
+		} else if (esObjeto == 1){
+			
+			//Buscar que la variable sea un objeto
+			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+			if (variable == NULL) {
+
+				printf("La variable %s no es un objeto \n", nombreVariable);
+				exit(1);
+			} 
+
+			//Buscar que la funcion este especificada en la clase
+			funcion = buscarFuncion(objetos, variable->clase, nombreProcedimiento);
+			
+			//Generacion del access
+			generarAccess();
+	
+		}
+
+		//Verificamos que exista, si no marcamos un error
+		if (funcion == NULL){
+			printf("Error no existe la funcion %s \n", nombreProcedimiento);
+			exit(1);
+		}		
+
+		//Creacion del ERA
+		generarEra();
+
+	}
+	parametros_funcion CPARENTESIS
+	{
+
+		//en caso de que no hubiera parametros checar
+		if (cantidadParametros == 0) {
+			if(funcion->parametros != NULL){
+				printf("Se esperaban voleres en la funcion %s", nombreProcedimiento);
+				exit(1);
+			}
+		}
+
+		//Generar el Gosub
+		generarGosub();
+
+		//Llamada a ENDACCES despues de las asignaciones para volver al estado actual solo si es objeto se hara esta funcion
+		if (esObjeto == 1){
+
+			generarEndAccess();
+
+			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariableActual);
+
+			generarTemporalFuncion(variable->clase);
+
+		} else {
+			//Aqui se debe generar el temporal y se mete en la pila
+			//Caso si no es una obejto
+			generarTemporalFuncion(nombreObjetoActual);
+		}
+
 		//apagamos la bandera
 		esObjeto = 0;
 	}
@@ -1768,7 +1757,7 @@ parametros_rep:
 			asignarMemoriaVariable();
 
 			//Agregar la variable a la tabla de parametros
-			objetos = agregarParametros(objetos, nombreObjetoActual, nombreProcedimientoActual, tipoVariable, cantidadParametros);
+			objetos = agregarParametros(objetos, nombreObjetoActual, nombreProcedimientoActual, tipoVariable, cantidadParametros, direccionVariable);
 
 			//Agregar el parametro a la tabla de variables locales de la funcion
 			objetos = agregarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual, nombreVariable, tipoVariable, direccionVariable);	
@@ -1963,6 +1952,8 @@ llama_funcion_opcional:
 	{
 		strncpy(nombreProcedimiento, $2, tamanioIdentificadores);
 		esObjeto = 1;
+
+		strncpy(nombreVariableActual, nombreVariable, tamanioIdentificadores);
 	}
 	;
 

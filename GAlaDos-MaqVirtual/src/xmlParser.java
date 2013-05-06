@@ -349,6 +349,84 @@ public class xmlParser {
 											funcion.setLocales(bloque);
 											bloque = new bloque();
 										}
+										
+										
+										// Guardar parametros
+										int contadorParamEntero = 0;
+										int contadorParamDecimal = 0;
+										int contadorParamTexto = 0;
+										int contadorParamBooleano = 0;
+										
+										NodeList auxiliarLista6 = eElement3
+												.getElementsByTagName("parametros");
+										auxiliar = auxiliarLista6.item(0);
+										
+										if (auxiliar.getNodeType() == Node.ELEMENT_NODE) {
+											// Objeto elemento con los subnodos
+											Element eElement4 = (Element) auxiliar;
+
+											
+											NodeList auxiliarLista7 = eElement4
+													.getChildNodes();
+											auxiliar = auxiliarLista7.item(0);
+											if (auxiliar.getNodeType() == Node.ELEMENT_NODE) {
+												Element eElement6 = (Element) auxiliar;
+												System.out.println("npm "+ eElement6.getNodeName());
+											
+											}
+											// System.out.println("auxLs"+auxiliarLista.getLength());
+											// Iterar la lista para agregar cada
+											// variable
+											for (int temp3 = 0; temp3 < auxiliarLista7
+													.getLength(); temp3++) {
+												auxiliar = auxiliarLista7
+														.item(temp3);
+												
+												if (auxiliar.getNodeType() == Node.ELEMENT_NODE) {
+													// Obtener los datos de
+													// variables locales
+													Element eElement5 = (Element) auxiliar;
+													
+													int numeroParametro = Integer
+															.parseInt(eElement5
+																	.getElementsByTagName(
+																			"numeroParametro")
+																	.item(0)
+																	.getTextContent());
+													
+													int tipo = Integer
+															.parseInt(eElement5
+																	.getElementsByTagName(
+																			"tipo")
+																	.item(0)
+																	.getTextContent());
+													
+													//Si es un arreglo o matriz generar su espacio correspondiente
+												
+													//Guardar en memoria
+													switch (tipo) {
+													case 0:	
+														System.out.println("entra");
+														funcion.parametros.put(numeroParametro, contadorParamEntero);
+														contadorParamEntero++;
+														break;
+													case 1:
+														funcion.parametros.put(numeroParametro, contadorParamDecimal);
+														contadorParamDecimal++;
+														break;
+													case 2:
+														funcion.parametros.put(numeroParametro, contadorParamTexto);
+														contadorParamTexto++;
+														break;
+													case 3:
+														funcion.parametros.put(numeroParametro, contadorParamBooleano);
+														contadorParamBooleano++;
+														break;													
+													}
+												}
+											}										
+										}																													
+										
 									}
 								}
 

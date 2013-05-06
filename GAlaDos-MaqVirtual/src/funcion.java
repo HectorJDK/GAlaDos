@@ -7,22 +7,16 @@ public class funcion {
 	int permiso;
 	int direccionCuadruplo;
 	bloque locales;
-	bloque temporales;	
+	bloque temporales;
+	HashMap<Integer,Integer> parametros;
 	
 	//Constructor
 	public funcion(){
 		locales = new bloque();
 		temporales = new bloque();
+		parametros = new HashMap<Integer,Integer>();
 	}
-	/*
-	public registro buscarLocal(int direccion){
-		for(int i = 0; i<this.locales.length; i++){
-			if(this.locales[i].getDireccion() == direccion){
-				return this.locales[i];
-			}
-		}
-		return null;
-	}*/
+	
 	public bloque getLocales(){
 		return this.locales;
 	}

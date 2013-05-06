@@ -127,7 +127,7 @@ directorioObjetos* agregarVariablesObjeto(directorioObjetos *objetos, char *obje
 /*
 * Funcion para agregar los parametros al directorio de funciones.
 */
-directorioObjetos* agregarParametros(directorioObjetos *objetos, char *objeto, char *funcion, int tipo, int cantidadParametros) {
+directorioObjetos* agregarParametros(directorioObjetos *objetos, char *objeto, char *funcion, int tipo, int cantidadParametros, int direccionParametros) {
 		
 		//Variables auxiliares
 		directorioObjetos *exiteObjeto;
@@ -147,6 +147,7 @@ directorioObjetos* agregarParametros(directorioObjetos *objetos, char *objeto, c
 							temp = (directorioParametros*)malloc(sizeof(directorioParametros));
 							temp->numeroParametro = cantidadParametros;
 							temp->tipo = tipo;
+							temp->direccion = direccionParametros;
 							HASH_ADD_INT(existeProcedimiento->parametros, numeroParametro, temp);
 							return objetos;   
 					} else {
@@ -354,6 +355,8 @@ directorioProcedimientos* buscarFuncion(directorioObjetos *objetos, char *objeto
 				//Checar si la funcion ya existe
 				HASH_FIND_STR(existe->procedimientos, nombre, temp);
 				if (temp == NULL) {
+					printf("%s\n",objeto);
+					printf("%s\n",nombre);
 					//La funcion no esta declarada en el objeto
 					printf("Error Funcion %s no declarada", nombre);
 					exit(1);
