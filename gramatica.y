@@ -2044,27 +2044,74 @@ lectura:
 		pushPilaOperadores(OP_LECTURA);
 	}
  	APARENTESIS IDENTIFICADOR
-	{
+ 	{
 		//Obtenemos el nombre de la variable que desamos usar
 		strncpy(nombreVariable, $4, tamanioIdentificadores);
 
-		//Obtenemos los valores de las variables si no existen exit
-		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
-			
-		//La variable no se encontro
-		if (variable == NULL) {
-			//Si esta variable entonces la tomamos si no es asi marcaremos un error
-			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreVariable);
+		//Checar si es una matriz
+		esMatriz = 0;
+	} 
+	lectura_matriz
+	{	
+		//la variable a guardar no es matriz
+		if (esMatriz == 0) {
+
+			//Debemos checar primero que ademas la variable no sea una constante
+			variable = buscarConstante(constantes, nombreVariable);
+
+			if (variable == NULL) {
+				//Obtenemos los valores de las variables
+				variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+
+				//La variable no se encontro
+				if (variable == NULL) {
+					//Si esta variable entonces la tomamos si no es asi marcaremos un error
+					variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreVariable);
+				}
+
+				//crearemos un nodoOperando para agregarlo a la pila
+				pushPilaOperandos(variable);	
+			}
 		}
-
-		//crearemos un nodoOperando para agregarlo a la pila
-		pushPilaOperandos(variable);
-
+		
+		esMatriz = 0;
 	}
 	CPARENTESIS
 	{
 		generarLectura();
 	}
+	;
+
+lectura_matriz:
+	ACORCHETE 
+	{
+		//Inicializacion parametros
+		esMatriz = 1;
+
+		strncpy(nombreMatrizActual, nombreVariable, tamanioIdentificadores);
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
+
+		if (variable == NULL) {
+			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
+		} 
+
+		if(variable->dimensionada == 0){
+			printf("Error: la variable no es dimensionada \n");
+			exit(1);
+		}
+	} serexpresion2 
+	{
+
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
+
+		if (variable == NULL) {
+			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
+		} 
+		generarVerifica(1);
+
+		generarDesplazamiento(1);
+	}
+	CCORCHETE dimensiones2
 	;
 	
 escritura:
