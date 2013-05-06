@@ -47,6 +47,7 @@ directorioObjetos* agregarVariablesLocales(directorioObjetos *objetos, char *obj
 		}
 }
 
+
 /*
 * Funcion para buscar en la tabla de variables de una funcion, solo regresa el directorio de la variable para ser usada
 */
@@ -80,6 +81,48 @@ directorio* buscarVariablesLocales(directorioObjetos *objetos, char *objeto, cha
 			exit(1);
 		}
 }
+
+/*
+* Funcion para agregar los objetos locales al directorio de funciones.
+*/
+directorioObjetos* agregarVariablesObjeto(directorioObjetos *objetos, char *objetoActual, char *funcionActual, char *nombreVariable, char *nombreClase) {
+		
+		//Variables auxiliares
+		directorio *temp;
+		directorioObjetos *exiteObjeto;
+		directorioProcedimientos *existeProcedimiento;
+
+		//Buscar el objeto en el directorio
+		HASH_FIND_STR(objetos, objetoActual, exiteObjeto);  /* existe el objeto? */
+		if (exiteObjeto) {
+				//Buscar la funcion en el directorio
+				HASH_FIND_STR(exiteObjeto->procedimientos, funcionActual, existeProcedimiento);  /* existe el procedimiento? */
+				if (existeProcedimiento) {
+					//Checar si la variable ya existe
+					HASH_FIND_STR(existeProcedimiento->variablesLocales, nombreVariable, temp);
+					if (temp==NULL) {
+							//Agregar la nueva variable al directorio
+							temp = (directorio*)malloc(sizeof(directorio));
+							strcpy(temp->nombre, nombreVariable);
+							temp->tipo = 4;
+							temp->direccion = -1;
+							strcpy(temp->clase, nombreClase);
+							HASH_ADD_STR(existeProcedimiento->variablesLocales, nombre, temp);  
+							return objetos;   
+					} else {
+							printf("Error Variable %s ya esta delcarada \n", nombreVariable);
+							exit(1);
+					}
+				} else {
+					printf("Error Funcion %s no se encuentra declarada \n", funcionActual);
+					exit(1);
+				}
+		} else {
+			printf("Error Clase %s no se encuentra declarada \n", objetoActual);
+			exit(1);
+		}
+}
+
 
 /*
 * Funcion para agregar los parametros al directorio de funciones.
@@ -303,7 +346,7 @@ directorioProcedimientos* buscarFuncion(directorioObjetos *objetos, char *objeto
 		
 		//Variables auxiliares
 		directorioProcedimientos *temp;
-		directorioObjetos *existe;  
+		directorioObjetos *existe;
 
 		//Buscar el objeto en el directorio
 		HASH_FIND_STR(objetos, objeto, existe);  
@@ -312,13 +355,14 @@ directorioProcedimientos* buscarFuncion(directorioObjetos *objetos, char *objeto
 				HASH_FIND_STR(existe->procedimientos, nombre, temp);
 				if (temp == NULL) {
 					//La funcion no esta declarada en el objeto
-					printf("Eror Funcion %s no declarada", nombre);
+					printf("Error Funcion %s no declarada", nombre);
 					exit(1);
 				} else {
 					//Si existe regresamos el directorioProcedmientos
 					return temp;
 				}
 		} else {
+			printf("Clase: %s Funcion: %s\n",objeto, nombre);
 			printf("Error Clase %s no se encuentra declarada \n", objeto);
 			exit(1);
 		}

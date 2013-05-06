@@ -31,6 +31,9 @@
 #define OP_VERIFICA			26
 #define OP_SUMAMAT			27
 #define OP_MULTIMAT			28
+#define OP_ORO				29
+#define OP_ACCESS			30
+#define OP_ENDACCESS		31
 
 #define OP_ERROR			-1
 

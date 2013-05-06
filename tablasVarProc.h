@@ -6,6 +6,7 @@
 //Estructura Variables uthash-------------------------------------------------------
 typedef struct directorio {
 	char nombre[25];              /* key */
+	char clase[25];
 	int tipo;
 	unsigned long direccion;
 	int dimensionada;
@@ -45,6 +46,7 @@ typedef struct directorioObjetos {
 
 directorioObjetos* agregarVariablesLocales(directorioObjetos *objetos, char *objeto, char *funcion, char *nombre, unsigned short tipo, unsigned long direccion);
 directorio* buscarVariablesLocales(directorioObjetos *objetos, char *objeto, char *funcion, char *nombre);
+directorioObjetos* agregarVariablesObjeto(directorioObjetos *objetos, char *objeto, char *funcion, char *nombreVariable, char *nombreClase);
 directorioObjetos* agregarParametros(directorioObjetos *objetos, char *objeto, char *funcion, int tipo, int cantidadParametros);
 int checarParametro(directorioObjetos *objetos, char *objeto, char *funcion, int numeroParametro, int tipo);
 directorioObjetos* agregarVariablesGlobales(directorioObjetos *objetos, char *objeto, char *nombre, unsigned short tipo, unsigned long direccion);

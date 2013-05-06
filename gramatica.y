@@ -151,6 +151,9 @@ directorioObjetos *objetos = NULL;
 //Variables directorio objetos para manipulacion de herencia
 directorioObjetos *objetoHeredado = NULL;
 
+//Variables para la busqueda de clases
+directorioObjetos *objetoBuscar = NULL;
+
 //Declaracion para la tabla de constates
 directorio *constantes = NULL;
 
@@ -191,6 +194,17 @@ void pushPilaSaltos(int valor){
 	push(pilaSaltos, salto);
 }
 
+void generarEndAccess(){
+	listaCuadruplos = generarCuadruploEndAccess(listaCuadruplos, &contadorIndice);
+}
+
+void generarAccess(){
+	listaCuadruplos = generarCuadruploAccess(listaCuadruplos, nombreVariable, variable->clase, nombreProcedimientoActual, nombreObjetoActual, &contadorIndice);
+}
+
+void generarOro(){
+	listaCuadruplos = generarCuadruploOro(listaCuadruplos, nombreVariable, nombreObjeto, nombreProcedimientoActual, nombreObjetoActual, &contadorIndice);
+}
 
 void  generarMultiplicacionDivision(){
 	listaCuadruplos = generarCuadruploSequencial(1 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
@@ -267,12 +281,11 @@ void generarEra(){
 	if (esObjeto == 0) {
 		listaCuadruplos = generarCuadruploEra(listaCuadruplos, nombreProcedimiento, nombreObjetoActual, &contadorIndice);	
 	} else if (esObjeto == 1){
-		listaCuadruplos = generarCuadruploEra(listaCuadruplos, nombreProcedimiento, nombreObjeto,&contadorIndice);
+		listaCuadruplos = generarCuadruploEra(listaCuadruplos, nombreProcedimiento, nombreObjeto, &contadorIndice);
 	} else {
 		printf("Error critico de control de llamadas a objetos\n");
 		exit(1);
 	}
-	
 
 }
 
@@ -1031,10 +1044,33 @@ declara_variables:
 		}
 	}
 	|
-	CREAROBJETO IDENTIFICADOR ES IDENTIFICADOR PUNTOYCOMA
+	CREAROBJETO IDENTIFICADOR
 	{		
-		//Pendiente
+		if(seccVariablesGlobales == 1){
+			printf("Funcionalidad aun no implementada.\n Declarar objetos en la seccion de Locales");
+			exit(1);
+		} else if (seccVariablesLocales == 1) {
+			//Guardamos el identificador de la variable
+			strncpy(nombreVariable, $2, tamanioIdentificadores);
+		}
 	}
+	ES IDENTIFICADOR
+	{
+		//Guardamos el identificador del objeto
+		strncpy(nombreObjeto, $5, tamanioIdentificadores);
+	}
+	PUNTOYCOMA
+	{	
+
+		//Buscamos que exista la clase si no existe terminara
+		objetoBuscar = buscarObjeto(objetos, nombreObjeto);
+
+		//Agregamos la variable a la tabla de variables locales
+		objetos = agregarVariablesObjeto(objetos, nombreObjetoActual, nombreProcedimientoActual, nombreVariable, nombreObjeto);
+
+		//Creacion del era es por esto que solo podra estar en variables locales
+		generarOro();
+	} 
 	;
 
 asignacion_matriz:
@@ -1361,10 +1397,21 @@ opcionalFuncion:
 			strncpy(nombreProcedimiento, nombreVariable, tamanioIdentificadores);
 			//Se debe verificar que exista (Se busca en el objeto actual)
 			funcion = buscarFuncion(objetos, nombreObjetoActual, nombreProcedimiento);
-		} else {
-			//**** Esta funcion debe ser especial porque debera buscar las capacidadesde dependiendo de qcomo se asicio
-			//Se debe verificar con el nombre del objeto que se puso ()
-			funcion = buscarFuncion(objetos, nombreObjeto, nombreProcedimiento);	
+
+		} else if (esObjeto == 1){
+
+			//Buscar que la variable sea un objeto
+			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+			if (variable == NULL) {
+				printf("La variable %s no es un objeto \n", nombreVariable);
+				exit(1);
+			} 
+
+			//Buscar que la funcion este especificada en la clase
+			funcion = buscarFuncion(objetos, variable->clase, nombreProcedimiento);
+
+			//Generacion del access
+			generarAccess();
 		}
 
 		//Verificamos que exista, si no marcamos un error
@@ -1386,16 +1433,20 @@ opcionalFuncion:
 				exit(1);
 			}
 		}
-		
-		//apagamos la bandera
-		esObjeto = 0;
 
 		//Generar el Gosub
 		generarGosub();
 
+		//Llamada a ENDACCES despues de las asignaciones para volver al estado actual solo si es objeto se hara esta funcion
+		if (esObjeto == 1){
+			generarEndAccess();
+		}
+
 		//Aqui se debe generar el temporal y se mete en la pila
 		generarTemporalFuncion();
-				
+		
+		//apagamos la bandera
+		esObjeto = 0;
 	}
 	| ACORCHETE 
 	{
@@ -1431,7 +1482,7 @@ opcionalFuncion:
 
 opcionalFuncion2:
 	llama_funcion_opcional APARENTESIS 
-	{
+	{	
 		//Inicializacion de los datos
 		esFuncion = 1;
 		cantidadParametros = 0;
@@ -1441,20 +1492,33 @@ opcionalFuncion2:
 			strncpy(nombreProcedimiento, nombreVariable, tamanioIdentificadores);
 			//Se debe verificar que exista (Se busca en el objeto actual)
 			funcion = buscarFuncion(objetos, nombreObjetoActual, nombreProcedimiento);
-		} else {
-			//**** Esta funcion debe ser especial porque debera buscar las capacidadesde dependiendo de qcomo se asicio
-			//Se debe verificar con el nombre del objeto que se puso ()
-			funcion = buscarFuncion(objetos, nombreObjeto, nombreProcedimiento);	
+		} else if (esObjeto == 1){
+			
+			//Buscar que la variable sea un objeto
+			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
+			if (variable == NULL) {
+
+				printf("La variable %s no es un objeto \n", nombreVariable);
+				exit(1);
+			} 
+			
+			//Buscar que la funcion este especificada en la clase
+			funcion = buscarFuncion(objetos, variable->clase, nombreProcedimiento);
+			
+			//Generacion del access
+			generarAccess();
+	
 		}
 
 		//Verificamos que exista, si no marcamos un error
 		if (funcion == NULL){
 			printf("Error no existe la funcion %s \n", nombreProcedimiento);
 			exit(1);
-		}			
+		}		
 
 		//Creacion del ERA
 		generarEra();
+		
 
 	} parametros_funcion CPARENTESIS
 	{
@@ -1465,12 +1529,20 @@ opcionalFuncion2:
 				exit(1);
 			}
 		}
-		
-		//apagamos la bandera
-		esObjeto = 0;
 
 		//Generar el Gosub
 		generarGosub();
+
+		//Llamada a ENDACCES despues de las asignaciones para volver al estado actual solo si es objeto se hara esta funcion
+		if (esObjeto == 1){
+			generarEndAccess();
+		}
+
+		//Aqui se debe generar el temporal y se mete en la pila
+		generarTemporalFuncion();
+		
+		//apagamos la bandera
+		esObjeto = 0;
 	}
 	;
 
@@ -1889,13 +1961,10 @@ llama_funcion_opcional:
 	/*Empty*/
 	| FLECHA IDENTIFICADOR
 	{
-		strncpy(nombreObjeto, nombreVariable, tamanioIdentificadores);
 		strncpy(nombreProcedimiento, $2, tamanioIdentificadores);
 		esObjeto = 1;
 	}
 	;
-
-
 
 asignacion1:
 	ACORCHETE 
@@ -1956,7 +2025,8 @@ asignacion1:
 		//Funcion experimental solo funcionara con expresiones y id
 		generarAsignacion();
 	}
-	| FLECHA IDENTIFICADOR asignacion3  IGUAL asignacion2;
+	| FLECHA IDENTIFICADOR asignacion3  IGUAL asignacion2
+	;
 
 asignacion2:
 	asignacion_matriz 

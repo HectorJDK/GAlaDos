@@ -138,6 +138,18 @@ void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode) {
 				case 28:
 				strcpy(operacion, "MULTIMAT");
 				break;
+
+				case 29:
+				strcpy(operacion, "ORO");
+				break;
+
+				case 30:
+				strcpy(operacion, "ACCESS");
+				break;
+
+				case 31:
+				strcpy(operacion, "ENDACCESS");
+				break;
 			}
 			printf("Cuadruplo: %d | %s %s %s %s \n", temporal->indice, operacion, temporal->operando1->nombre, temporal->operando2->nombre, temporal->resultado->nombre);
 		}
@@ -277,6 +289,18 @@ void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode) {
 
 				case 28:
 				strcpy(operacion, "MULTIMAT");
+				break;
+
+				case 29:
+				strcpy(operacion, "ORO");
+				break;
+
+				case 30:
+				strcpy(operacion, "ACCESS");
+				break;
+
+				case 31:
+				strcpy(operacion, "ENDACCESS");
 				break;
 			}
 			printf("Cuadruplo: %d | %s %i %i %i \n", temporal->indice, operacion, temporal->operando1->direccion, temporal->operando2->direccion, temporal->resultado->direccion);
@@ -920,6 +944,105 @@ cuadruplos* generarCuadruploEra(cuadruplos *listaCuadruplos, char *nombreFuncion
 }
 
 /*
+*Funcion encargada de generar el cuadruplo para la creacion de los datos de los objetos
+*/
+cuadruplos* generarCuadruploOro(cuadruplos *listaCuadruplos, char *nombreVariable, char *nombreClase, char *nombreProcedimiento, char *nombreObjetoActual, int *contadorIndice){
+	//Variables auxiliares Apuntadores
+	cuadruplos *accederCuadruplo;
+
+	//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
+	listaCuadruplos = generaCuadruplo(listaCuadruplos, NULL, NULL, OP_ORO, NULL, *contadorIndice);
+
+	//Checamos si no hubo algun error en la generacion de los cuadruplos
+	if (listaCuadruplos == NULL) {
+			//Si hubo un error desplegarlo por pantalla
+			printf("Error en la creacion del cuadruplo\n");
+			exit(1);
+	} else {
+		//Buscamos el cuadruplo que acabamos de crear
+		HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
+
+		//Rellenamos los datos del Goto para que apunte de nuevo a la evaluacion
+		if(accederCuadruplo != NULL){
+
+			//Modificacion de los datos de
+			sprintf(accederCuadruplo->operando1->nombre, "%s", nombreVariable);
+			sprintf(accederCuadruplo->operando2->nombre, "%s", nombreClase);
+			sprintf(accederCuadruplo->resultado->nombre, "%s%s", nombreProcedimiento, nombreObjetoActual);
+		} else {
+			printf("Error en el acceso al cuadruplo\n");
+			exit(1);
+		}
+
+		//Tuvo exito la creacion del cuadruplo
+		*contadorIndice = *contadorIndice+1;
+
+		//Regresamos la lista
+		return listaCuadruplos;	
+	}
+}
+
+/*
+*Funcion encargada de generar el cuadruplo para la creacion de los datos de los objetos
+*/
+cuadruplos* generarCuadruploAccess(cuadruplos *listaCuadruplos, char *nombreVariable, char *nombreClase, char *nombreProcedimiento, char *nombreObjetoActual, int *contadorIndice){
+	//Variables auxiliares Apuntadores
+	cuadruplos *accederCuadruplo;
+
+	//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
+	listaCuadruplos = generaCuadruplo(listaCuadruplos, NULL, NULL, OP_ACCESS, NULL, *contadorIndice);
+
+	//Checamos si no hubo algun error en la generacion de los cuadruplos
+	if (listaCuadruplos == NULL) {
+			//Si hubo un error desplegarlo por pantalla
+			printf("Error en la creacion del cuadruplo\n");
+			exit(1);
+	} else {
+		//Buscamos el cuadruplo que acabamos de crear
+		HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
+
+		//Rellenamos los datos del Goto para que apunte de nuevo a la evaluacion
+		if(accederCuadruplo != NULL){
+
+			//Modificacion de los datos de
+			sprintf(accederCuadruplo->operando1->nombre, "%s", nombreVariable);
+			sprintf(accederCuadruplo->operando2->nombre, "%s", nombreClase);
+			sprintf(accederCuadruplo->resultado->nombre, "%s%s", nombreProcedimiento, nombreObjetoActual);
+		} else {
+			printf("Error en el acceso al cuadruplo\n");
+			exit(1);
+		}
+
+		//Tuvo exito la creacion del cuadruplo
+		*contadorIndice = *contadorIndice+1;
+
+		//Regresamos la lista
+		return listaCuadruplos;	
+	}
+}
+
+/*
+Funcion encargada de generar el cuadruplo de ENDPROC y aumentar en 1 el contador de indices
+*/
+cuadruplos* generarCuadruploEndAccess(cuadruplos *listaCuadruplos, int *contadorIndice){
+	//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
+	listaCuadruplos = generaCuadruplo(listaCuadruplos, NULL, NULL, OP_ENDACCESS, NULL, *contadorIndice);
+
+	//Checamos si no hubo algun error en la generacion de los cuadruplos
+	if (listaCuadruplos == NULL) {
+			//Si hubo un error desplegarlo por pantalla
+			printf("Error en la creacion del cuadruplo\n");
+			exit(1);
+	} else {
+		//Tuvo exito la creacion del cuadruplo
+		*contadorIndice = *contadorIndice+1;
+
+		//Regresamos la lista
+		return listaCuadruplos;	
+	}
+}
+
+/*
 Funcion encargada de generar el cuadruplo de ENDPROC y aumentar en 1 el contador de indices
 */
 cuadruplos* generarCuadruploEndProc(cuadruplos *listaCuadruplos, int *contadorIndice){
@@ -1366,7 +1489,6 @@ cuadruplos* generarCuadruploSequencial(int prioridad, cuadruplos *listaCuadruplo
 *generarObj
 *Crea el archivo obj de traduccion del lenguaje
 */
-
 void generarObj(cuadruplos *listaCuadruplos) {
 	
 	//Crear el archivo y guardarlo en carpeta raiz
@@ -1375,13 +1497,14 @@ void generarObj(cuadruplos *listaCuadruplos) {
 	
 	cuadruplos *temporal;
 
-		for(temporal = listaCuadruplos; temporal != NULL; temporal=(cuadruplos*)(temporal->hh.next)) {
-			char operacion[10];					
-			if(temporal->operador == 21){
-				fprintf(fp,  "%i, %s, %i, %s\n", temporal->operador, temporal->operando1->nombre, temporal->operando2->direccion, temporal->resultado->nombre);
-			} else {
-				fprintf(fp,  "%i, %i, %i, %i\n", temporal->operador, temporal->operando1->direccion, temporal->operando2->direccion, temporal->resultado->direccion);			
-			}
+	for(temporal = listaCuadruplos; temporal != NULL; temporal=(cuadruplos*)(temporal->hh.next)) {
+		char operacion[10];					
+		if(temporal->operador == 21){
+			fprintf(fp,  "%i, %s, %i, %s\n", temporal->operador, temporal->operando1->nombre, temporal->operando2->direccion, temporal->resultado->nombre);
+		} else if (temporal->operador == 29) {
+			fprintf(fp,  "%i, %s, %s, %s\n", temporal->operador, temporal->operando1->nombre, temporal->operando2->nombre, temporal->resultado->nombre);
+		} else if (temporal->operador == 30) {
+			fprintf(fp,  "%i, %s, %s, %s\n", temporal->operador, temporal->operando1->nombre, temporal->operando2->nombre, temporal->resultado->nombre);
 		}
-	
+	}
 }
