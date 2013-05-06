@@ -194,7 +194,7 @@ int checarParametro(directorioObjetos *objetos, char *objeto, char *funcion, int
 							exit(1);
 						} else {
 							//Valor es compatible
-							return 1;
+							return temp->direccion;
 						}
 					}
 				} else {

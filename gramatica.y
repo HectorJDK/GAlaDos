@@ -25,11 +25,6 @@ void yyerror( const char *str )
 int numeroDimensiones = 0;
 char nombreMatrizActual[25];
 
-//Contadores de temporales para las funciones
-int totalTempEntero = 0;
-int totalTempDecimal = 0;
-int totalTempTexto = 0;
-int totalTempBooleano = 0;
 
 //Globales miscelaneas de Control
 int tamanioIdentificadores = 25;
@@ -40,6 +35,7 @@ int esFuncion = 0;
 int esMatriz = 0;
 int esObjeto = 0;
 int herenciaActiva = 0;
+int direccionParametro = 0;
 
 //Globales de control para validacion de parametros
 int seccVariablesLocales = 0;
@@ -268,7 +264,7 @@ void generarEndProc(){
 }
 
 void generarParam(){
-	listaCuadruplos = generarCuadruploParam(listaCuadruplos, &cantidadParametros, operandos, &contadorIndice);
+	listaCuadruplos = generarCuadruploParam(listaCuadruplos, &direccionParametro, operandos, &contadorIndice);
 }
 
 void generarGosub(){
@@ -1552,7 +1548,7 @@ parametros_funcion:
 		nodoAuxiliar = pop(operandos);
 
 		//Verificamos que el tipo del parametro sea el mismo 
-		checarParametro(objetos, nombreObjeto, nombreProcedimiento, cantidadParametros, ((nodoOperando*)(nodoAuxiliar->dato))->tipo);
+		direccionParametro = checarParametro(objetos, nombreObjeto, nombreProcedimiento, cantidadParametros, ((nodoOperando*)(nodoAuxiliar->dato))->tipo);
 			
 		push(operandos, ((nodoOperando*)(nodoAuxiliar->dato)));
 
