@@ -78,7 +78,8 @@ public class bloque {
 	 */
 	public void ingresaElementoEntero(int direccion, int valor){	
 			//Si la direccion es menor que el tamaño, reemplazar el valor existente
-			if(entero.size() > direccion){
+		
+		if(entero.size() > direccion){
 				entero.set(direccion,valor);
 			} else {
 				//Agregar una nueva direccion

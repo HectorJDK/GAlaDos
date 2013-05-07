@@ -174,6 +174,7 @@ public class xmlParser {
 			funcion funcion, String nombreObjeto) {
 
 		try {
+						
 			// Declaracion e inicializacion de estructuras y objetos
 			File fXmlFile = new File("obj/datos.txt");
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory
@@ -187,7 +188,7 @@ public class xmlParser {
 			doc.getDocumentElement().normalize();
 			// Obtener el nodo principal
 			//NodeList principal = doc.getElementsByTagName("GALaDos");
-			auxiliarLista = doc.getElementsByTagName("main");
+			auxiliarLista = doc.getElementsByTagName(nombreObjeto);
 						
 			//auxiliar = principal.item(0);
 			//auxiliarLista = auxiliar.getChildNodes();			

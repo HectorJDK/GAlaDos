@@ -1171,7 +1171,6 @@ public class maquinaVirtual {
 			        
 					//Cargar su informacion
 			        funcionNueva = datos.cargarFunciones(workspaceActual, nombreFuncion, funcionNueva, nombreObjeto);										
-    							      
 			        //Continuar con el siguiente cuadruplo
 					indice++;					
     				cuadruplo = cuadruplos.get(indice);    			
@@ -1181,9 +1180,10 @@ public class maquinaVirtual {
 					//Asignar cada parametro con su valor a la estructura de la funcion
 					
 					//Obtenemos la direccion del valor a asignar y numero de parametro
-					int direccionAsignar = direccionOperando1;
+					int direccionAsignar = direccionOperando1;				
 					bloque.inicializarBase(5000);
-					int direccionParametro = bloque.mapearDireccion(direccionResultado);					
+					int direccionParametro = bloque.mapearDireccion(direccionResultado);
+	
 					//Asignamos el parametro en la funcion nueva
 					switch(tipoOperando1){
 					case 0:
