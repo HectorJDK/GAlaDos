@@ -10,7 +10,7 @@ Variables_Globales [
 ]
 
 Declara_Funciones [	
-	publica funcion1() regresa entero;
+	  funcion1() regresa entero;
 ]
 
 Implementa_Funciones [	

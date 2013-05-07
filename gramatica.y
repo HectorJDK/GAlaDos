@@ -1,21 +1,23 @@
 %{
-	//Hector Jesus De La Garza Ponce
-	//Oziel Alonso Garza Lopez
-	extern char * yytext;
-	#include <stdio.h>
-	#include <stdlib.h>
-	#include <string.h>  /* strcpy */
-	#include "uthash.h"
-	#include "tablasVarProc.h"
-	#include "codigosOperaciones.h"
-	#include "pilas.h"
-	#include "utilerias.h"
-	#include "cuadruplos.h"
-	#define YYERROR_VERBOSE 1
+/*
+*Hector Jesus De La Garza Ponce 	619971
+*Oziel Alonzo Garza Lopez 			805074
+
+*Compilador GAlaDos
+*/
+extern char * yytext;
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "uthash.h"
+#include "tablasVarProc.h"
+#include "codigosOperaciones.h"
+#include "pilas.h"
+#include "utilerias.h"
+#include "cuadruplos.h"
+#define YYERROR_VERBOSE 1
 	
 //------------------------------------Variables de Control-----------------------------------------------
-
-
 void yyerror( const char *str )
 {
 	fprintf( stderr, "error: %s\n", str );
@@ -30,7 +32,6 @@ char nombreMatrizActual[25];
 int tamanioIdentificadores = 25;
 int cantidadParametros = 0;
 int cantidadParametrosFuncion = 0;
-int permisoFuncion = 0;
 int esFuncion = 0;
 int esMatriz = 0;
 int esObjeto = 0;
@@ -157,11 +158,16 @@ directorio *constantes = NULL;
 //Decalracion para la tabla de retorno
 directorio *retornos = NULL;
 
-//---------------------------------WRAPPERS-------------------------------------------
+//**************************************************************************************************************
+//----------------------------------------FUNCIONES DE CONTROL--------------------------------------------------
+//**************************************************************************************************************
 
+//Funcion encargada de meter en la pila de operandos un nuevo valor
 void pushPilaOperandos(directorio *variable){
 	//Creamos la nueva variable para agregar a la pila de variables
 	operando = (nodoOperando*)malloc(sizeof(nodoOperando));
+
+	//Rellenamos los nuevos valores para la variable
 	if(variable == NULL){
 		operando->temp = -1;
 		operando->tipo = -1; 
@@ -176,6 +182,7 @@ void pushPilaOperandos(directorio *variable){
 	push(operandos,operando);
 }
 
+//Funcion encargada de meter en la pila de operadores un nuevo valor
 void pushPilaOperadores(int valor){
 	//Creamos el nodo operandor que se le hara push en la pila operadores
 	operador = (nodoOperador*)malloc(sizeof(nodoOperador));
@@ -185,206 +192,41 @@ void pushPilaOperadores(int valor){
 	push(operadores, operador);
 }
 
+//Funcion encargada de meter en la pila de saltos un nuevo valor
 void pushPilaSaltos(int valor){
+	//Creamos el nodo operandor que se le hara push en la pila operadores
 	salto = (nodoOperador*)malloc(sizeof(nodoOperador));
 	salto->operador = valor;
+
+	//Metemos la multiplicacion en la pila de operadores
 	push(pilaSaltos, salto);
 }
 
-void generarEndAccess(){
-	listaCuadruplos = generarCuadruploEndAccess(listaCuadruplos, &contadorIndice);
-}
-
-void generarAccess(){
-	listaCuadruplos = generarCuadruploAccess(listaCuadruplos, nombreVariable, variable->clase, nombreProcedimientoActual, nombreObjetoActual, &contadorIndice);
-}
-
-void generarOro(){
-	listaCuadruplos = generarCuadruploOro(listaCuadruplos, nombreVariable, nombreObjeto, nombreProcedimientoActual, nombreObjetoActual, &contadorIndice);
-}
-
-void  generarMultiplicacionDivision(){
-	listaCuadruplos = generarCuadruploSequencial(1 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
-}
-
-void  generarSumaResta(){
-	listaCuadruplos = generarCuadruploSequencial(2 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
-}
-
-void  generarRelacional(){
-	listaCuadruplos = generarCuadruploSequencial(3, listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
-}
-
-void  generarAndOr(){
-	listaCuadruplos = generarCuadruploSequencial(4, listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
-}
-
-void  generarAsignacion(){
-	listaCuadruplos = generarCuadruploSequencial(5 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
-}
-
-void  generarLectura(){
-	listaCuadruplos = generarCuadruploSequencial(6 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
-}
-
-void  generarEscritura(){
-	listaCuadruplos = generarCuadruploSequencial(7 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
-}
-
-void generarAccion1Ciclo(){
-		listaCuadruplos = generarCuadruploAccion1(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
-}
-
-void generarAccion2Ciclo(){
-		listaCuadruplos = generarCuadruploAccion2Ciclo(listaCuadruplos, pilaSaltos, &contadorIndice);
-}
-
-void generarAccion1If(){
-	listaCuadruplos = generarCuadruploAccion1(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
-}
-
-void generarAccion2If(){
-	listaCuadruplos = generarCuadruploAccion2If(listaCuadruplos,  operandos, pilaSaltos, &contadorIndice);
-}
-
-void generarAccion3If(){
-	listaCuadruplos = generarCuadruploAccion3If(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
-}
-
-void generarGoto(){
-	listaCuadruplos = generarCuadruploGoto(listaCuadruplos, &contadorIndice);
-}
-
-void rellenarGoto(){
-	listaCuadruplos = generarCuadruploAccion3If(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
-}
-
-void generarEndProc(){
-	listaCuadruplos = generarCuadruploEndProc(listaCuadruplos, &contadorIndice);
-}
-
-void generarParam(){
-	listaCuadruplos = generarCuadruploParam(listaCuadruplos, &direccionParametro, operandos, &contadorIndice);
-}
-
-void generarGosub(){
-	//Buscar en la funcion su numero de direccion
-	//funcion tiene cargado anteriormente la busqueda de la funcion con todos los datos pertinentes
-	listaCuadruplos = generarCuadruploGosub(listaCuadruplos, funcion->direccionCuadruplo, &contadorIndice);
-}
-
-void generarEra(){
-
-	if (esObjeto == 0) {
-		listaCuadruplos = generarCuadruploEra(listaCuadruplos, nombreProcedimiento, nombreObjetoActual, &contadorIndice);	
-	} else if (esObjeto == 1){
-		listaCuadruplos = generarCuadruploEra(listaCuadruplos, nombreProcedimiento, nombreObjeto, &contadorIndice);
-	} else {
-		printf("Error critico de control de llamadas a objetos\n");
-		exit(1);
-	}
-
-}
-
-void generarReturn(){
-	//Buscamos el dato de la variable de retorno de la funcion
-	funcion = buscarFuncion(objetos, nombreObjetoActual, nombreProcedimientoActual);
-
-	//Verificamos que la funcion pueda regresar alguna dato de funcion
-	if (funcion->regresa != -1) {
-		//Obtenemos el nombre de la variable de retorno
-		sprintf(nombreVariableRetorno, "%s%i", nombreProcedimientoActual, funcion->regresa);
-
-		//Buscamos la variable de retorno
-		variable = buscarVariablesRetorno(retornos, nombreVariableRetorno);
-
-		//Generamos el return del cuadruplo aqui se checara si es posible realizarlo o no
-		listaCuadruplos = generarCuadruploReturn(listaCuadruplos, operandos, variable->tipo, variable->direccion, variable->nombre ,&contadorIndice);
-	} else {
-		printf("Error en funcion %s: No se puede regresar un dato cuando se especifica como nada\n", nombreProcedimientoActual);
-		exit(1);
-	}
-}
-
-void generarFinPrograma(){
-	listaCuadruplos = generarCuadruploEndProgram(listaCuadruplos, &contadorIndice);
-}
-
-//Esta funcion probablemente se deba cambiar
-void generarTemporalFuncion(char *objetoABuscar){
-	
-	//obtenemos el tipo de variable que regresa la funcion la forma de objeto->funcion()
-	funcion = buscarFuncion(objetos, objetoABuscar, nombreProcedimiento);
-	
-	//Verificamos que la funcion sea adecuada para una expresion
-	if (funcion->regresa != -1) {
-		//Obtenemos el nombre de la variable de retorno
-		sprintf(nombreVariableRetorno, "%s%i", nombreProcedimiento, funcion->regresa);
-
-		//Buscamos la variable de retorno
-		variable = buscarVariablesRetorno(retornos, nombreVariableRetorno);
-
-		//Generamos el cuadruplo de la variable
-		listaCuadruplos = generarCuadruploTemporalFuncion(listaCuadruplos, operandos, variable->tipo, variable->direccion, variable->nombre , availEntero, availDecimal, availTexto, availBoolean, &contadorIndice);
-	} 
-}
-
-void generarVerifica(int dimension){	
-	if(dimension == 1){
-		listaCuadruplos = generaCuadruploVerifica(listaCuadruplos, operandos,  variable->lsuperior1, &contadorIndice );
-	} else if( dimension == 2) {
-		listaCuadruplos = generaCuadruploVerifica(listaCuadruplos, operandos,  variable->lsuperior2, &contadorIndice );
-	}
-}
-
-void generarDesplazamiento(int dimension){
-	variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
-	if (variable == NULL) {
-		variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
-	} 
-
-	if(variable->dimensionada == 1){
-
-		//Generacion de sumaMat para arreglo
-		listaCuadruplos = generaCuadruploSUMAarreglo(listaCuadruplos, operandos, variable->direccion, availEntero, &contadorIndice);
-	} else if(variable->dimensionada == 2 && dimension == 1) {
-
-		//Generar multimat = (S1 * m1)
-		listaCuadruplos = generarCuadruploMULTIarreglo(listaCuadruplos, operandos, variable->m1, availEntero, &contadorIndice);
-	} else if(variable->dimensionada == 2 && dimension == 2) {
-
-		//Segunda accion Matrices para acumular el cambio se realiza una simple suma
-		//Se agrega la operacion de Suma
-		pushPilaOperadores(OP_SUMA);
-
-		//Se realiza la acumulacion de valores
-		generarSumaResta();
-
-		//Ultima accion Matrices para obtener el direccion
-		listaCuadruplos = generaCuadruploSUMAarreglo(listaCuadruplos, operandos, variable->direccion, availEntero, &contadorIndice);
-	} 
-
-}
-//----------------------------------------Funciones de Control--------------------------------------------------
-
+//Funcion encargada de limpiar de las constantes de texto las comillas dobles
 void limpiarString(){
+
 	int indice = 1;
 	char stringLimpio[25];
 
+	//Se copia en un nuevo string cada dato del string menos las comillas
 	while(nombreVariable[indice] != '"'){
 		stringLimpio[indice - 1] = nombreVariable[indice];
 		indice = indice + 1;
 	}
 
+	//Se le indica al string su terminacion
 	stringLimpio[indice - 1] = '\0';
 
+	//Se copia los datos de los strings
 	strncpy(nombreVariable, stringLimpio, tamanioIdentificadores);
 }
 
+//Funcion encargada de inicializar las direcciones de las variables en el caso de una herencia de clases
 void calcularMemoriaHeredada(){
 	//Cargamos los datos del objeto heredado en el hijo
 	objetoHeredado = buscarObjeto(objetos, nombreObjetoActual);
 	
+	//Barrido de todos los datos globales de clase
 	for(variable = objetoHeredado->variablesGlobales; variable!= NULL; variable=(struct directorio*)(variable->hh.next)) {
 
 		//Dependiendo el tipo de la variable la igualaremos a la memoria para que las nuevas variables no se sobrescriban en memoria
@@ -441,6 +283,7 @@ void calcularMemoriaHeredada(){
 	}
 }
 
+//Metodo que se encarga de determinar que direccion de memoria se debera aumentar y guardarla en direccionVariable
 void asignarMemoriaVariable(){
 	//Checamos en que seccion nos encontramos al momento de crear una variable
 	if (seccVariablesGlobales == 1) {
@@ -533,10 +376,11 @@ void asignarMemoriaVariable(){
 	}
 }
 
+//Metodo que se encarga de determinar que direccion de memoria se debera aumentar y guardarla en direccionVariable
 void asignarMemoriaVariableConstante(int tipoConstate){
 	//Checamos en que seccion nos encontramos al momento de crear una variable
-			//Estamos en las variables Globales
-			//Determinar que tipo de variable tomaremos el dato
+	//Estamos en las variables Globales
+	//Determinar que tipo de variable tomaremos el dato
 	switch(tipoConstate){
 		case 0:
 		if (memoriaEnteroConstante < (baseMemoriaConstante + cantidadVariablesConstante * cursorEntero)) {
@@ -580,6 +424,7 @@ void asignarMemoriaVariableConstante(int tipoConstate){
 	}
 }
 
+//Metodo que se encarga de determinar que direccion de memoria se debera aumentar y guardarla en direccionVariable
 void asignarMemoriaVariableRetorno(){
 	if (memoriaVariablesRetorno < 1000) {
 		direccionVariable = memoriaVariablesRetorno;
@@ -590,6 +435,7 @@ void asignarMemoriaVariableRetorno(){
 	}	
 }
 
+//Metodo que reinizializa los datos de las direcciones de temporales
 void calcularMemoriaTemporal(){
 	memoriaEnteroTemp = baseMemoriaTemp + (cantidadVariablesTemp * 0);
 	memoriaDecimalTemp = baseMemoriaTemp + (cantidadVariablesTemp * 1);
@@ -597,14 +443,15 @@ void calcularMemoriaTemporal(){
 	memoriaBooleanoTemp = baseMemoriaTemp + (cantidadVariablesTemp * 3);
 }
 
+//Metodo que reinizializa los datos de las direcciones de locales
 void calcularMemoriaLocal(){
 	memoriaEnteroLocal = baseMemoriaLocal + (cantidadVariablesLocal * 0);
 	memoriaDecimalLocal = baseMemoriaLocal + (cantidadVariablesLocal * 1);
 	memoriaTextoLocal =	baseMemoriaLocal + (cantidadVariablesLocal * 2);
 	memoriaBooleanoLocal = baseMemoriaLocal + (cantidadVariablesLocal * 3);
-
 }
 
+//Metodo que reinizializa los datos de las direcciones de globales
 void calcularMemoriaGlobal(){
 	memoriaEnteroGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 0);
 	memoriaDecimalGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 1);
@@ -612,10 +459,12 @@ void calcularMemoriaGlobal(){
 	memoriaBooleanoGlobal = baseMemoriaGlobal + (cantidadVariablesGlobal * 3);
 }
 
+//Metodo que reinizializa los datos de las direcciones de temporales
 void calcularMemoriaRetorno(){
 	memoriaVariablesRetorno = 0;
 }
 
+//Metodo que inicializa las diferentes tipos de memoria del lenguaje
 void calcularMemoriaVirtual(){
 	//Memoria Temporal
 	calcularMemoriaTemporal();
@@ -636,18 +485,51 @@ void calcularMemoriaVirtual(){
 	memoriaBooleanoConstante = baseMemoriaConstante + (cantidadVariablesConstante * 3);
 }
 
+//Metodo que agrega a la tabla de constantes el tipo de variable que se tiene
 void agregarTablaConstantes(char *nombre, int tipo){
 	directorio *temp;
 
 	//Buscar si anteriormente se ha insertado la constante en la tabla
 	temp = buscarConstante(constantes, nombre);
 
+	//Si la constante no se ha agregado anteriormente meterla con su direccion apropiada
 	if (temp == NULL) {
+		//Obtiene la direccion de la constante apropiada
 		asignarMemoriaVariableConstante(tipo);
 		constantes = agregarConstante(constantes, nombre, tipo, direccionVariableConstante);
 	}
 }
 
+//Metodo que se encarga de inicializar el avail de temporales
+void inicializarTemporales(){
+	//liberacion de espacio en memoria
+	free(availEntero);
+	free(availDecimal);
+	free(availTexto);
+	free(availBoolean);
+
+	//Creacion de las pilas de Avail en Memoria
+	availEntero = malloc(sizeof(pila));
+	availEntero->tamanio = 0;
+	availEntero->primero = NULL;
+
+	availDecimal = malloc(sizeof(pila));
+	availDecimal->tamanio = 0;
+	availDecimal->primero = NULL;
+
+	availTexto = malloc(sizeof(pila));
+	availTexto->tamanio = 0;
+	availTexto->primero = NULL;
+
+	availBoolean = malloc(sizeof(pila));
+	availBoolean->tamanio = 0;
+	availBoolean->primero = NULL;
+
+	//Inicializacion de las 4 pilas de avail
+	inicializarAvail(availEntero, availDecimal, availTexto, availBoolean, &memoriaEnteroTemp, &memoriaDecimalTemp, &memoriaTextoTemp, &memoriaBooleanoTemp);
+}
+
+//Metodo que se encarga de crear e inicializar las estructuras necesarias para el compilador
 void inicializarCompilador(){
 	//Accion numero 1
 	//Inicializacion de estructuras
@@ -693,36 +575,189 @@ void inicializarCompilador(){
 	inicializarSemantica(cuboSemantico);
 }
 
-inicializarTemporales(){
-	//liberacion de espacio en memoria
-	free(availEntero);
-	free(availDecimal);
-	free(availTexto);
-	free(availBoolean);
+//**************************************************************************************************************
+//-----------------------------------FUNCIONES WRAPPERS PARA GENERAR CUADRUPLOS---------------------------------
+//**************************************************************************************************************
 
-	//Creacion de las pilas de Avail en Memoria
-	availEntero = malloc(sizeof(pila));
-	availEntero->tamanio = 0;
-	availEntero->primero = NULL;
-
-	availDecimal = malloc(sizeof(pila));
-	availDecimal->tamanio = 0;
-	availDecimal->primero = NULL;
-
-	availTexto = malloc(sizeof(pila));
-	availTexto->tamanio = 0;
-	availTexto->primero = NULL;
-
-	availBoolean = malloc(sizeof(pila));
-	availBoolean->tamanio = 0;
-	availBoolean->primero = NULL;
-
-	inicializarAvail(availEntero, availDecimal, availTexto, availBoolean, &memoriaEnteroTemp, &memoriaDecimalTemp, &memoriaTextoTemp, &memoriaBooleanoTemp);
+void generarEndAccess(){
+	listaCuadruplos = generarCuadruploEndAccess(listaCuadruplos, &contadorIndice);
 }
 
+void generarAccess(){
+	listaCuadruplos = generarCuadruploAccess(listaCuadruplos, nombreVariable, variable->clase, nombreProcedimientoActual, nombreObjetoActual, &contadorIndice);
+}
 
+void generarOro(){
+	listaCuadruplos = generarCuadruploOro(listaCuadruplos, nombreVariable, nombreObjeto, nombreProcedimientoActual, nombreObjetoActual, &contadorIndice);
+}
 
-//----------------------------------MAIN--------------------------------------
+void  generarMultiplicacionDivision(){
+	listaCuadruplos = generarCuadruploSequencial(1 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+}
+
+void  generarSumaResta(){
+	listaCuadruplos = generarCuadruploSequencial(2 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+}
+
+void  generarRelacional(){
+	listaCuadruplos = generarCuadruploSequencial(3, listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+}
+
+void  generarAndOr(){
+	listaCuadruplos = generarCuadruploSequencial(4, listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+}
+
+void  generarAsignacion(){
+	listaCuadruplos = generarCuadruploSequencial(5 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+}
+
+void  generarLectura(){
+	listaCuadruplos = generarCuadruploSequencial(6 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+}
+
+void  generarEscritura(){
+	listaCuadruplos = generarCuadruploSequencial(7 , listaCuadruplos, operandos, operadores, cuboSemantico, &contadorIndice, availEntero, availDecimal, availTexto, availBoolean);
+}
+
+void generarAccion1Ciclo(){
+		listaCuadruplos = generarCuadruploAccion1(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
+}
+
+void generarAccion2Ciclo(){
+		listaCuadruplos = generarCuadruploAccion2Ciclo(listaCuadruplos, pilaSaltos, &contadorIndice);
+}
+
+void generarAccion1If(){
+	listaCuadruplos = generarCuadruploAccion1(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
+}
+
+void generarAccion2If(){
+	listaCuadruplos = generarCuadruploAccion2If(listaCuadruplos,  operandos, pilaSaltos, &contadorIndice);
+}
+
+void generarAccion3If(){
+	listaCuadruplos = generarCuadruploAccion3If(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
+}
+
+void generarGoto(){
+	listaCuadruplos = generarCuadruploGoto(listaCuadruplos, &contadorIndice);
+}
+
+void rellenarGoto(){
+	listaCuadruplos = generarCuadruploAccion3If(listaCuadruplos, operandos, pilaSaltos, &contadorIndice);
+}
+
+void generarEndProc(){
+	listaCuadruplos = generarCuadruploEndProc(listaCuadruplos, &contadorIndice);
+}
+
+void generarParam(){
+	listaCuadruplos = generarCuadruploParam(listaCuadruplos, &direccionParametro, operandos, &contadorIndice);
+}
+
+void generarGosub(){
+	listaCuadruplos = generarCuadruploGosub(listaCuadruplos, funcion->direccionCuadruplo, &contadorIndice);
+}
+
+void generarFinPrograma(){
+	listaCuadruplos = generarCuadruploEndProgram(listaCuadruplos, &contadorIndice);
+}
+
+void generarEra(){
+	//Generacion de diferentes tipos de era dependiendo de si es un objeto o no
+	if (esObjeto == 0) {
+		//Si no es un objeto el era se realiza con el nombre de la clase actual
+		listaCuadruplos = generarCuadruploEra(listaCuadruplos, nombreProcedimiento, nombreObjetoActual, &contadorIndice);	
+	} else if (esObjeto == 1){
+		//Si es un objeto el era se realiza con el nombre de la clase del objeto
+		listaCuadruplos = generarCuadruploEra(listaCuadruplos, nombreProcedimiento, nombreObjeto, &contadorIndice);
+	} else {
+		printf("Error critico de control de llamadas a objetos\n");
+		exit(1);
+	}
+}
+
+void generarReturn(){
+	//Buscamos el dato de la variable de retorno de la funcion
+	funcion = buscarFuncion(objetos, nombreObjetoActual, nombreProcedimientoActual);
+
+	//Verificamos que la funcion pueda regresar alguna dato de funcion
+	if (funcion->regresa != -1) {
+		//Obtenemos el nombre de la variable de retorno
+		sprintf(nombreVariableRetorno, "%s%i", nombreProcedimientoActual, funcion->regresa);
+
+		//Buscamos la variable de retorno
+		variable = buscarVariablesRetorno(retornos, nombreVariableRetorno);
+
+		//Generamos el return del cuadruplo aqui se checara si es posible realizarlo o no
+		listaCuadruplos = generarCuadruploReturn(listaCuadruplos, operandos, variable->tipo, variable->direccion, variable->nombre ,&contadorIndice);
+	} else {
+		printf("Error en funcion %s: No se puede regresar un dato cuando se especifica como nada\n", nombreProcedimientoActual);
+		exit(1);
+	}
+}
+
+void generarTemporalFuncion(char *objetoABuscar){
+	//obtenemos el tipo de variable que regresa la funcion la forma de objeto->funcion()
+	funcion = buscarFuncion(objetos, objetoABuscar, nombreProcedimiento);
+	
+	//Verificamos que la funcion sea adecuada para una expresion
+	if (funcion->regresa != -1) {
+		//Obtenemos el nombre de la variable de retorno
+		sprintf(nombreVariableRetorno, "%s%i", nombreProcedimiento, funcion->regresa);
+
+		//Buscamos la variable de retorno
+		variable = buscarVariablesRetorno(retornos, nombreVariableRetorno);
+
+		//Generamos el cuadruplo de la variable
+		listaCuadruplos = generarCuadruploTemporalFuncion(listaCuadruplos, operandos, variable->tipo, variable->direccion, variable->nombre , availEntero, availDecimal, availTexto, availBoolean, &contadorIndice);
+	} 
+}
+
+void generarVerifica(int dimension){
+	//Dependiendo del la dimension se genera un verifica con diferentes datos	
+	if(dimension == 1){
+		//Para la dimension 1 se toma el valor superior del primer arreglo
+		listaCuadruplos = generaCuadruploVerifica(listaCuadruplos, operandos,  variable->lsuperior1, &contadorIndice );
+	} else if( dimension == 2) {
+		//Para la dimension 2 se toma el valor superior del primer arreglo
+		listaCuadruplos = generaCuadruploVerifica(listaCuadruplos, operandos,  variable->lsuperior2, &contadorIndice );
+	}
+}
+
+void generarDesplazamiento(int dimension){
+
+	//Buscamos los datos de la matriz
+	variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
+	if (variable == NULL) {
+		variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
+	} 
+
+	//Dependiendo de si es arreglo o matriz generamos diferentes cuadruplo
+	if(variable->dimensionada == 1){
+		//Generacion de sumaMat para arreglo
+		listaCuadruplos = generaCuadruploSUMAarreglo(listaCuadruplos, operandos, variable->direccion, availEntero, &contadorIndice);
+	} else if(variable->dimensionada == 2 && dimension == 1) {
+
+		//Generar multimat = (S1 * m1)
+		listaCuadruplos = generarCuadruploMULTIarreglo(listaCuadruplos, operandos, variable->m1, availEntero, &contadorIndice);
+	} else if(variable->dimensionada == 2 && dimension == 2) {
+
+		//Segunda accion Matrices para acumular el cambio se realiza una simple suma
+		//Se agrega la operacion de Suma
+		pushPilaOperadores(OP_SUMA);
+
+		//Se realiza la acumulacion de valores
+		generarSumaResta();
+
+		//Ultima accion Matrices para obtener el direccion
+		listaCuadruplos = generaCuadruploSUMAarreglo(listaCuadruplos, operandos, variable->direccion, availEntero, &contadorIndice);
+	}
+}
+
+//**************************************************************************************************************
+//---------------------------------------------------MAIN-------------------------------------------------------
+//**************************************************************************************************************
 
 int main()
 {
@@ -738,7 +773,9 @@ int main()
 	return 0;
 }
 
-//----------------------------------TOKENS--------------------------------------
+//**************************************************************************************************************
+//-------------------------------------------------TOKENS-------------------------------------------------------
+//**************************************************************************************************************
 
 %}
 
@@ -766,8 +803,6 @@ int main()
 %token CLASE
 %token <ival> MATRIZENTERA
 %token <ival> MATRIZDECIMAL
-%token PRIVADA
-%token PUBLICA
 %token REGRESA
 %token HIJODE
 %token EJECUTARPROGRAMA
@@ -807,7 +842,9 @@ int main()
 %start programa
 %%
 
-//-------------------------------------REGLAS--------------------------------------
+//**************************************************************************************************************
+//-------------------------------------------------REGLAS-------------------------------------------------------
+//**************************************************************************************************************
 
 programa:
 	{
@@ -817,7 +854,7 @@ programa:
 		//Metemos el contador en la pila de saltos
 		pushPilaSaltos(contadorIndice);
 		
-		// cuadruplo 0 sera un goto a ejecutarPrograma
+		//cuadruplo 0 sera un goto a ejecutarPrograma
 		generarGoto();
 
 	}
@@ -833,7 +870,7 @@ programa:
 	}
 		variables_globales declara_funciones implementa_funciones EJECUTARPROGRAMA
 	{
-		//Rellenamos el goto para que apuunte a ejecutar programa
+		//Rellenamos el goto para que apunte a ejecutar programa
 		rellenarGoto();
 
 		//LLenamos los datos a la tabla correspondiente
@@ -880,7 +917,10 @@ bloque_variables_rep:
 
 declara_variables:
 	ENTERO IDENTIFICADOR PUNTOYCOMA
-	{						
+	{	
+		//Determinamos el tipo de variable
+		//Obtenemos el texto del identificador
+		//Calculamos la direccion para asignarle dependiendo el tipo de la variable
 		tipoVariable = $1;
 		strncpy(nombreVariable, $2, tamanioIdentificadores);
 		asignarMemoriaVariable();
@@ -898,7 +938,10 @@ declara_variables:
 	}
 	|
 	DECIMAL IDENTIFICADOR PUNTOYCOMA
-	{		
+	{	
+		//Determinamos el tipo de variable
+		//Obtenemos el texto del identificador
+		//Calculamos la direccion para asignarle dependiendo el tipo de la variable
 		tipoVariable = $1;
 		strncpy(nombreVariable, $2, tamanioIdentificadores);
 		asignarMemoriaVariable();
@@ -916,7 +959,10 @@ declara_variables:
 	}
 	|
 	TEXTO IDENTIFICADOR PUNTOYCOMA
-	{		
+	{	
+		//Determinamos el tipo de variable
+		//Obtenemos el texto del identificador
+		//Calculamos la direccion para asignarle dependiendo el tipo de la variable
 		tipoVariable = $1;
 		strncpy(nombreVariable, $2, tamanioIdentificadores);
 		asignarMemoriaVariable();
@@ -934,7 +980,10 @@ declara_variables:
 	}
 	|
 	BOOLEANO IDENTIFICADOR PUNTOYCOMA
-	{		
+	{	
+		//Determinamos el tipo de variable
+		//Obtenemos el texto del identificador
+		//Calculamos la direccion para asignarle dependiendo el tipo de la variable
 		tipoVariable = $1;
 		strncpy(nombreVariable, $2, tamanioIdentificadores);
 		asignarMemoriaVariable();
@@ -953,6 +1002,9 @@ declara_variables:
 	|
 	MATRIZDECIMAL IDENTIFICADOR
 	{
+		//Determinamos el tipo de variable
+		//Obtenemos el texto del identificador
+		//Calculamos la direccion para asignarle dependiendo el tipo de la variable
 		tipoVariable = 1;
 		strncpy(nombreVariable, $2, tamanioIdentificadores);
 		asignarMemoriaVariable();
@@ -975,6 +1027,7 @@ declara_variables:
 			}
 		}
 
+		//Contador que nos permitira saber si sera de 1 o 2 dimensiones el arreglo
 		numeroDimensiones = 0;
 		
 	}
@@ -989,9 +1042,12 @@ declara_variables:
 			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
 		}
 
+		//Calculo del tamaño
 		variable->tamanio = ((variable->lsuperior1 + 1) * (variable->lsuperior2 + 1));
+		//Calculo de la m1
 		variable->m1 = variable->tamanio / (variable->lsuperior1 + 1);
 
+		//Aumento de las respectivas memorias con respecto al tamaño del arreglo o matriz
 		if (seccVariablesGlobales == 1) {
 			//Aumento de las variables globales
 			memoriaDecimalGlobal = memoriaDecimalGlobal + variable->tamanio - 1;
@@ -1003,7 +1059,9 @@ declara_variables:
 	|
 	MATRIZENTERA IDENTIFICADOR
 	{
-		//Pendiente
+		//Determinamos el tipo de variable
+		//Obtenemos el texto del identificador
+		//Calculamos la direccion para asignarle dependiendo el tipo de la variable
 		tipoVariable = 0;
 		strncpy(nombreVariable, $2, tamanioIdentificadores);
 		asignarMemoriaVariable();
@@ -1025,7 +1083,7 @@ declara_variables:
 				exit(1);
 			}
 		}
-
+		//Contador que nos permitira saber si sera de 1 o 2 dimensiones el arreglo
 		numeroDimensiones = 0;
 	}
 	dimensiones PUNTOYCOMA
@@ -1039,20 +1097,24 @@ declara_variables:
 			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
 		}
 
-		//Inicializacion de los datos
+		//Calculo del tamaño
 		variable->tamanio = ((variable->lsuperior1 + 1) * (variable->lsuperior2 + 1));
+		//Calculo de la m1
 		variable->m1 = variable->tamanio / (variable->lsuperior1 + 1);
-
-		//Aumento de las respectivas memorias
+		
+		//Aumento de las respectivas memorias con respecto al tamaño del arreglo o matriz
 		if (seccVariablesGlobales == 1) {
+			//Aumento de las variables globales
 			memoriaEnteroGlobal = memoriaEnteroGlobal + variable->tamanio - 1;
 		} else if (seccVariablesLocales == 1) {
+			//Aumento de las variables locales
 			memoriaEnteroLocal = memoriaEnteroLocal + variable->tamanio - 1;
 		}
 	}
 	|
 	CREAROBJETO IDENTIFICADOR
-	{		
+	{	
+		//Determinar en que seccion se crea el objeto
 		if(seccVariablesGlobales == 1){
 			printf("Funcionalidad aun no implementada.\n Declarar objetos en la seccion de Locales");
 			exit(1);
@@ -1068,7 +1130,6 @@ declara_variables:
 	}
 	PUNTOYCOMA
 	{	
-
 		//Buscamos que exista la clase si no existe terminara
 		objetoBuscar = buscarObjeto(objetos, nombreObjeto);
 
@@ -1080,34 +1141,13 @@ declara_variables:
 	} 
 	;
 
-asignacion_matriz:
-	ALLAVE asignacion_matriz_arreglo CLLAVE
-	;
-
-asignacion_matriz_arreglo:
-	asignacion_matriz_valor PUNTOYCOMA asignacion_matriz_opcional
-	;
-
-asignacion_matriz_opcional:
-	/*Empty*/
-	| asignacion_matriz_arreglo
-	;
-
-asignacion_matriz_valor:
-	CTEENTERA asignacion_matriz_valor1 
-	| CTEDECIMAL asignacion_matriz_valor1
-	;
-
-asignacion_matriz_valor1:
-	/*Empty*/
-	| COMA asignacion_matriz_valor
-	;
-
 dimensiones:
 	ACORCHETE CTEENTERA CCORCHETE
-	{
+	{	
+		//Aumentamos el numero de dimensiones en 1
 		numeroDimensiones++;
 
+		//Identificamos en que seccion nos encontramos
 		if (seccVariablesGlobales == 1) {
 			//Accedemos a la variable recien creada
 			variable = buscarVariablesGlobales(objetos, nombreObjetoActual,  nombreVariable);
@@ -1116,8 +1156,10 @@ dimensiones:
 			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
 		}
 
+		//declaramos el nuevo arreglo, matriz con las dimensiones correctas
 		variable->dimensionada = numeroDimensiones;
 
+		//obtenemos el valor de la parte superior (primer dimension)
 		variable->lsuperior1 = atoi($2);
 	}
 	dimensiones_rep
@@ -1126,8 +1168,10 @@ dimensiones:
 dimensiones_rep:
 	/*empty*/
 	| ACORCHETE CTEENTERA CCORCHETE
-	{
+	{	
+		//Aumentamos el numero de dimensiones en 1
 		numeroDimensiones++;
+		//Identificamos en que seccion nos encontramos
 		if (seccVariablesGlobales == 1) {
 			//Accedemos a la variable recien creada
 			variable = buscarVariablesGlobales(objetos, nombreObjetoActual,  nombreVariable);
@@ -1136,7 +1180,10 @@ dimensiones_rep:
 			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
 		}
 
-		variable->dimensionada = numeroDimensiones;		
+		//declaramos el nuevo arreglo, matriz con las dimensiones correctas
+		variable->dimensionada = numeroDimensiones;
+		
+		//obtenemos el valor de la parte superior (primer dimension)
 		variable->lsuperior2 = atoi($2);	
 	}
 	;
@@ -1146,12 +1193,13 @@ dimensiones2:
 	|
 	ACORCHETE 
 	{
-		
+		//Buscamos los datos de la variable en locales y globales
 		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
 		if (variable == NULL) {
 			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
 		} 
 
+		//Desplegamos errores dependiendo de como se haya definido esa variable
 		if(variable->dimensionada == 0 ){
 			printf("Error: la variable %s no es dimensionada",  nombreMatrizActual);
 			exit(1);
@@ -1161,13 +1209,16 @@ dimensiones2:
 		}
 	} serexpresion2 
 	{
-
+		//Buscamos los datos de la variable en locales y globales
 		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
-
 		if (variable == NULL) {
 			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
-		} 
+		}
+
+		//Generamos el cuadruplo verifica
 		generarVerifica(2);
+
+		//Generamos el cuadruplo de desplazamiento final
 		generarDesplazamiento(2);
 	}
 	CCORCHETE
@@ -1181,7 +1232,7 @@ expresion_and_or:
 	/*empty*/
 	| AMPERSAND 
 	{
-		//Creamos el nodo operandor que se le hara push en la pila operadores
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_AND);
 	}
 	serexpresion 
@@ -1191,6 +1242,7 @@ expresion_and_or:
 	}
 	| BARRA 
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_OR);
 	}
 	serexpresion 
@@ -1216,26 +1268,32 @@ expresion_condicional:
 op_booleanos:
 	COMPARA 
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_IGUAL);
 	}
 	| NEGACION 
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_DIFERENTE);
 	}
 	| MAYORQUE 
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_MAYORQUE);
 	}
 	| MENORQUE 
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_MENORQUE);
 	}
 	| MAYORIGUAL 
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_MAYORIGUAL);
 	}
 	| MENORIGUAL
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_MENORIGUAL);
 	} 
 	;
@@ -1243,6 +1301,7 @@ op_booleanos:
 exp:
 	termino
 	{
+		//Generamos el cuadruplo de suma-resta dependiendo del operador en la pila de operadores
 		generarSumaResta();	
 	} 
 	exp_suma_resta
@@ -1252,11 +1311,13 @@ exp_suma_resta:
 	/*Empty*/
 	| MAS 
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_SUMA);
 	}
 	exp 
 	| MENOS 
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_RESTA);
 	}
 	exp
@@ -1265,6 +1326,7 @@ exp_suma_resta:
 termino:
 	factor
 	{
+		//Generamos el cuadruplo de multiplicacion-division dependiendo del operador en la pila de operadores
 		generarMultiplicacionDivision();
 	} 
 	termino_multi_divide
@@ -1274,12 +1336,14 @@ termino_multi_divide:
 	/*Empty*/
 	| POR
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_MULTIPLICACION);
 	} 
 	termino 
 	| 
 	ENTRE
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_DIVISION);
 	} 
 	termino
@@ -1288,20 +1352,15 @@ termino_multi_divide:
 factor:
 	APARENTESIS
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_APARENTESIS);
 	} 
 	serexpresion CPARENTESIS
 	{
 		//Encontramos el cirre del parentesis lo sacamos de la pila
 		pop(operadores);	
-	} 
-	| MAS factor_operando 
-	| MENOS factor_operando 
-	| factor_operando
-	;
-
-factor_operando:
-	var_cte 	
+	}
+	| var_cte
 	;
 
 var_cte:
@@ -1407,8 +1466,8 @@ opcionalFuncion:
 		//Si no esta en formato de objeto->funcion el primer identificador es de la funcion
 		if (esObjeto == 0) {
 			strncpy(nombreProcedimiento, nombreVariable, tamanioIdentificadores);
-			//Se debe verificar que exista (Se busca en el objeto actual)
 
+			//Se debe verificar que exista (Se busca en el objeto actual)
 			funcion = buscarFuncion(objetos, nombreObjetoActual, nombreProcedimiento);
 
 		} else if (esObjeto == 1){
@@ -1441,7 +1500,6 @@ opcionalFuncion:
 	}
 	parametros_funcion CPARENTESIS
 	{
-
 		//en caso de que no hubiera parametros checar
 		if (cantidadParametros == 0) {
 			if(funcion->parametros != NULL){
@@ -1453,44 +1511,58 @@ opcionalFuncion:
 		//Generar el Gosub
 		generarGosub();
 
-		//Llamada a ENDACCES despues de las asignaciones para volver al estado actual solo si es objeto se hara esta funcion
+		//Verificar si es un objeto el que llama la funcion
 		if (esObjeto == 1){
-
+			
+			//Generar el cuadruploEndAccess que permitira a la maquina saber que ya no debe usar las variables del objeto
 			generarEndAccess();
 
+			//Buscar los datos de la variable
 			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariableActual);
 
+			//Determinamos si la funcion regresa un tipo de dato buscandola en la clase
 			generarTemporalFuncion(variable->clase);
 
 		} else {
-			//Aqui se debe generar el temporal y se mete en la pila
-			//Caso si no es una obejto
+			//Caso si no es una objeto
+			//Se generar el temporal y se mete en la pila
 			generarTemporalFuncion(nombreObjetoActual);
 		}
 
-		//apagamos la bandera
+		//Apagamos la bandera
 		esObjeto = 0;
 	}
 	| ACORCHETE 
 	{
 		//Inicializacion parametros
 		esMatriz = 1;
+
+		//Al saber que es una matriz guardamos temporalmente el nombre de la matriz para futuras referencias
 		strncpy(nombreMatrizActual, nombreVariable, tamanioIdentificadores);
+
+		//Buscamos los datos de la variabl
 		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual, nombreMatrizActual);
 		if (variable == NULL) {
 			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
 		}
+
+		//Determinamos si esta ha sido declarada como una matriz o arreglo
 		if(variable->dimensionada == 0){
 			printf("Error: la variable no es dimensionada \n");
 			exit(1);
 		}
 	} serexpresion2 
 	{
+		//Buscamos la matriz y cargamos sus datos
 		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual, nombreMatrizActual);
 		if (variable == NULL) {
 			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
 		} 
+		
+		//Generamos el primer verifica
 		generarVerifica(1);
+
+		//Generamos el desplazamiento
 		generarDesplazamiento(1);
 	}
 	CCORCHETE dimensiones2
@@ -1508,8 +1580,8 @@ opcionalFuncion2:
 		//Si no esta en formato de objeto->funcion el primer identificador es de la funcion
 		if (esObjeto == 0) {
 			strncpy(nombreProcedimiento, nombreVariable, tamanioIdentificadores);
-			//Se debe verificar que exista (Se busca en el objeto actual)
 
+			//Se debe verificar que exista (Se busca en el objeto actual)
 			funcion = buscarFuncion(objetos, nombreObjetoActual, nombreProcedimiento);
 
 		} else if (esObjeto == 1){
@@ -1542,8 +1614,7 @@ opcionalFuncion2:
 	}
 	parametros_funcion CPARENTESIS
 	{
-
-		//en caso de que no hubiera parametros checar
+		//En caso de que no hubiera parametros checar
 		if (cantidadParametros == 0) {
 			if(funcion->parametros != NULL){
 				printf("Se esperaban voleres en la funcion %s", nombreProcedimiento);
@@ -1554,13 +1625,16 @@ opcionalFuncion2:
 		//Generar el Gosub
 		generarGosub();
 
-		//Llamada a ENDACCES despues de las asignaciones para volver al estado actual solo si es objeto se hara esta funcion
+		//Verificar si es un objeto el que llama la funcion
 		if (esObjeto == 1){
 
+			//Generar el cuadruploEndAccess que permitira a la maquina saber que ya no debe usar las variables del objeto
 			generarEndAccess();
 
+			//Buscar los datos de la variable
 			variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariableActual);
 
+			//Determinamos si la funcion regresa un tipo de dato buscandola en la clase
 			generarTemporalFuncion(variable->clase);
 
 		} else {
@@ -1569,7 +1643,7 @@ opcionalFuncion2:
 			generarTemporalFuncion(nombreObjetoActual);
 		}
 
-		//apagamos la bandera
+		//Apagamo la bandera
 		esObjeto = 0;
 	}
 	;
@@ -1606,7 +1680,6 @@ rep_parametros:
 	/*Empty*/
 	| COMA parametros_funcion
 	;
-
 
 declara_objetos:
 	DECLARA_OBJETOS ACORCHETE declara_objetos_rep CCORCHETE;
@@ -1688,7 +1761,7 @@ declara_funciones_rep:
 	;
 
 declaracion_prototipos:
-	permiso IDENTIFICADOR 
+	IDENTIFICADOR 
 	{
 		//Reseteo de las variables
 		calcularMemoriaLocal();
@@ -1697,7 +1770,7 @@ declaracion_prototipos:
 		seccVariablesLocales = 1;
 
 		//Cargamos los datos en la tablas especiales
-		strncpy(nombreProcedimientoActual, $2, tamanioIdentificadores);
+		strncpy(nombreProcedimientoActual, $1, tamanioIdentificadores);
 		objetos = agregarFuncion(objetos, nombreObjetoActual, nombreProcedimientoActual);
 
 		//Inicializacion de la cantidad de parametros
@@ -1717,7 +1790,7 @@ declaracion_prototipos:
 			exit(1);
 		} else {
 			//Asignarle a la funcion actual el tipo de dato que regresara en este caso nada
-			funcion->permiso = permisoFuncion;
+			funcion->permiso = 0;
 
 			//Salimos de la seccion de variables locales
 			seccVariablesLocales = 0;
@@ -1762,17 +1835,6 @@ declaracion_prototipos_regresa:
 
 		//Asignarle a la funcion actual el tipo de dato que regresara
 		funcion->regresa = -1;	
-	}
-	;
-
-permiso:
-	PRIVADA 
-	{
-		permisoFuncion = 0;
-	}
-	| PUBLICA
-	{
-		permisoFuncion = 1;
 	}
 	;
 
@@ -1844,42 +1906,44 @@ parametros_rep1:
 tipo:	
 	ENTERO
 	{
-
+		//Obtenemos el valor del tipo
 		tipoVariable=$1;
 	}
 	| DECIMAL 
 	{
-		
+		//Obtenemos el valor del tipo
 		tipoVariable=$1;
 	}
 	| BOOLEANO 
 	{
-
+		//Obtenemos el valor del tipo
 		tipoVariable=$1;
 	}
 	| TEXTO 
 	{
-
+		//Obtenemos el valor del tipo
 		tipoVariable=$1;
 	}
 	| MATRIZENTERA 
 	{
-
+		//Obtenemos el valor del tipo
 		tipoVariable=$1;
 	}
 	| MATRIZDECIMAL
 	{
-
+		//Obtenemos el valor del tipo
 		tipoVariable=$1;
 	}
 	;
 
 implementa_funciones:
 	{
+		//Entramos a la seccion de implementacion de funciones
 		seccFuncionesImplementacion = 1;
 	}
 	IMPLEMENTA_FUNCIONES ACORCHETE implementa_funciones_rep CCORCHETE
 	{
+		//Salimos de la seccion de implementacion de funciones
 		seccFuncionesImplementacion = 0;
 	}
 	;
@@ -1935,6 +1999,7 @@ funciones:
 
 	} bloque CLLAVE
 	{
+		//Verificamos si es necesario tener por lo menos 1 return en alguna parte de la funcion
 		if (regresoNecesario == 1) {
 			printf("Error en funcion %s: Se espera regresar un valor\n", nombreProcedimientoActual);
 			exit(1);
@@ -1978,6 +2043,7 @@ decideEstatuto:
 		//Obtenemos el nombre de la variable que desamos usar
 		strncpy(nombreVariable, $1, tamanioIdentificadores);
 
+		//Inicializacion de los datos necesarios para saber si es una matriz o llamada a funcion
 		esFuncion = 0;
 		esMatriz = 0;
 	}  
@@ -1986,7 +2052,7 @@ decideEstatuto:
 
 
 estatutoOAsignacion:
-	asignacion1 
+	asignacion 
 	|
 	opcionalFuncion2
 	;
@@ -1995,44 +2061,54 @@ llama_funcion_opcional:
 	/*Empty*/
 	| FLECHA IDENTIFICADOR
 	{
-		strncpy(nombreProcedimiento, $2, tamanioIdentificadores);
+		//Prendemos la bandera de ser un objeto llamando una funcion
 		esObjeto = 1;
 
+		//Obtenemos el nombre del funcionamiento y lo guardamos
+		strncpy(nombreProcedimiento, $2, tamanioIdentificadores);
+		
+		//Obtenemos el nombre de la variableActual = nombre del objeto
 		strncpy(nombreVariableActual, nombreVariable, tamanioIdentificadores);
 	}
 	;
 
-asignacion1:
+asignacion:
 	ACORCHETE 
 	{
 		//Inicializacion parametros
 		esMatriz = 1;
 
+		//Guardamos el nombre de la matriz en su correspondiente string
 		strncpy(nombreMatrizActual, nombreVariable, tamanioIdentificadores);
-		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
 
+		//Buscamos los datos de la variable en locales y globales
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
 		if (variable == NULL) {
 			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
 		} 
 
+		//Verificamos que sea un array o matriz
 		if(variable->dimensionada == 0){
 			printf("Error: la variable no es dimensionada \n");
 			exit(1);
 		}
 	} serexpresion2 
 	{
-
+		//Buscamos los datos de la variable en locales o globales
 		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
-
 		if (variable == NULL) {
 			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
 		} 
+
+		//Generamos el primer verifica
 		generarVerifica(1);
 
+		//Generamos el desplazamiento
 		generarDesplazamiento(1);
 	}
 	CCORCHETE dimensiones2 IGUAL
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_ASIGNACION);		 
 	}
 	serexpresion
@@ -2044,39 +2120,27 @@ asignacion1:
 	{	
 		//Obtenemos los valores de las variables si no existen exit
 		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreVariable);
-
-		//La variable no se encontro
 		if (variable == NULL) {
-			//Si esta variable entonces la tomamos si no es asi marcaremos un error
 			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreVariable);
 		}
 
 		//crearemos un nodoOperando para agregarlo a la pila
 		pushPilaOperandos(variable);
 
+		//Metemos el operador de asignacion '=' en la pila de operadores
 		pushPilaOperadores(OP_ASIGNACION);
 	} 
-	asignacion2
+	serexpresion
 	{
 		//Funcion experimental solo funcionara con expresiones y id
 		generarAsignacion();
 	}
-	| FLECHA IDENTIFICADOR asignacion3  IGUAL asignacion2
-	;
-
-asignacion2:
-	asignacion_matriz 
-	| serexpresion
-	;
-
-asignacion3:
-	/*Empty*/
-	| dimensiones
 	;
 
 lectura:
 	LEERDELTECLADO
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_LECTURA);
 	}
  	APARENTESIS IDENTIFICADOR
@@ -2110,10 +2174,12 @@ lectura:
 			}
 		}
 		
+		//Reseteamos la bandera de Matriz
 		esMatriz = 0;
 	}
 	CPARENTESIS
 	{
+		//Generamos el cuadruplos de Lectura
 		generarLectura();
 	}
 	;
@@ -2125,27 +2191,32 @@ lectura_matriz:
 		//Inicializacion parametros
 		esMatriz = 1;
 
+		//Al saber que es una matriz guardamos temporalmente el nombre de la matriz para futuras referencias
 		strncpy(nombreMatrizActual, nombreVariable, tamanioIdentificadores);
-		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
 
+		//Buscamos los datos de la variabl
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
 		if (variable == NULL) {
 			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
 		} 
 
+		//Determinamos si esta ha sido declarada como una matriz o arreglo
 		if(variable->dimensionada == 0){
 			printf("Error: la variable no es dimensionada \n");
 			exit(1);
 		}
 	} serexpresion2 
 	{
-
+		//Buscamos la matriz y cargamos sus datos
 		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual,  nombreMatrizActual);
-
 		if (variable == NULL) {
 			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
-		} 
+		}
+
+		//Generamos el primer verifica
 		generarVerifica(1);
 
+		//Generamos el desplazamiento
 		generarDesplazamiento(1);
 	}
 	CCORCHETE dimensiones2
@@ -2154,17 +2225,21 @@ lectura_matriz:
 escritura:
 	DESPLIEGA APARENTESIS 
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_ESCRITURA);
 	}
 	escritura_valores CPARENTESIS 
-	{
+	{	
+		//Generamos el cuadruplo de despliega
 		generarEscritura();
 
+		//Metemos el operador en la pila de operadores para lograr el efecto de salto de linea
 		pushPilaOperadores(OP_ESCRITURA);
 		
-		//crearemos un nodoOperando para agregarlo a la pila DUMMY
+		//crearemos un nodoOperando para agregarlo a la pila DUMMY para lograr el efecto de salto de linea
 		pushPilaOperandos(NULL);
 
+		//Generamos el cuadruplo de despliega salto de linea nuevo
 		generarEscritura();
 	}
 	;
@@ -2177,8 +2252,10 @@ escritura_valores1:
 	/*Empty*/
 	| CONCATENA
 	{
+		//Generamos un cuadruplo de escritura por cada valor que se tenga
 		generarEscritura();
 
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_ESCRITURA);
 
 	} escritura_valores
@@ -2195,7 +2272,7 @@ regresa:
 		//Generamos el "return" que en reailidad sera una asignacion del resultado a su variable global
 		generarReturn();
 
-		//Generamos 
+		//Generamos el ENDPROC al momento de encontrar un return para no seguir ejecutando
 		generarEndProc();
 	}
 	;
@@ -2203,11 +2280,13 @@ regresa:
 
 condicional:
 	SI APARENTESIS serexpresion CPARENTESIS 
-	{
+	{	
+		//Generamos las acciones semanticas de un inicio de if
 	 	generarAccion1If();
 	}
 	ALLAVE bloque CLLAVE condicional_if
-	{
+	{	
+		//Generamos las acciones semanticas de un fin de if
 		generarAccion3If();
 	}
 	;
@@ -2216,6 +2295,7 @@ condicional_if:
 	/*Empty*/
 	| SINO 
 	{
+		//Generamos las acciones semanticas de un inicio de else
 		generarAccion2If();
 	}
 	ALLAVE bloque CLLAVE
@@ -2239,17 +2319,15 @@ ciclo:
 	}
 	;
 
-
-/*-----------------------------------------------------------------------------------------------------------*/
-	serexpresion2: 
+serexpresion2: 
 	expresion2 expresion_and_or2
 	;
 
-	expresion_and_or2:
+expresion_and_or2:
 	/*empty*/
 	| AMPERSAND 
 	{
-		//Creamos el nodo operandor que se le hara push en la pila operadores
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_AND);
 	}
 	serexpresion2 
@@ -2259,6 +2337,7 @@ ciclo:
 	}
 	| BARRA 
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_OR);
 	}
 	serexpresion2 
@@ -2268,19 +2347,11 @@ ciclo:
 	}
 	;
 
-exp2:
-	termino2
-	{
-		generarSumaResta();	
-	} 
-	exp_suma_resta2
-	;
-
 expresion2:
 	exp2 expresion_condicional2
 	;
 
-	expresion_condicional2:
+expresion_condicional2:
 	/*empty*/
 	| op_booleanos2 exp2
 	{
@@ -2289,74 +2360,94 @@ expresion2:
 	}
 	;
 
-termino2:
-	factor2
+op_booleanos2:
+	COMPARA 
 	{
-		generarMultiplicacionDivision();
+		//Metemos el operador en la pila de operadores
+		pushPilaOperadores(OP_IGUAL);
+	}
+	| NEGACION 
+	{
+		//Metemos el operador en la pila de operadores
+		pushPilaOperadores(OP_DIFERENTE);
+	}
+	| MAYORQUE 
+	{
+		//Metemos el operador en la pila de operadores
+		pushPilaOperadores(OP_MAYORQUE);
+	}
+	| MENORQUE 
+	{
+		//Metemos el operador en la pila de operadores
+		pushPilaOperadores(OP_MENORQUE);
+	}
+	| MAYORIGUAL 
+	{
+		//Metemos el operador en la pila de operadores
+		pushPilaOperadores(OP_MAYORIGUAL);
+	}
+	| MENORIGUAL
+	{
+		//Metemos el operador en la pila de operadores
+		pushPilaOperadores(OP_MENORIGUAL);
 	} 
-	termino_multi_divide2
 	;
 
-	exp_suma_resta2:
+exp2:
+	termino2
+	{	
+		//Generamos el cuadruplo de suma-resta dependiendo del operador en la pila de operadores
+		generarSumaResta();	
+	} 
+	exp_suma_resta2
+	;
+
+exp_suma_resta2:
 	/*Empty*/
 	| MAS 
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_SUMA);
 	}
 	exp2
 	| MENOS 
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_RESTA);
 	}
 	exp2
 	;
 
-op_booleanos2:
-	COMPARA 
+termino2:
+	factor2
 	{
-		pushPilaOperadores(OP_IGUAL);
-	}
-	| NEGACION 
-	{
-		pushPilaOperadores(OP_DIFERENTE);
-	}
-	| MAYORQUE 
-	{
-		pushPilaOperadores(OP_MAYORQUE);
-	}
-	| MENORQUE 
-	{
-		pushPilaOperadores(OP_MENORQUE);
-	}
-	| MAYORIGUAL 
-	{
-		pushPilaOperadores(OP_MAYORIGUAL);
-	}
-	| MENORIGUAL
-	{
-		pushPilaOperadores(OP_MENORIGUAL);
+		//Generamos el cuadruplo de multiplicacion-division dependiendo del operador en la pila de operadores
+		generarMultiplicacionDivision();
 	} 
+	termino_multi_divide2
 	;
-
 
 termino_multi_divide2:
 	/*Empty*/
 	| POR
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_MULTIPLICACION);
 	} 
 	termino2 
 	| 
 	ENTRE
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_DIVISION);
 	} 
 	termino2
 	;
 
-	factor2:
+factor2:
 	APARENTESIS
 	{
+		//Metemos el operador en la pila de operadores
 		pushPilaOperadores(OP_APARENTESIS);
 	} 
 	serexpresion2 CPARENTESIS
@@ -2364,13 +2455,7 @@ termino_multi_divide2:
 		//Encontramos el cirre del parentesis lo sacamos de la pila
 		pop(operadores);	
 	} 
-	| MAS factor_operando2 
-	| MENOS factor_operando2 
-	| factor_operando2
-	;
-
-	factor_operando2:
-	var_cte2 	
+	| var_cte2
 	;
 
 var_cte2:
@@ -2440,4 +2525,3 @@ var_cte2:
 		pushPilaOperandos(variable);
 	}	
 	;
-

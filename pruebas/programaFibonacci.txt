@@ -7,8 +7,8 @@ Variables_Globales [
 ]
 
 Declara_Funciones [	
-	publica fibonacciRecursivo(datoN:entero) regresa entero;
-	publica fibonacciIterativo(datoN:entero) regresa entero;
+	  fibonacciRecursivo(datoN:entero) regresa entero;
+	  fibonacciIterativo(datoN:entero) regresa entero;
 ]
 
 Implementa_Funciones [	

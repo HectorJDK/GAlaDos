@@ -7,8 +7,8 @@ Variables_Globales [
 ]
 
 Declara_Funciones [	
-	publica factorialRecursivo(datoN:entero) regresa entero;
-	publica factorialIterativo(datoN:entero) regresa entero;
+	  factorialRecursivo(datoN:entero) regresa entero;
+	  factorialIterativo(datoN:entero) regresa entero;
 ]
 
 Implementa_Funciones [	

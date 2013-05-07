@@ -7,10 +7,10 @@ Declara_Objetos [
 			booleano cuatroz;
 		]
 		Declara_Funciones[
-			publica fibonacciRecursivo(datoN:entero) regresa entero;
-			publica fibonacciIterativo(datoN:entero) regresa entero;
-			publica factorialRecursivo(datoN:entero) regresa entero;
-			publica factorialIterativo(datoN:entero) regresa entero;
+			  fibonacciRecursivo(datoN:entero) regresa entero;
+			  fibonacciIterativo(datoN:entero) regresa entero;
+			  factorialRecursivo(datoN:entero) regresa entero;
+			  factorialIterativo(datoN:entero) regresa entero;
 		]
 		Implementa_Funciones[
 			fibonacciRecursivo(datoN:entero){

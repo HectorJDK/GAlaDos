@@ -7,12 +7,12 @@ Clase prueba {
 			booleano cuatro;
 		]
 		Declara_Funciones[
-			publica procedimiento1 () regresa nada;
-			publica procedimiento2 (dato1:entero, dato2:decimal, dato3:texto, dato4:booleano) regresa nada;
-			publica procedimiento3 (datoE:entero)regresa entero;
-			publica procedimiento4 (datD:decimal)regresa decimal;
-			publica procedimiento5 (datT:texto)regresa texto;
-			publica procedimiento6 (datoB:booleano)regresa booleano;
+			  procedimiento1 () regresa nada;
+			  procedimiento2 (dato1:entero, dato2:decimal, dato3:texto, dato4:booleano) regresa nada;
+			  procedimiento3 (datoE:entero)regresa entero;
+			  procedimiento4 (datD:decimal)regresa decimal;
+			  procedimiento5 (datT:texto)regresa texto;
+			  procedimiento6 (datoB:booleano)regresa booleano;
 		]
 		Implementa_Funciones[
 			procedimiento1 (){

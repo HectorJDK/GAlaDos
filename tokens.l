@@ -28,8 +28,6 @@ matrizDecimal			(?i:matrizDecimal)
 matrizEntera			(?i:matrizEntera)
 mientras				(?i:mientras)
 nada					(?i:nada)
-privada					(?i:privada)
-publica					(?i:publica)
 regresa					(?i:regresa)
 si						(?i:si)
 sino					(?i:sino)
@@ -118,17 +116,15 @@ blanks					([ \t\n\r]+)
 	{implementaFunciones}		{return IMPLEMENTA_FUNCIONES;}
 	{leerDelTeclado}			{return LEERDELTECLADO;}
 	{matrizDecimal} 			{								
-								yylval.ival = 5;
+								yylval.ival = 1;
 								return MATRIZDECIMAL;
 								}
 	{matrizEntera} 				{								
-								yylval.ival = 4;
+								yylval.ival = 0;
 								return MATRIZENTERA;
 								}
 	{mientras} 					{return MIENTRAS;}
 	{nada}						{return NADA;}
-	{privada} 					{return PRIVADA;}
-	{publica}   				{return PUBLICA;}
 	{regresa}	 				{return REGRESA;}
 	{sino}						{return SINO;}
 	{si} 						{return SI;}
