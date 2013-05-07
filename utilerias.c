@@ -1,38 +1,19 @@
-//Ejemplo basico para la estructura del cubo semantico
-//Codigo de operaciones
 /*
-	Primeras dos entradas del cubo son los operadores
-	1 = TIPO_ENTERO
-	2 = Decimal
-	3 = Texto
-	4 = Booleano
+*Hector Jesus De La Garza Ponce 	619971
+*Oziel Alonzo Garza Lopez 			805074
 
-	Ultima entrada del cubo definira la operacion
-	---------------Operadores Aritmeticos
-	1 = OP_SUMA
-	2 = OP_Resta
-	3 = OP_Division
-	4 = OP_Multiplicacion
-	---------------Operadores booleanos
-	5 = OP_mayorque >
-	6 = OP_menorque >
-	7 = OP_mayorIgual >=
-	8 = OP_menorIgual <=
-	9 = igual ==
-	10 = diferente ¬¬
-	---------------Operadores logicos
-	11 = and &
-	12 = or |
-	---------------Operador de asignacion
-	13 = asignacion =
-	---------------Operadores especiales
-	14 = concatena <<
-
+*Libreria utilerias.c
 */
-
 #include "utilerias.h"
 #include <stdio.h>
 
+/*
+* Función: inicializarSemantica
+* Parámetros: int cuboSemantico[5][5][14]
+* Descripción: Funcion encargada de llenar los datos del cuboSemantico con las operaciones apropiadas
+				y el tipo de variable que estas generan
+* Salida: ninguna
+*/
 void inicializarSemantica(int cuboSemantico[5][5][14]){
 	//************************************************************************************************************
 	//************************************************************************************************************
@@ -459,7 +440,13 @@ void inicializarSemantica(int cuboSemantico[5][5][14]){
 	cuboSemantico[TIPO_OBJETO][TIPO_OBJETO][OP_CONCATENA] = OP_ERROR;
 }
 
-
+/*
+* Función: inicializarAvail
+* Parámetros: pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean,
+			  int *memoriaEnteroTemp, int *memoriaDecimalTemp, int *memoriaTextoTemp, int *memoriaBooleanoTemp
+* Descripción: Funcion encargada de inicializar y rellenar las cuatro pilas de temporales dandoles direccion nombre y tipo
+* Salida: ninguna
+*/
 void inicializarAvail(pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean,int *memoriaEnteroTemp, int *memoriaDecimalTemp, int *memoriaTextoTemp, int *memoriaBooleanoTemp){
 	//Inicializacion del ciclo (for)
 	int repeticion= 0;
