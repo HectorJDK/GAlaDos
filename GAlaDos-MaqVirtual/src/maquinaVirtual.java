@@ -1,67 +1,59 @@
 /**
  * Maquina Virtual GALaDos
  * 
- * Programa que carga los cuadruplos y datos (tablas de objetos y constantes)
- * a estructuras especiales. 
- * Realiza el proceso de ejecucion mediante la simulacion de un bloque de 
- * memoria con registros.
+ * Programa que carga los cuadruplos y estructuras de memoria principales.
+ * Las estructuras de memoria son objetos, retornos, funciones y constantes.
+ * Realiza el proceso de ejecucion hasta terminar el programa.
  * 
  * @author Oziel Garza, Hector De la Garza
  */
 
 //Librerias para lectura de archivo
 import java.io.*;
+
 //Librerias para estructuras
 import java.util.*;
 
 public class maquinaVirtual {
 	
-	//Estructuras de memoria
-	
+	//Estructuras de memoria	
 	static objetos workspaceActual;						//El espacio de memoria actual
 	static funcion funcion;								//Funcion actual	
 	static bloque constantes;							//Espacio de constantes
-	static HashMap<Integer,retorno> retornos;								//Espacio de retornos
+	static HashMap<Integer,retorno> retornos;			//Espacio de retornos
 	
 	public static void main(String [ ] args) throws IOException{
 		
 		//Declaracion de variables y estructuras principales
 		BufferedReader br = new BufferedReader(new FileReader("obj/codigoObjeto.txt"));		//Crear el objeto BufferedReader y cargar el documento			
-		InputStreamReader stream = new InputStreamReader(System.in);							//Lectura de teclado
-		BufferedReader brT = new BufferedReader(stream);		//Crear objeto para leer de teclado			
-		ArrayList<cuadruplos> cuadruplos ;				//Crear la lista que contendra los cuadruplos						
-		HashMap<String, objetos> workspaces;					//Espacios de ejecucion (objetos)		
-		xmlParser datos;								//Manejador del xml
-		bloque bloque;									//Objeto auxiliar para el manejo de los bloques de datos
-		cuadruplos cuadruplo;					 		//Crear el objeto cuadruplo			
-		String[] cuadruploLinea;						//String auxiliar para separacion de elementos del cuadruplo
-		String line;									//String para leer la linea de archivo
-		int indice;										//Auxiliares para el manejo de ejecucion de los cuadruplos	
-		boolean finEjecucion;			//Bandera para terminar la ejecucion (Fin de programa)
-		int operacion;									//Auxiliares para el manejo de ejecucion de los cuadruplos	  
-		Stack<Integer> pilaEjecucion;					//Pila para transferir ejecucion a modulos
-		Stack<funcion> pilaFuncion;						//Pila para almacenar la base del modulo
-		Stack<objetos> pilaObjetos;						//Pila para almacenar el objeto
-		funcion funcionNueva;							//Funcion temporal para llamada a modulos							
-		boolean accederAClase;
-		String nombreClaseAcceder;
+		InputStreamReader stream = new InputStreamReader(System.in);						//Lectura de teclado
+		BufferedReader brT = new BufferedReader(stream);									//Crear objeto para leer de teclado			
+		ArrayList<cuadruplos> cuadruplos ;													//Crear la lista que contendra los cuadruplos						
+		HashMap<String, objetos> workspaces;												//Espacios de ejecucion (objetos)		
+		xmlParser datos;																	//Manejador del xml
+		bloque bloque;																		//Objeto auxiliar para el manejo de los bloques de datos
+		cuadruplos cuadruplo;					 											//Crear el objeto cuadruplo			
+		String[] cuadruploLinea;															//String auxiliar para separacion de elementos del cuadruplo
+		String line;																		//String para leer la linea de archivo
+		int indice;																			//Auxiliares para el manejo de ejecucion de los cuadruplos	
+		boolean finEjecucion;																//Bandera para terminar la ejecucion (Fin de programa)
+		int operacion;																		//Auxiliares para el manejo de ejecucion de los cuadruplos	  
+		Stack<Integer> pilaEjecucion;														//Pila para transferir ejecucion a modulos
+		Stack<funcion> pilaFuncion;															//Pila para almacenar la base del modulo
+		Stack<objetos> pilaObjetos;															//Pila para almacenar el objeto
+		funcion funcionNueva;																//Funcion temporal para llamada a modulos							
+		boolean accederAClase;																//Bandera para cambio de contexto a una clase
+		String nombreClaseAcceder;															//Nombre de la clase a la cual cambiar
 		
 	    try {
 			
 			//Inicializacion de variables y estructuras
 	    	datos = new xmlParser();
-			//registro = new registro();			
 			cuadruplo = new cuadruplos();
-			//Crear arraylist de objetos cuadruplos
-	        cuadruplos = new ArrayList<cuadruplos>();
+			cuadruplos = new ArrayList<cuadruplos>();
 	        bloque = new bloque();
-	        //Objetos
-	        workspaces = new HashMap<String,objetos>();
-	        
-	        accederAClase = false;
-	        nombreClaseAcceder = "";
-	        //workspaces = datos.cargarObjetos(workspaces, "");
-	        
+	        workspaces = new HashMap<String,objetos>();	        	       
+	        	     
 	        /*
 	         * Cargar datos en las estructuras principales
 	         */
@@ -94,19 +86,25 @@ public class maquinaVirtual {
 	        //Variable auxiliar para llamadas a modulos
 	        funcionNueva = new funcion();
 	        
+	        //Variables auxiliares para clases
+	        accederAClase = false;
+	        nombreClaseAcceder = "";
+	        
 	        /**
-	         * Seccion para cargar los cuadruplos de archivo a la estructura arraylist
+	         * Seccion para cargar los cuadruplos de archivo a la estructura
 	         */
 	        //Iterar hasta que termine todas las lineas del documento
 	        while (line != null) {	        	
 	        	cuadruploLinea = line.split(", ");	        	
         		cuadruplo.setOperacion(Integer.parseInt(cuadruploLinea[0]));
-        		//Si es un cuadruplo ERA construir el cuadruplo con strings
+        		
         		if(Integer.parseInt(cuadruploLinea[0])==21){
+        			//Si es un cuadruplo ERA construir el cuadruplo con strings
         			cuadruplo.setOperando1S(cuadruploLinea[1]);
         			cuadruplo.setOperando2(Integer.parseInt(cuadruploLinea[2]));
         			cuadruplo.setResultadoS(cuadruploLinea[3]);
         		} else  if(Integer.parseInt(cuadruploLinea[0])==30 | Integer.parseInt(cuadruploLinea[0])==29){
+        			//Si es un cuadruplo ORO o ACCESS construir el cuadruplo con strings
         			cuadruplo.setOperando1S(cuadruploLinea[1]);
         			cuadruplo.setOperando2S(cuadruploLinea[2]);
         			cuadruplo.setResultadoS(cuadruploLinea[3]);
@@ -115,13 +113,13 @@ public class maquinaVirtual {
         			cuadruplo.setOperando2(Integer.parseInt(cuadruploLinea[2]));
         			cuadruplo.setResultado(Integer.parseInt(cuadruploLinea[3]));        			
         		}
-        		
-        		
-	        	//Agregarlo a la lista	       	        	
+        		        		
+	        	//Agregar el cuadruplo a la lista de cuadruplos       	        	
         		cuadruplos.add( cuadruplo);
         		
-        		//Reinicializar objeto cuadruplos
+        		//Reinicializar el objeto cuadruplos
         		if(Integer.parseInt(cuadruploLinea[0])==21){
+        			//Si es un cuadruplo ERA construir el cuadruplo con strings
         			cuadruplo = new cuadruplos("","");
         		} else {
         			cuadruplo = new cuadruplos();
@@ -131,14 +129,14 @@ public class maquinaVirtual {
 	        }
 	       	       	       	     
 	       
-	        //Enviar la ejecucion a ejecutarPrograma 
+	        //Enviar la ejecucion a la funcion ejecutarPrograma de main 
     		cuadruplo = cuadruplos.get(indice);    	
     		if(cuadruplo.getOperacion() == 19){ 
 				indice = cuadruplo.getResultado();
 				cuadruplo = cuadruplos.get(cuadruplo.getResultado());     				
 			}
     		
-            //Iniciar ejecucion    		
+            //Iniciar la ejecucion    		
     		while(!finEjecucion){
     			
     			//Obtener la operacion a ejecutar
@@ -154,22 +152,25 @@ public class maquinaVirtual {
 			
 				/*
 				 * Ajuste de direcciones para indexamiento de matrices y arreglos
+				 * Si la direccion es mayor que 100000 corresponde al contenido de un arreglo
 				 */
 				if(direccionOperando1 >= 100000){
-					//Obtener la direccion del elemento del arreglo						
+					//Reestablecer la direccion					
 					direccionOperando1 = direccionOperando1 - 100000;						
-					//Entero					
+					//Obtener la direccion que contiene					
 					direccionOperando1 = obtieneEntero(constantes, workspaceActual, funcion, bloque, direccionOperando1);
 				
 				}
 				if(direccionOperando2 >= 100000){
-					//Obtener la direccion del elemento del arreglo						
+					//Reestablecer la direccion					
 					direccionOperando2 = direccionOperando2 - 100000;						
-					//Entero
+					//Obtener la direccion que contiene
 					direccionOperando2 = obtieneEntero(constantes, workspaceActual, funcion, bloque, direccionOperando2);						
 				}
 				if(direccionResultado >= 100000){
+					//Reestablecer la direccion	
 					direccionResultado = direccionResultado - 100000;
+					//Obtener la direccion que contiene
 					direccionResultado = obtieneEntero(constantes, workspaceActual, funcion, bloque, direccionResultado);										
 				}
 				
@@ -195,15 +196,15 @@ public class maquinaVirtual {
     			boolean operando1B=false, operando2B=false;
     			
     			/*
-    			 * Obtener de memoria los valores de los operandos del cuadruplo
+    			 * Obtener de las estructuras de memoria los valores de los operandos del cuadruplo
     			 */
     			//Si es operacion de ERA, PARAM, VERIFICA, SUMAMAT no mapear los elementos del cuadruplo.
     			if(operacion != 23 && operacion != 22 && operacion != 26 && operacion != 27 && operacion != 28){
     			
     				//Selector de memoria en base a la direccion
-    				//Operando1
-    				//Memoria especial de retornos
-    				if(direccionOperando1>=0 && direccionOperando1<1000){  
+    				//Operando1    				
+    				if(direccionOperando1>=0 && direccionOperando1<1000){ 
+    					//Obtener de memoria especial de retornos
     					tipoOperando1 = datos.tipoRetorno(workspaceActual.getNombre(), ""+direccionOperando1);    				    					    					
     					switch(tipoOperando1){
     					case 0:      						
@@ -220,7 +221,7 @@ public class maquinaVirtual {
     					break;
     					}
     				}  else if(direccionOperando1>=1000 && direccionOperando1<5000){      					    			
-    				//Espacio de globales    				
+    					//Obtener del espacio de globales    				
     					bloque.inicializarBase(1000);
     					direccionOperando1 = bloque.mapearDireccion(direccionOperando1);
 	    				switch(tipoOperando1){
@@ -238,7 +239,7 @@ public class maquinaVirtual {
 						break;
 						}
     				} else  if(direccionOperando1>=5000 && direccionOperando1<9000){      					    			
-    				//Espacio de locales 				
+    					//Obtener del espacio de locales 				
     					bloque.inicializarBase(5000);
     					direccionOperando1 = bloque.mapearDireccion(direccionOperando1);
 						switch(tipoOperando1){
@@ -256,7 +257,7 @@ public class maquinaVirtual {
 						break;
 						}
 					} else  if(direccionOperando1>=9000 && direccionOperando1<13000){      					    			
-    				//Espacio de temporales				
+    					//Obtener del espacio de temporales				
 						bloque.inicializarBase(9000);
     					direccionOperando1 = bloque.mapearDireccion(direccionOperando1);
 						switch(tipoOperando1){
@@ -274,7 +275,7 @@ public class maquinaVirtual {
 						break;
 						}
 					} else  if(direccionOperando1>=13000 && direccionOperando1<17000){      					    			
-    				//Espacio de constantes		
+						//Obtener del espacio de constantes		
 						bloque.inicializarBase(13000);
     					direccionOperando1 = bloque.mapearDireccion(direccionOperando1);    				
 						switch(tipoOperando1){
@@ -293,9 +294,9 @@ public class maquinaVirtual {
 						}
 					}
 					
-					//Operando2
-    				//Memoria especial de retornos
-    				if(direccionOperando2>=0 && direccionOperando2<1000){     					    				
+					//Operando2    				
+    				if(direccionOperando2>=0 && direccionOperando2<1000){
+    					//Obtener de memoria especial de retornos
     					tipoOperando2 = datos.tipoRetorno(workspaceActual.getNombre(), ""+direccionOperando2);    				    					    					
     					switch(tipoOperando2){
     					case 0:      						
@@ -314,7 +315,7 @@ public class maquinaVirtual {
     				}  else if(direccionOperando2>=1000 && direccionOperando2<5000){  
     					bloque.inicializarBase(1000);
     					direccionOperando2 = bloque.mapearDireccion(direccionOperando2);  
-	    				//Espacio de globales    				    				
+	    				//Obtner del espacio de globales    				    				
 						switch(tipoOperando2){
 						case 0:						
 							operando2E =  workspaceActual.getGlobales().entero.get(direccionOperando2);    			
@@ -330,7 +331,7 @@ public class maquinaVirtual {
 						break;
 						}
     				} else  if(direccionOperando2>=5000 && direccionOperando2<9000){      					    			
-    				//Espacio de locales 				
+    					//Obtener del espacio de locales 				
     					bloque.inicializarBase(5000);
     					direccionOperando2 = bloque.mapearDireccion(direccionOperando2);  
 						switch(tipoOperando2){
@@ -348,7 +349,7 @@ public class maquinaVirtual {
 						break;
 						}
 					} else  if(direccionOperando2>=9000 && direccionOperando2<13000){      					    			
-    				//Espacio de temporales				
+						//Obtener del espacio de temporales				
 						bloque.inicializarBase(9000);
     					direccionOperando2 = bloque.mapearDireccion(direccionOperando2);  
 						switch(tipoOperando2){
@@ -366,7 +367,7 @@ public class maquinaVirtual {
 						break;
 						}
 					} else  if(direccionOperando2>=13000 && direccionOperando2<17000){      					    			
-    				//Espacio de constantes			
+						//Obtner del espacio de constantes			
 						bloque.inicializarBase(13000);
     					direccionOperando2 = bloque.mapearDireccion(direccionOperando2);  
 						switch(tipoOperando2){
@@ -390,27 +391,26 @@ public class maquinaVirtual {
     			direccionOperando1 = cuadruplo.getOperando1();
     			//Ajuste de direcciones para indexamiento de matrices y arreglos
 				if(direccionOperando1 >= 100000){
-					//Obtener la direccion del elemento del arreglo						
+					//Reestablecer la direccion						
 					direccionOperando1 = direccionOperando1 - 100000;						
-					//Entero
+					//Obtener la direccion que contiene
 					direccionOperando1 = obtieneEntero(constantes, workspaceActual, funcion, bloque, direccionOperando1);						
 				}
 				direccionOperando2 = cuadruplo.getOperando2();  
 				if(direccionOperando2 >= 100000){
 					//Obtener la direccion del elemento del arreglo						
 					direccionOperando2 = direccionOperando2 - 100000;						
-					//Entero
+					//Obtener la direccion que contiene
 					direccionOperando2 = obtieneEntero(constantes, workspaceActual, funcion, bloque, direccionOperando2);						
 				}
 				
 				/*
-				 * Realizar la operacion solicitada
-				 */
-				
+				 * Ejecutar la operacion solicitada
+				 */				
     			switch (operacion){    		
     			case (0):
-    			//Suma        		
-    				
+    				//Suma 
+    				//Realiza la operacion aritmetica de suma de los operandos y la almacena el la direccion de resultado
     				if(tipoOperando1 == 0){
     					if(tipoOperando2 == 0){
     						//Suma de dos enteros
@@ -457,6 +457,7 @@ public class maquinaVirtual {
     				cuadruplo = cuadruplos.get(indice);       				
     			break;    				
     			//Resta
+    			//Realiza la operacion aritmetica de resta de los operandos y la almacena el la direccion de resultado    			
     			case (1): 
     				try{
     				if(tipoOperando1 == 0){
@@ -470,7 +471,7 @@ public class maquinaVirtual {
     							almacenaDecimal(constantes, workspaceActual, funcion, bloque, direccionResultado, operando1E - operando2E);	    					     	    								        						
     						}
     					}else{
-    						//Resta de entero mas decimal
+    						//Resta de entero menos decimal
     						if(tipoResultado==0){    		
     							//Asignarlo a un entero
     							almacenaEntero(constantes, workspaceActual, funcion, bloque, direccionResultado,operando1E - (int)operando2D);	    					     	    								        						   				
@@ -481,7 +482,7 @@ public class maquinaVirtual {
     					}    					
     				} else {
     					if(tipoOperando2 == 0){
-    						//Resta decimal mas entero    						
+    						//Resta decimal menos entero    						
     						if(tipoResultado==0){    				
     							//Asignarlo a un entero  	    					 
     							almacenaEntero(constantes, workspaceActual, funcion, bloque, direccionResultado, (int)operando1D - operando2E);	    					     	    								        						    					
@@ -509,26 +510,23 @@ public class maquinaVirtual {
     				//Continuar con el siguiente cuadruplo
     				indice++;
     				cuadruplo = cuadruplos.get(indice);     		  			
-    				break;  			
-    			//Division
+    				break;  			    			
 				case (2):  
-					
-    				if(tipoOperando1 == 0){
+					//Division
+					//Realiza la operacion aritmetica de division de los operandos y la almacena el la direccion de resultado	    			
+					try{
+					if(tipoOperando1 == 0){
     					if(tipoOperando2 == 0){
     						//Division de dos enteros
     						if(tipoResultado==0){ 
     							//Asignarlo a un entero
-    	    					try{
-    							almacenaEntero(constantes, workspaceActual, funcion, bloque, direccionResultado, operando1E / operando2E);
-    	    					} catch(ArithmeticException e){
-    	    						System.out.println("Error: Operacion invalida");
-    	    					}
+    	    					almacenaEntero(constantes, workspaceActual, funcion, bloque, direccionResultado, operando1E / operando2E);    	    				
     						} else {
     							//Asignarlo a un decimal    							
     							almacenaDecimal(constantes, workspaceActual, funcion, bloque, direccionResultado, operando1E / operando2E);    							
     						}
     					}else{
-    						//Division de entero mas decimal
+    						//Division de entero y decimal
     						if(tipoResultado==0){    		
     							//Asignarlo a un entero
     							almacenaEntero(constantes, workspaceActual, funcion, bloque, direccionResultado,operando1E / (int)operando2D);	    					     	    								        						   				
@@ -539,7 +537,7 @@ public class maquinaVirtual {
     					}    					
     				} else {
     					if(tipoOperando2 == 0){
-    						//Division decimal mas entero    						
+    						//Division decimal y  entero    						
     						if(tipoResultado==0){    				
     							//Asignarlo a un entero  	    					 
     							almacenaEntero(constantes, workspaceActual, funcion, bloque, direccionResultado, (int)operando1D / operando2E);	    					     	    								        						    					
@@ -557,14 +555,17 @@ public class maquinaVirtual {
     							almacenaDecimal(constantes, workspaceActual, funcion, bloque, direccionResultado, operando1D / operando2D);	    					     	    								        						
     						}
     					}
-    				} 					
+    				} 	
+					} catch(ArithmeticException e){
+						System.out.println("Error: Operacion invalida");
+					}
 					//Continuar con el siguiente cuadruplo
     				indice++;
     				cuadruplo = cuadruplos.get(indice);   
     				break;  		
-	    			//Multiplicacion
-					case (3): 
-						
+	    			case (3):
+	    				//Multiplicacion						
+						//Realiza la operacion aritmetica de multiplicacion de los operandos y lo almacena el la direccion de resultado    					    				
 						if(tipoOperando1 == 0){
 	    					if(tipoOperando2 == 0){
 	    						//Multiplicacion de dos enteros
@@ -576,7 +577,7 @@ public class maquinaVirtual {
 	    							almacenaDecimal(constantes, workspaceActual, funcion, bloque, direccionResultado, operando1E * operando2E);	    					     	    								        						
 	    						}
 	    					}else{
-	    						//Multiplicacion de entero mas decimal
+	    						//Multiplicacion de entero por decimal
 	    						if(tipoResultado==0){    		
 	    							//Asignarlo a un entero
 	    							almacenaEntero(constantes, workspaceActual, funcion, bloque, direccionResultado,operando1E * (int)operando2D);	    					     	    								        						   				
@@ -587,7 +588,7 @@ public class maquinaVirtual {
 	    					}    					
 	    				} else {
 	    					if(tipoOperando2 == 0){
-	    						//Multiplicacion decimal mas entero    						
+	    						//Multiplicacion decimal por entero    						
 	    						if(tipoResultado==0){    				
 	    							//Asignarlo a un entero  	    					 
 	    							almacenaEntero(constantes, workspaceActual, funcion, bloque, direccionResultado, (int)operando1D * operando2E);	    					     	    								        						    					
@@ -613,19 +614,24 @@ public class maquinaVirtual {
     				break;
 					case 4:
 					//Mayor que
+					//Realiza la operacion condicional de mayorque de los operandos y lo almacena el la direccion de resultado    					    									
 					if(tipoOperando1 == 0){
 						if(tipoOperando2 == 0){
 							//Entero > Entero
-							if(operando1E > operando2E){								
+							if(operando1E > operando2E){	
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);	    					     	    								        							    														
-							} else {								
+							} else {	
+								//Si es falso, guardar el valor falso en la direccion de resultado
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);	
 							}
 						} else {
 							//Entero > Decimal
 							if(operando1E > operando2D){
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);	
 							} else {
+								//Si es falso, guardar el valor falso en la direccion de resultado
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);	
 							}
 						}
@@ -633,15 +639,19 @@ public class maquinaVirtual {
 						if(tipoOperando2 == 0){
 							//Decimal > Entero
 							if(operando1D > operando2E){
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);	
-							} else {								
+							} else {	
+								//Si es falso, guardar el valor falso en la direccion de resultado
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);	
 							}
 						} else {
 							//Decimal > Decimal
 							if(operando1D > operando2D){
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);	
 							} else {
+								//Si es falso, guardar el valor falso en la direccion de resultado
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);	
 							}
 						}	
@@ -652,19 +662,24 @@ public class maquinaVirtual {
 					break;
 				case 5:
 					//Menor que
+					//Realiza la operacion condicional de menorque de los operandos y lo almacena el la direccion de resultado    					    														
 					if(tipoOperando1 == 0){
 						if(tipoOperando2 == 0){
 							//Entero < Entero
 							if(operando1E < operando2E){
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado								
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);	    					     	    								        							    														
-							} else {								
+							} else {	
+								//Si es falso, guardar el valor falso en la direccion de resultado								
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);	
 							}
 						} else {
 							//Entero < Decimal
 							if(operando1E < operando2D){
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado								
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);	
 							} else {
+								//Si es falso, guardar el valor falso en la direccion de resultado								
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);	
 							}
 						}
@@ -672,15 +687,19 @@ public class maquinaVirtual {
 						if(tipoOperando2 == 0){
 							//Decimal < Entero
 							if(operando1D < operando2E){
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado								
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);	
-							} else {								
+							} else {	
+								//Si es falso, guardar el valor falso en la direccion de resultado								
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);	
 							}
 						} else {
 							//Decimal < Decimal
 							if(operando1D < operando2D){
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado								
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);	
 							} else {
+								//Si es falso, guardar el valor falso en la direccion de resultado								
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);	
 							}
 						}	
@@ -690,19 +709,24 @@ public class maquinaVirtual {
 					break;
 				case 6:
 					//Mayor o igual
+					//Realiza la operacion condicional de mayor o igual que de los operandos y lo almacena el la direccion de resultado    					    																			
 					if(tipoOperando1 == 0){
 						if(tipoOperando2 == 0){
 							//Entero >= Entero
 							if(operando1E >= operando2E){
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado								
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);	    					     	    								        							    														
-							} else {								
+							} else {		
+								//Si es falso, guardar el valor falso en la direccion de resultado																
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);	
 							}
 						} else {
 							//Entero >= Decimal
 							if(operando1E >= operando2D){
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado								
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);	
 							} else {
+								//Si es falso, guardar el valor falso en la direccion de resultado																
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);	
 							}
 						}
@@ -710,15 +734,19 @@ public class maquinaVirtual {
 						if(tipoOperando2 == 0){
 							//Decimal >= Entero
 							if(operando1D >= operando2E){
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado								
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);	
-							} else {								
+							} else {
+								//Si es falso, guardar el valor falso en la direccion de resultado																
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);	
 							}
 						} else {
 							//Decimal >= Decimal
 							if(operando1D >= operando2D){
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado								
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);	
 							} else {
+								//Si es falso, guardar el valor falso en la direccion de resultado																
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);	
 							}
 						}	
@@ -729,19 +757,24 @@ public class maquinaVirtual {
 					break;										
 				case 7:
 					//Menor o igual
+					//Realiza la operacion condicional de menor o igual que de los operandos y lo almacena el la direccion de resultado    					    																			
 					if(tipoOperando1 == 0){
 						if(tipoOperando2 == 0){
 							//Entero <= Entero
 							if(operando1E <= operando2E){
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado								
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);	    					     	    								        							    														
-							} else {								
+							} else {
+								//Si es falso, guardar el valor falso en la direccion de resultado																
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);	
 							}
 						} else {
 							//Entero <= Decimal
 							if(operando1E <= operando2D){
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado								
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);	
 							} else {
+								//Si es falso, guardar el valor falso en la direccion de resultado																
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);	
 							}
 						}
@@ -749,15 +782,19 @@ public class maquinaVirtual {
 						if(tipoOperando2 == 0){
 							//Decimal <= Entero
 							if(operando1D <= operando2E){
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado								
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);	
-							} else {								
+							} else {
+								//Si es falso, guardar el valor falso en la direccion de resultado																
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);	
 							}
 						} else {
 							//Decimal <= Decimal
 							if(operando1D <= operando2D){
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado								
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);	
 							} else {
+								//Si es falso, guardar el valor falso en la direccion de resultado																
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);	
 							}
 						}	
@@ -768,19 +805,24 @@ public class maquinaVirtual {
 					break;
 					case 8:				
 					//Igual
+					//Realiza la operacion condicional de igual de los operandos y lo almacena el la direccion de resultado    					    																				
 						if(tipoOperando1 == 0){
 							if(tipoOperando2 == 0){
 								//Entero == Entero
 								if(operando1E == operando2E){
+									//Si es verdadero, guardar el valor verdadero en la direccion de resultado																	
 									almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);	    					     	    								        							    														
-								} else {								
+								} else {	
+									//Si es falso, guardar el valor falso en la direccion de resultado																	
 									almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);	
 								}
 							} else {
 								//Entero == Decimal
 								if(operando1E == operando2D){
+									//Si es verdadero, guardar el valor verdadero en la direccion de resultado									
 									almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);	
 								} else {
+									//Si es falso, guardar el valor falso en la direccion de resultado																	
 									almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);	
 								}
 							}
@@ -788,15 +830,19 @@ public class maquinaVirtual {
 							if(tipoOperando2 == 0){
 								//Decimal == Entero
 								if(operando1D == operando2E){
+									//Si es verdadero, guardar el valor verdadero en la direccion de resultado																	
 									almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);	
-								} else {								
+								} else {	
+									//Si es falso, guardar el valor falso en la direccion de resultado																	
 									almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);	
 								}
 							} else {
 								//Decimal == Decimal
 								if(operando1D <= operando2D){
+									//Si es verdadero, guardar el valor verdadero en la direccion de resultado									
 									almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);	
 								} else {
+									//Si es falso, guardar el valor falso en la direccion de resultado																	
 									almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);	
 								}
 							}	
@@ -804,8 +850,10 @@ public class maquinaVirtual {
 							if(tipoOperando2 == 2){
 								//Texto == Texto
 								if(operando1T.equals(operando2T)){
+									//Si es verdadero, guardar el valor verdadero en la direccion de resultado									
 									almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);									
-								} else {								
+								} else {
+									//Si es falso, guardar el valor falso en la direccion de resultado																	
 									almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);									
 								}
 							}
@@ -813,15 +861,19 @@ public class maquinaVirtual {
 						if(tipoOperando2 == 3){
 							//Booleano == Booleano
 							if(operando1B){								
-								if(operando2B){									
+								if(operando2B){
+									//Si es verdadero, guardar el valor verdadero en la direccion de resultado																		
 									almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);										
-								} else {									
+								} else {
+									//Si es falso, guardar el valor falso en la direccion de resultado																										
 									almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);											
 								}
 							} else {
 								if(operando2B){
+									//Si es verdadero, guardar el valor verdadero en la direccion de resultado																		
 									almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);										
 								} else {
+									//Si es falso, guardar el valor falso en la direccion de resultado																										
 									almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);										
 								}								
 							}
@@ -833,10 +885,12 @@ public class maquinaVirtual {
 					break;
 			case 9:
 			//Diferente
+			//Realiza la operacion condicional de diferente de los operandos y lo almacena el la direccion de resultado    					    																							
 					if(tipoOperando1 == 0){
 						if(tipoOperando2 == 0){
 							//Entero != Entero
 							if(operando1E != operando2E){
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado																										
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);									
 							} else {								
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);									
@@ -844,6 +898,7 @@ public class maquinaVirtual {
 						} else {
 							//Entero != Decimal
 							if(operando1E != operando2D){
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado																										
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);									
 							} else {
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);									
@@ -853,6 +908,7 @@ public class maquinaVirtual {
 						if(tipoOperando2 == 0){
 							//Decimal != Entero
 							if(operando1D != operando2E){
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado																										
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);									
 							} else {								
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);									
@@ -860,6 +916,7 @@ public class maquinaVirtual {
 						} else {
 							//Decimal != Decimal
 							if(operando1D != operando2D){
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado																										
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);									
 							} else {
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);									
@@ -869,6 +926,7 @@ public class maquinaVirtual {
 						if(tipoOperando2 == 2){
 							//Texto != Texto
 							if(!operando1T.equals(operando2T)){
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado																										
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);									
 							} else {								
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);									
@@ -880,11 +938,13 @@ public class maquinaVirtual {
 							if(operando1B){								
 								if(operando2B){									
 									almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);										
-								} else {									
+								} else {						
+									//Si es verdadero, guardar el valor verdadero en la direccion de resultado																											
 									almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);										
 								}
 							} else {
 								if(operando2B){
+									//Si es verdadero, guardar el valor verdadero en la direccion de resultado																											
 									almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);									
 								} else {
 									almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);										
@@ -898,10 +958,12 @@ public class maquinaVirtual {
 					break;
 				case 10:
 					//AND
+					//Realiza la operacion logica AND de los operandos y lo almacena el la direccion de resultado    					    																												
 					if (tipoOperando1 == 3) {
 						if (tipoOperando2 == 3) {
 							// Booleano AND Booleano
 							if (operando1B & operando2B) {
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado																										
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);									
 							} else {
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);									
@@ -914,10 +976,12 @@ public class maquinaVirtual {
     				break;
 				case 11:					
 					//OR
+					//Realiza la operacion logica OR de los operandos y lo almacena el la direccion de resultado    					    																							
 					if (tipoOperando1 == 3) {
 						if (tipoOperando2 == 3) {
 							// Booleano OR Booleano
 							if (operando1B | operando2B) {
+								//Si es verdadero, guardar el valor verdadero en la direccion de resultado																										
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, true);									
 							} else {
 								almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, false);								
@@ -929,10 +993,11 @@ public class maquinaVirtual {
     				cuadruplo = cuadruplos.get(indice);					
 					break;
 				case 12:
-					//Asignacion										
+					//Asignacion
+					//Realiza la asignacion del resultado con lo que contiene el operando1    					    																												
 				switch(tipoOperando1){				
 					case 0:					
-						//Operando1 Entero
+						//Se asignara un dato tipo Entero
 						if(tipoResultado == 0){
 							//Asignarlo a un entero
 							almacenaEntero(constantes, workspaceActual, funcion, bloque, direccionResultado, obtieneEntero(constantes, workspaceActual, funcion, bloque, direccionOperando1));	    					     	    								        						    							    																											
@@ -942,7 +1007,7 @@ public class maquinaVirtual {
 						}	
 						break;
 					case 1:
-						//Decimal
+						//Se asignara un dato tipo Decimal
 						if(tipoResultado == 0){
 							//Asignarlo a un entero
 							almacenaEntero(constantes, workspaceActual, funcion, bloque, direccionResultado, (int)obtieneDecimal(constantes, workspaceActual, funcion, bloque, direccionOperando1));	    					     	    								        						    							    																											
@@ -952,14 +1017,14 @@ public class maquinaVirtual {
 						}	
 						break;
 					case 2:
-						//Texto
+						//Se asignara un dato tipo Texto
 						if(tipoResultado == 2){
 							//Asignarlo a un texto
 							almacenaTexto(constantes, workspaceActual, funcion, bloque, direccionResultado, obtieneTexto(constantes, workspaceActual, funcion, bloque, direccionOperando1));	    					     	    								        						    							    																																		
 						}
 						break;
 					case 3:
-						//Booleano
+						//Se asignara un dato tipo Booleano
 						if(tipoResultado == 3){
 							//Asignarlo a un booleano
 							almacenaBooleano(constantes, workspaceActual, funcion, bloque, direccionResultado, obtieneBooleano(constantes, workspaceActual, funcion, bloque, direccionOperando1));	    					     	    								        						    							    																																		
@@ -972,6 +1037,7 @@ public class maquinaVirtual {
 				break;
 				case 13:
 					//CONCATENA
+					//Realiza la operacion de concatenacion de los operandos y lo almacena el la direccion de resultado    					    																												
 					switch(tipoOperando1) {
 					case 0:
 						switch(tipoOperando2){
@@ -1033,40 +1099,50 @@ public class maquinaVirtual {
 					if(direccionOperando1>=0 && direccionOperando1<1000){ 
 						//Espacio de retornos  
 						if(!retornos.get(direccionOperando1).booleano){
+							//Ir al salto
 							indice = cuadruplo.getResultado();
 						} else {
+							//Continuar con el siguiente cuadruplo
 							indice++;
 						}						
 					}  else if(direccionOperando1>=1000 && direccionOperando1<5000){      					    			
-					//Espacio de globales    
+						//Espacio de globales    
 						bloque.inicializarBase(1000);
 						if(!workspaceActual.getGlobales().booleano.get(bloque.mapearDireccion(direccionOperando1))){
+							//Ir al salto
 							indice = cuadruplo.getResultado();
 						} else {
+							//Continuar con el siguiente cuadruplo
 							indice++;
 						}
 					} else  if(direccionOperando1>=5000 && direccionOperando1<9000){      					    			
-					//Espacio de locales 
+						//Espacio de locales 
 						bloque.inicializarBase(5000);
 						if(!funcion.getLocales().booleano.get(bloque.mapearDireccion(direccionOperando1))){
+							//Ir al salto
 							indice = cuadruplo.getResultado();
 						} else {
+							//Continuar con el siguiente cuadruplo
 							indice++;
 						}
 					} else  if(direccionOperando1>=9000 && direccionOperando1<13000){      					    			
-					//Espacio de temporales	
+						//Espacio de temporales	
 						bloque.inicializarBase(9000);
 						if(!funcion.getTemporales().booleano.get(bloque.mapearDireccion(direccionOperando1))){
+							//Ir al salto
 							indice = cuadruplo.getResultado();
 						} else {
+							//Continuar con el siguiente cuadruplo
 							indice++;
 						}
 					} else  if(direccionOperando1>=13000 && direccionOperando1<17000){      					    			
-					//Espacio de constantes		
+						//Espacio de constantes		
 						bloque.inicializarBase(13000);
 						if(!constantes.booleano.get(bloque.mapearDireccion(direccionOperando1))){
+							//Ir al salto
 							indice = cuadruplo.getResultado();
 						} else {
+							//Continuar con el siguiente cuadruplo
 							indice++;
 						}
 					}						
@@ -1075,6 +1151,7 @@ public class maquinaVirtual {
 				case 17:
 					//Lectura	
 					//Obtener la entrada del teclado y asignarla a la variable dada en el cuadruplo
+					
 					//Texto de entrada
 					String entrada = brT.readLine();
 					switch(tipoResultado){
@@ -1112,13 +1189,15 @@ public class maquinaVirtual {
 							//Leer entrada y asignarlo a un dato tipo texto
 							almacenaTexto(constantes, workspaceActual, funcion, bloque, direccionResultado,	entrada);
 						break;
-					} 													
+					} 	
+					//Continuar con el siguiente cuadruplo
 					indice++;
     				cuadruplo = cuadruplos.get(indice);    							
 					break;
 				case 18:
 					//Escritura	
 					//Despliega en consola el valor de la variable o constante especificado en el cuadruplo
+					
 					switch(tipoResultado){
 						case 0:
 							//Imprime un dato tipo entero
@@ -1136,12 +1215,16 @@ public class maquinaVirtual {
 					if(cuadruplo.getResultado() == -1){
 						System.out.println("");
 					}
+					
+					//Continuar con el siguiente cuadruplo
 					indice++;
     				cuadruplo = cuadruplos.get(indice);    				    								
 					break;
 				case 19:	
 					//GOTO
 					//Desplaza la ejecucion al cuadruplo especificado
+					
+					//El salto al cual mover la ejecucion
 					indice = cuadruplo.getResultado();									
 					cuadruplo = cuadruplos.get(indice);					
 					break;
@@ -1171,6 +1254,7 @@ public class maquinaVirtual {
 			        
 					//Cargar su informacion
 			        funcionNueva = datos.cargarFunciones(workspaceActual, nombreFuncion, funcionNueva, nombreObjeto);										
+			        
 			        //Continuar con el siguiente cuadruplo
 					indice++;					
     				cuadruplo = cuadruplos.get(indice);    			
@@ -1179,8 +1263,10 @@ public class maquinaVirtual {
 					//PARAM				
 					//Asignar cada parametro con su valor a la estructura de la funcion
 					
-					//Obtenemos la direccion del valor a asignar y numero de parametro
+					//Obtenemos la direccion del valor a asignar 
 					int direccionAsignar = direccionOperando1;				
+					
+					//Obtenemos la direccion del parametro
 					bloque.inicializarBase(5000);
 					int direccionParametro = bloque.mapearDireccion(direccionResultado);
 	
@@ -1222,12 +1308,15 @@ public class maquinaVirtual {
 					indice = cuadruplo.getOperando1();
 					
 					//Cargar la nueva estructura
-					funcion = funcionNueva;															
+					funcion = funcionNueva;	
+					
+					//Si se accede a un afuncion de una clase
 					  if(accederAClase){
+						  //Guardar la base de objetoActual
 						  pilaObjetos.push(workspaceActual);
+						  //Cambiar el contexto a la clase nueva
 						  workspaceActual = workspaces.get(nombreClaseAcceder);
-				      }
-					  
+				      }					  
 					
 					cuadruplo = cuadruplos.get(indice);										
 					break;
@@ -1285,10 +1374,11 @@ public class maquinaVirtual {
 				case 29:
 					//ORO
 					//Carga datos del objeto para tener acceso posteriormente
+					
 					//Establece una llave unica 
 					String llave = cuadruplo.getOperando1S()+cuadruplo.getOperando2S()+cuadruplo.getResultadoS();					
 					
-					//Cargar los datos de la clase y lo carga en la estructura
+					//Cargar los datos de la clase y cargarlo en la estructura
 					workspaces = datos.cargarObjetos(workspaces, llave, cuadruplo.getOperando2S());
 					
 					//Continuar con el siguiente cuadruplo
@@ -1299,7 +1389,10 @@ public class maquinaVirtual {
 					//ACCESS
 					//Se detecta necesidad de acceso a una clase
 					
+					//Actualizar la bandera de acceso a clase
 					accederAClase = true;
+					
+					//Obtener la llave unica
 					nombreClaseAcceder = cuadruplo.getOperando1S()+cuadruplo.getOperando2S()+cuadruplo.getResultadoS();	
 					
 					//Continuar con el siguiente cuadruplo
@@ -1308,8 +1401,14 @@ public class maquinaVirtual {
 					break;
 				case 31:
 					//ENDACCESS	
+					//Se termina el acceso a la clase y se reestablece la base del objeto
+					
+					//Se actualiza la bandera de acceso a clase
 					accederAClase = false;
+					//Se resetea el nombre de la clase a acceder
 					nombreClaseAcceder = "";
+					
+					//Se actualiza la base de objeto
 					workspaceActual = pilaObjetos.pop();
 					
 					//Continuar con el siguiente cuadruplo
@@ -1359,6 +1458,7 @@ public class maquinaVirtual {
 
 	/**
 	 * Metodo para almacenar un registro entero en las estructuras de memoria
+	 * 
 	 * @param constantes
 	 * @param workspaceActual
 	 * @param funcion
@@ -1372,19 +1472,19 @@ public class maquinaVirtual {
 		//Espacio de Retornos  
 		retornos.get(direccionResultado).entero =  valor;    		    					  					    						
 	}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
-	//Espacio de globales    
+		//Espacio de globales    
 		bloque.inicializarBase(1000);
 		workspaceActual.getGlobales().ingresaElementoEntero(bloque.mapearDireccion(direccionResultado), valor);    		    					  					    						
 	} else  if(direccionResultado>=5000 && direccionResultado<9000){      					    			
-	//Espacio de locales 
+		//Espacio de locales 
 		bloque.inicializarBase(5000);
 		funcion.getLocales().ingresaElementoEntero(bloque.mapearDireccion(direccionResultado), valor);
 	} else  if(direccionResultado>=9000 && direccionResultado<13000){      					    			
-	//Espacio de temporales	
+		//Espacio de temporales	
 		bloque.inicializarBase(9000);
 		funcion.getTemporales().ingresaElementoEntero(bloque.mapearDireccion(direccionResultado), valor); 
 	} else  if(direccionResultado>=13000 && direccionResultado<17000){      					    			
-	//Espacio de constantes		
+		//Espacio de constantes		
 		bloque.inicializarBase(13000);
 		constantes.ingresaElementoEntero(bloque.mapearDireccion(direccionResultado), valor);  						
 	} 
@@ -1393,6 +1493,7 @@ public class maquinaVirtual {
 	
 	/**
 	 * Metodo para almacenar un registro decimal en las estructuras de memoria
+	 * 
 	 * @param constantes
 	 * @param workspaceActual
 	 * @param funcion
@@ -1406,19 +1507,19 @@ public class maquinaVirtual {
 		//Espacio de Retornos  
 		retornos.get(direccionResultado).decimal =  valor;      		    					  					    						
 	}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
-	//Espacio de globales    
+		//Espacio de globales    
 		bloque.inicializarBase(1000);
 		workspaceActual.getGlobales().ingresaElementoDecimal(bloque.mapearDireccion(direccionResultado), valor);    		    					  					    						
 	} else  if(direccionResultado>=5000 && direccionResultado<9000){      					    			
-	//Espacio de locales 
+		//Espacio de locales 
 		bloque.inicializarBase(5000);
 		funcion.getLocales().ingresaElementoDecimal(bloque.mapearDireccion(direccionResultado), valor);
 	} else  if(direccionResultado>=9000 && direccionResultado<13000){      					    			
-	//Espacio de temporales	
+		//Espacio de temporales	
 		bloque.inicializarBase(9000);
 		funcion.getTemporales().ingresaElementoDecimal(bloque.mapearDireccion(direccionResultado), valor); 
 	} else  if(direccionResultado>=13000 && direccionResultado<17000){      					    			
-	//Espacio de constantes		
+		//Espacio de constantes		
 		bloque.inicializarBase(13000);
 		constantes.ingresaElementoDecimal(bloque.mapearDireccion(direccionResultado), valor);  						
 	}
@@ -1426,6 +1527,7 @@ public class maquinaVirtual {
 	
 	/**
 	 * Metodo para almacenar un registro texto en las estructuras de memoria
+	 * 
 	 * @param constantes
 	 * @param workspaceActual
 	 * @param funcion
@@ -1439,19 +1541,19 @@ public class maquinaVirtual {
 		//Espacio de retornos  
 		retornos.get(direccionResultado).texto =  valor;       		    					  					    						
 	}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
-	//Espacio de globales    
+		//Espacio de globales    
 		bloque.inicializarBase(1000);
 		workspaceActual.getGlobales().ingresaElementoTexto(bloque.mapearDireccion(direccionResultado), valor);    		    					  					    						
 	} else  if(direccionResultado>=5000 && direccionResultado<9000){      					    			
-	//Espacio de locales 
+		//Espacio de locales 
 		bloque.inicializarBase(5000);
 		funcion.getLocales().ingresaElementoTexto(bloque.mapearDireccion(direccionResultado), valor);
 	} else  if(direccionResultado>=9000 && direccionResultado<13000){      					    			
-	//Espacio de temporales	
+		//Espacio de temporales	
 		bloque.inicializarBase(9000);
 		funcion.getTemporales().ingresaElementoTexto(bloque.mapearDireccion(direccionResultado), valor); 
 	} else  if(direccionResultado>=13000 && direccionResultado<17000){      					    			
-	//Espacio de constantes		
+		//Espacio de constantes		
 		bloque.inicializarBase(13000);
 		constantes.ingresaElementoTexto(bloque.mapearDireccion(direccionResultado), valor);  						
 	}  
@@ -1459,6 +1561,7 @@ public class maquinaVirtual {
 	
 	/**
 	 * Metodo para almacenar un registro booleano en las estructuras de memoria
+	 * 
 	 * @param constantes
 	 * @param workspaceActual
 	 * @param funcion
@@ -1472,26 +1575,27 @@ public class maquinaVirtual {
 		//Espacio de retornos  
 		retornos.get(direccionResultado).booleano =  valor;     		    					  					    						
 	}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
-	//Espacio de globales    
+		//Espacio de globales    
 		bloque.inicializarBase(1000);
 		workspaceActual.getGlobales().ingresaElementoBooleano(bloque.mapearDireccion(direccionResultado), valor);    		    					  					    						
 	} else  if(direccionResultado>=5000 && direccionResultado<9000){      					    			
-	//Espacio de locales 
+		//Espacio de locales 
 		bloque.inicializarBase(5000);
 		funcion.getLocales().ingresaElementoBooleano(bloque.mapearDireccion(direccionResultado), valor);
 	} else  if(direccionResultado>=9000 && direccionResultado<13000){      					    			
-	//Espacio de temporales	
+		//Espacio de temporales	
 		bloque.inicializarBase(9000);
 		funcion.getTemporales().ingresaElementoBooleano(bloque.mapearDireccion(direccionResultado), valor); 
 	} else  if(direccionResultado>=13000 && direccionResultado<17000){      					    			
-	//Espacio de constantes		
+		//Espacio de constantes		
 		bloque.inicializarBase(13000);
 		constantes.ingresaElementoBooleano(bloque.mapearDireccion(direccionResultado), valor);  						
 	}  
 	}
 	
 	/**
-	 * Metodo para recuperar el valor de un registro en las estructuras de memoria
+	 * Metodo para recuperar el valor de un registro enterod de las estructuras de memoria
+	 * 
 	 * @param constantes
 	 * @param workspaceActual
 	 * @param funcion
@@ -1501,25 +1605,26 @@ public class maquinaVirtual {
 	 */
 	public static int obtieneEntero(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado){
 		
+		//El valor a regresar
 		int valor = -1;
 		
 		if(direccionResultado>=0 && direccionResultado<1000){ 
 			//Espacio de retornos 
 			valor = retornos.get(direccionResultado).entero;       					  					    						
 		}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
-		//Espacio de globales    
+			//Espacio de globales    
 			bloque.inicializarBase(1000);
 			valor = workspaceActual.getGlobales().entero.get(bloque.mapearDireccion(direccionResultado));		    					  					    						
 		} else  if(direccionResultado>=5000 && direccionResultado<9000){      					    			
-		//Espacio de locales 
+			//Espacio de locales 
 			bloque.inicializarBase(5000);
 			valor = funcion.getLocales().entero.get(bloque.mapearDireccion(direccionResultado));
 		} else  if(direccionResultado>=9000 && direccionResultado<13000){      					    			
-		//Espacio de temporales	
+			//Espacio de temporales	
 			bloque.inicializarBase(9000);
 			valor = funcion.getTemporales().entero.get(bloque.mapearDireccion(direccionResultado));
 		} else  if(direccionResultado>=13000 && direccionResultado<17000){      					    			
-		//Espacio de constantes		
+			//Espacio de constantes		
 			bloque.inicializarBase(13000);
 			valor = constantes.entero.get(bloque.mapearDireccion(direccionResultado));  						
 		}
@@ -1528,6 +1633,7 @@ public class maquinaVirtual {
 	
 	/**
 	 * Metodo para obtener un registro decimal de las estructuras de memoria
+	 * 
 	 * @param constantes
 	 * @param workspaceActual
 	 * @param funcion
@@ -1537,25 +1643,26 @@ public class maquinaVirtual {
 	 */
 	public static double obtieneDecimal(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado){
 		
-		double valor = -1;
+		//El valor a regresar
+		double valor = -1.0;
 		
 		if(direccionResultado>=0 && direccionResultado<1000){ 
 			//Espacio de retornos 
 			valor = retornos.get(direccionResultado).decimal;       					  					    						
 		}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
-		//Espacio de globales    
+			//Espacio de globales    
 			bloque.inicializarBase(1000);
 			valor = workspaceActual.getGlobales().decimal.get(bloque.mapearDireccion(direccionResultado));		    					  					    						
 		} else  if(direccionResultado>=5000 && direccionResultado<9000){      					    			
-		//Espacio de locales 
+			//Espacio de locales 
 			bloque.inicializarBase(5000);
 			valor = funcion.getLocales().decimal.get(bloque.mapearDireccion(direccionResultado));
 		} else  if(direccionResultado>=9000 && direccionResultado<13000){      					    			
-		//Espacio de temporales	
+			//Espacio de temporales	
 			bloque.inicializarBase(9000);
 			valor = funcion.getTemporales().decimal.get(bloque.mapearDireccion(direccionResultado));
 		} else  if(direccionResultado>=13000 && direccionResultado<17000){      					    			
-		//Espacio de constantes		
+			//Espacio de constantes		
 			bloque.inicializarBase(13000);
 			valor = constantes.decimal.get(bloque.mapearDireccion(direccionResultado));  						
 		}
@@ -1564,6 +1671,7 @@ public class maquinaVirtual {
 	
 	/**
 	 * Metodo para obtener un registro texto de las estructuras de memoria
+	 * 
 	 * @param constantes
 	 * @param workspaceActual
 	 * @param funcion
@@ -1573,25 +1681,26 @@ public class maquinaVirtual {
 	 */
 	public static String obtieneTexto(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado){
 		
+		//El valor a regresar
 		String valor = "";
 		
 		if(direccionResultado>=0 && direccionResultado<1000){ 
 			//Espacio de retornos 
 			valor = retornos.get(direccionResultado).texto;      					  					    						
 		}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
-		//Espacio de globales    
+			//Espacio de globales    
 			bloque.inicializarBase(1000);
 			valor = workspaceActual.getGlobales().texto.get(bloque.mapearDireccion(direccionResultado));		    					  					    						
 		} else  if(direccionResultado>=5000 && direccionResultado<9000){      					    			
-		//Espacio de locales 
+			//Espacio de locales 
 			bloque.inicializarBase(5000);
 			valor = funcion.getLocales().texto.get(bloque.mapearDireccion(direccionResultado));
 		} else  if(direccionResultado>=9000 && direccionResultado<13000){      					    			
-		//Espacio de temporales	
+			//Espacio de temporales	
 			bloque.inicializarBase(9000);
 			valor = funcion.getTemporales().texto.get(bloque.mapearDireccion(direccionResultado));
 		} else  if(direccionResultado>=13000 && direccionResultado<17000){      					    			
-		//Espacio de constantes		
+			//Espacio de constantes		
 			bloque.inicializarBase(13000);
 			valor = constantes.texto.get(bloque.mapearDireccion(direccionResultado));  						
 		}
@@ -1599,6 +1708,7 @@ public class maquinaVirtual {
 	}
 	/**
 	 * Metodo para obtener un registro booleano de las estructuras de memoria
+	 * 
 	 * @param constantes
 	 * @param workspaceActual
 	 * @param funcion
@@ -1608,25 +1718,26 @@ public class maquinaVirtual {
 	 */
 	public static boolean obtieneBooleano(bloque constantes, objetos workspaceActual, funcion funcion, bloque bloque, int  direccionResultado){
 		
+		//El valor a regresar
 		boolean valor = false;
 		
 		if(direccionResultado>=0 && direccionResultado<1000){ 
 			//Espacio de retornos 
 			valor = retornos.get(direccionResultado).booleano;       					  					    						
 		}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
-		//Espacio de globales    
+			//Espacio de globales    
 			bloque.inicializarBase(1000);
 			valor = workspaceActual.getGlobales().booleano.get(bloque.mapearDireccion(direccionResultado));		    					  					    						
 		} else  if(direccionResultado>=5000 && direccionResultado<9000){      					    			
-		//Espacio de locales 
+			//Espacio de locales 
 			bloque.inicializarBase(5000);
 			valor = funcion.getLocales().booleano.get(bloque.mapearDireccion(direccionResultado));
 		} else  if(direccionResultado>=9000 && direccionResultado<13000){      					    			
-		//Espacio de temporales	
+			//Espacio de temporales	
 			bloque.inicializarBase(9000);
 			valor = funcion.getTemporales().booleano.get(bloque.mapearDireccion(direccionResultado));
 		} else  if(direccionResultado>=13000 && direccionResultado<17000){      					    			
-		//Espacio de constantes		
+			//Espacio de constantes		
 			bloque.inicializarBase(13000);
 			valor = constantes.booleano.get(bloque.mapearDireccion(direccionResultado));  						
 		}

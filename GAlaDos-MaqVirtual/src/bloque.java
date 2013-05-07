@@ -2,9 +2,11 @@
  * Clase bloque
  * 
  * Mantiene las estructuras para datos tipo entero, decimal, texto y booleano
- * Incluye metodos para agregar o modificar los elementos
+ * Incluye metodos para agregar o modificar elementos de cada tipo 
  * @author Oziel Garza, Hector De la Garza
  */
+
+//Librerias para estructuras
 import java.util.*;
 
 public class bloque {
@@ -43,11 +45,11 @@ public class bloque {
 	}
 	
 	/**
-	 * Metodo para mapear una direccion en su tipo y obtener el indice
+	 * Método para mapear una dirección en su tipo y obtener el índice
 	 * correspondiente en memoria
 	 * 
-	 * @param direccion
-	 * @return La direccion de memoria virtual
+	 * @param dirección
+	 * @return La dirección de memoria virtual
 	 */
 	public int mapearDireccion(int direccion){
 		//La direccion a retornar
@@ -78,8 +80,7 @@ public class bloque {
 	 */
 	public void ingresaElementoEntero(int direccion, int valor){	
 			//Si la direccion es menor que el tamaño, reemplazar el valor existente
-		
-		if(entero.size() > direccion){
+			if(entero.size() > direccion){
 				entero.set(direccion,valor);
 			} else {
 				//Agregar una nueva direccion

@@ -23,7 +23,9 @@ ejecutarPrograma {
 		booleano b;		
 	]	
 
-	//Leer del teclado
+	i = (0-1);
+	despliega(i);
+	// Leer del teclado
 	// despliega("Ingresa t");
 	// leerdelteclado(t);
 	// despliega("El valor de t " << t);
