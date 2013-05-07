@@ -124,13 +124,13 @@ ejecutarPrograma {
 	e = objetoMate->fibonacciRecursivo(10);
 	despliega("Fibonacci recursivo "<< e);
 
-	e = objetoMate->fibonacciIterativo(10);
+	e = mate->fibonacciIterativo(10);
 	despliega("Fibonacci iterativo "<< e);
 
 	e = objetoMate->factorialRecursivo(7);
 	despliega("Factorial recursivo "<< e);
 
-	e = objetoMate->factorialIterativo(6);
+	e = mate->factorialIterativo(7);
 	despliega("Factorial recursivo "<< e);
 
 	objetoMate->funcionDespliega();

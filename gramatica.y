@@ -763,11 +763,11 @@ int main()
 {
 
 	yyparse();
-	imprimirObjetos(objetos, constantes, retornos);
-	printf("\n\n");
-	imprimeCuadruplos(listaCuadruplos, 0);
-	printf("\n\n");
-	imprimeCuadruplos(listaCuadruplos, 2);
+	// imprimirObjetos(objetos, constantes, retornos);
+	// printf("\n\n");
+	// imprimeCuadruplos(listaCuadruplos, 0);
+	// printf("\n\n");
+	// imprimeCuadruplos(listaCuadruplos, 2);
 	generarDatos(objetos, constantes, retornos);
 	generarObj(listaCuadruplos);
 	return 0;

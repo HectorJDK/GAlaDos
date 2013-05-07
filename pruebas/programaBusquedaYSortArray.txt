@@ -88,9 +88,5 @@ ejecutarPrograma {
 		despliega(arreglo[i]);
 		i = i + 1;
 	}
-
-
-
-
-	}
+	
 }

@@ -48,10 +48,10 @@ ejecutarPrograma {
 		entero e;
 	]	
 
-	// e = factorialRecursivo(7);
-	// despliega("Factorial recursivo "<< e);
+	e = factorialRecursivo(7);
+	despliega("Factorial recursivo "<< e);
 
-	// e = factorialIterativo(6);
-	// despliega("Factorial iterativo "<< e);
+	e = factorialIterativo(6);
+	despliega("Factorial iterativo "<< e);
 
 }
