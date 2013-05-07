@@ -1,0 +1,98 @@
+Declara_Objetos [	
+
+]
+
+Variables_Globales [
+	
+]
+
+Declara_Funciones [	
+	
+]
+
+Implementa_Funciones [	
+]
+
+ejecutarPrograma {
+	Variables_Locales [
+		entero i;
+		entero j;
+		entero elemento;
+		entero temporal;
+		booleano encontrado;
+		booleano voltear;
+		matrizEntera arreglo [10];
+	]	
+
+	//Rellenar el arreglo de forma descendente con valores desde el 10 hasta el 0 
+	i=0;
+	j=10;
+	mientras(i <= 10){		
+		//Asignar el valor en el arreglo
+		arreglo[i]=j;
+		//Incrementamos el indice
+		i = i + 1;
+		j = j - 1;
+	}
+
+	//Desplegar el arreglo
+	i=0;
+	mientras(i<=10){
+		despliega(arreglo[i]);
+		i = i + 1;
+	}
+	
+	//Buscar un elemento en el arreglo
+	elemento = 3;
+	encontrado = falso;
+	i=0;
+	//Iteramos el arreglo
+	mientras(i<=10){	
+		//Checamos el valor con el elemento a buscar	
+		si(arreglo[i]==elemento){
+			encontrado = verdadero;
+		}
+		//Incrementar el indice			
+		i = i + 1;
+	}
+
+	//Verificamos si encontro o no y desplegar el mensaje adecuado
+	si(encontrado){
+		despliega("Se encontro elemento");
+	} sino {
+		despliega("No se encontro elemento");
+	}
+
+	//Ordenamos el arreglo de forma ascendente
+	voltear = verdadero;
+	j=0;
+
+	mientras(voltear){
+		voltear = falso;
+		j = j + 1;
+		i=0;
+		mientras(i < 11 - j ){
+			si(arreglo[i]>arreglo[i+1]){
+				temporal = arreglo[i];
+				arreglo[i]=arreglo[i+1];
+				arreglo[i+1]=temporal;
+				voltear = verdadero;
+			}
+			i = i + 1;
+		}
+	}
+
+	//Desplegar el arreglo
+	i=0;
+	mientras(i<=10){
+		despliega(arreglo[i]);
+		i = i + 1;
+	}
+
+
+
+
+	}
+	
+
+}

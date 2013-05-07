@@ -1,0 +1,71 @@
+Declara_Objetos [	
+
+]
+
+Variables_Globales [
+	
+]
+
+Declara_Funciones [	
+	publica fibonacciRecursivo(datoN:entero) regresa entero;
+	publica fibonacciIterativo(datoN:entero) regresa entero;
+]
+
+Implementa_Funciones [	
+
+	fibonacciRecursivo(datoN:entero){
+		Variables_Locales[
+				entero fibo;
+			]
+		
+		fibo = datoN;
+		si(fibo < 2){
+			regresa fibo;
+		} sino {
+			fibo = (fibonacciRecursivo(datoN - 1)) + (fibonacciRecursivo(datoN -2));
+		}
+			regresa fibo;	
+	}	
+
+	fibonacciIterativo(datoN:entero){
+		Variables_Locales[	
+				entero x;
+				entero i;
+				entero previo;
+				entero previoAnterior;
+			]
+
+		si(datoN == 0){
+			x = 0;
+		} sino {
+			si(datoN == 1){
+				x = 1;
+			} sino {
+				previoAnterior = 0;
+				previo = 1;
+				i=2;
+				mientras(i <= datoN){
+				x  = previo + previoAnterior;
+				previoAnterior = previo; 
+				previo = x;
+				i = i + 1;
+				}
+			}
+		}		
+		regresa x;
+	}	
+
+]
+
+ejecutarPrograma {
+	Variables_Locales [
+		entero e;
+	]	
+
+	// e = fibonacciRecursivo(10);
+	// despliega("Fibonacci recursivo "<< e);
+
+	e = fibonacciIterativo(10);
+	despliega("Fibonacci iterativo "<< e);
+
+}

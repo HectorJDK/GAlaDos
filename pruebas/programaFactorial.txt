@@ -1,0 +1,57 @@
+Declara_Objetos [	
+
+]
+
+Variables_Globales [
+	
+]
+
+Declara_Funciones [	
+	publica factorialRecursivo(datoN:entero) regresa entero;
+	publica factorialIterativo(datoN:entero) regresa entero;
+]
+
+Implementa_Funciones [	
+
+	factorialRecursivo(datoN:entero){
+		Variables_Locales[]
+		
+		si(datoN == 1){
+			regresa 1;
+		} sino {
+			regresa (datoN) * (factorialRecursivo(datoN -1));
+		}
+	}
+
+	factorialIterativo(datoN:entero){
+		Variables_Locales[
+				entero aux;
+				entero i;
+			]
+		aux = 1;
+		i = 2;
+		si(datoN == 1){
+			aux = 1;
+		} sino {
+			mientras(i <= datoN){
+				aux = aux * i;
+				i = i + 1;		
+			}
+		}
+		regresa aux;
+	}	
+
+]
+
+ejecutarPrograma {
+	Variables_Locales [
+		entero e;
+	]	
+
+	// e = factorialRecursivo(7);
+	// despliega("Factorial recursivo "<< e);
+
+	// e = factorialIterativo(6);
+	// despliega("Factorial iterativo "<< e);
+
+}

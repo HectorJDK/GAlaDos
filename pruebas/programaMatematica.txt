@@ -1,0 +1,118 @@
+Declara_Objetos [
+	Clase matematica {
+		Atributos_Globales[		
+			entero unoz;
+			decimal dosz;
+			texto tresz;
+			booleano cuatroz;
+		]
+		Declara_Funciones[
+			publica fibonacciRecursivo(datoN:entero) regresa entero;
+			publica fibonacciIterativo(datoN:entero) regresa entero;
+			publica factorialRecursivo(datoN:entero) regresa entero;
+			publica factorialIterativo(datoN:entero) regresa entero;
+		]
+		Implementa_Funciones[
+			fibonacciRecursivo(datoN:entero){
+				Variables_Locales[
+						entero fibo;
+					]
+				
+				fibo = datoN;
+				si(fibo < 2){
+					regresa fibo;
+				} sino {
+					fibo = (fibonacciRecursivo(datoN - 1)) + (fibonacciRecursivo(datoN -2));
+				}
+					regresa fibo;	
+			}	
+
+			fibonacciIterativo(datoN:entero){
+				Variables_Locales[	
+						entero x;
+						entero i;
+						entero previo;
+						entero previoAnterior;
+					]
+				x = 0;
+				si(datoN == 0){
+					x = 0;
+				} sino {
+					si(datoN == 1){
+						x = 1;
+					} sino {
+
+						previoAnterior = 0;
+						previo = 1;
+						i=2;
+						mientras(i < datoN+1){							
+							x  = previo + previoAnterior;
+							previoAnterior = previo; 
+							previo = x;
+							i = i + 1;
+
+						}						
+					}					
+				}					
+				regresa x;
+			}
+
+			factorialRecursivo(datoN:entero){
+				Variables_Locales[]
+				
+				si(datoN == 1){
+					regresa 1;
+				} sino {
+					regresa (datoN) * (factorialRecursivo(datoN -1));
+				}
+			}
+
+			factorialIterativo(datoN:entero){
+				Variables_Locales[
+						entero aux;
+						entero i;
+					]
+				aux = 1;
+				i = 2;
+				si(datoN == 1){
+					aux = 1;
+				} sino {
+					mientras(i <= datoN){
+						aux = aux * i;
+						i = i + 1;		
+					}
+				}
+				regresa aux;
+			}		
+		]
+	}
+]
+
+Variables_Globales [
+
+]
+
+Declara_Funciones [	
+	
+]
+
+Implementa_Funciones [	
+]
+
+ejecutarPrograma {
+	Variables_Locales [	
+		entero e;
+		crearObjeto objetoMate es matematica;
+	]	
+	e = objetoMate->fibonacciRecursivo(10);
+	despliega("Fibonacci recursivo "<< e);
+
+	e = objetoMate->fibonacciIterativo(10);
+	despliega("Fibonacci iterativo "<< e);
+
+	e = objetoMate->factorialRecursivo(7);
+	despliega("Factorial recursivo "<< e);
+
+	e = objetoMate->factorialIterativo(6);
+	despliega("Factorial recursivo "<< e);
+}

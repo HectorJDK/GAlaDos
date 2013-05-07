@@ -1,0 +1,20 @@
+Declara_Objetos [	
+
+]
+
+Variables_Globales [
+
+]
+
+Declara_Funciones [	
+	
+]
+
+Implementa_Funciones [	
+]
+
+ejecutarPrograma {
+	Variables_Locales [	
+		
+	]	
+}

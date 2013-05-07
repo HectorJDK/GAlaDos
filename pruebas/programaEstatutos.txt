@@ -1,0 +1,52 @@
+Declara_Objetos [	
+
+]
+
+Variables_Globales [
+	
+]
+
+Declara_Funciones [	
+	
+]
+
+Implementa_Funciones [	
+]
+
+ejecutarPrograma {
+	Variables_Locales [
+		entero	i;	
+		decimal d;	
+		texto t;
+		decimal dato1;	
+		decimal dato2;
+		booleano b;		
+	]	
+
+	//Leer del teclado
+	// despliega("Ingresa t");
+	// leerdelteclado(t);
+	// despliega("El valor de t " << t);
+
+	// //Decision
+	// dato1 = 6.3;
+	// dato2 = 6.3;
+	// si(dato1 == dato2){
+	// 	despliega("1 es menor que 2");
+	// } sino {
+	// 	despliega("2 es menor que 1");	
+	// }
+
+	// //Ciclo
+	// b=verdadero;
+	// i=0;
+	// mientras(b){
+	// 	despliega("i es" << i);
+	// 	despliega("");
+	// 	i= i + 1 ;
+	// 	si(i==10){
+	// 		b=falso;
+	// 	}
+	// }
+
+}

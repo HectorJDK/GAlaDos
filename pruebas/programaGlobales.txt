@@ -1,0 +1,33 @@
+Declara_Objetos [	
+
+]
+
+Variables_Globales [
+	entero unoG;
+	decimal dosG;
+	texto tresG;
+	booleano cuatroG;
+]
+
+Declara_Funciones [	
+	publica funcion1() regresa entero;
+]
+
+Implementa_Funciones [	
+
+	funcion1(){
+		Variables_Locales[]
+		regresa 5;
+	}
+]
+
+ejecutarPrograma {
+	Variables_Locales [
+		entero x;
+		matrizEntera Y[2][4];
+	]	
+
+	Y[1][1]=2;
+	unoG = Y[1][1];
+	despliega(unoG);
+}
