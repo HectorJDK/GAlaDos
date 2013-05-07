@@ -1,4 +1,4 @@
-%{
+	%{
 	//Hector Jesus De La Garza Ponce
 	//Oziel Alonso Garza Lopez
 	extern char * yytext;
@@ -1977,6 +1977,7 @@ decideEstatuto:
 	{
 		//Obtenemos el nombre de la variable que desamos usar
 		strncpy(nombreVariable, $1, tamanioIdentificadores);
+
 		esFuncion = 0;
 		esMatriz = 0;
 	}  

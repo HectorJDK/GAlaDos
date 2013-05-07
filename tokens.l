@@ -137,6 +137,7 @@ blanks					([ \t\n\r]+)
 
 	{identificador}				{
 								yylval.sval = malloc(strlen(yytext));
+								yylval.sval[strlen(yytext)] = '\0';
 								strncpy(yylval.sval, yytext, strlen(yytext));
 								return IDENTIFICADOR;
 							}
