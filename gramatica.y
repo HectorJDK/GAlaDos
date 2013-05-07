@@ -1567,8 +1567,6 @@ opcionalFuncion:
 	}
 	CCORCHETE dimensiones2
 	;
-	;
-
 
 opcionalFuncion2:
 	llama_funcion_opcional APARENTESIS 
