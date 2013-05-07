@@ -1,0 +1,60 @@
+Declara_Objetos [	
+
+]
+
+Variables_Globales [
+	
+]
+
+Declara_Funciones [	
+	
+]
+
+Implementa_Funciones [	
+]
+
+ejecutarPrograma {
+	Variables_Locales [
+		entero i;
+		entero j;
+		entero elemento;
+		booleano encontrado;
+		matrizEntera matriz [2][2];
+	]	
+
+	//Rellenar la matriz del 1 al 9
+	i=0;
+	mientras(i < 3){
+		j=0;
+		mientras(j < 3){
+			matriz[i][j]= (i + 1)*(j + 1);
+			j = j + 1;
+		}
+		i = i + 1;
+	}
+
+	//Buscar un elmento en la matriz
+	elemento = 10;
+	encontrado = falso;
+	i=0;
+	mientras(i<3){
+		j=0;
+		mientras(j<3){
+			si(matriz[i][j]==elemento){
+				encontrado = verdadero;
+			}
+			j = j + 1;
+		}
+		i = i + 1;
+	}
+
+	si(encontrado){
+		despliega("Se encontro elemento");
+	} sino {
+		despliega("No se encontro elemento");
+	}
+
+	}
+	
+
+}

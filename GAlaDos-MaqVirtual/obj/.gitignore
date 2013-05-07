@@ -1,10 +1,4 @@
 ###################
 # compiled source #
 ###################
-*.exe
-*.tab.c
-*.tab.h
-*.yy.c
-*.class
-test
-*.log
+.txt
