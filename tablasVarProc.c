@@ -457,6 +457,7 @@ directorioObjetos* herenciaObjetos(directorioObjetos *objetos, char *nombreHijo,
 			//Copiado de datos
 			parametrosNew->numeroParametro = parametrosTemp->numeroParametro;
 			parametrosNew->tipo = parametrosTemp->tipo;
+			parametrosNew->direccion = parametrosTemp->direccion;
 
 			//Agregarlo a la nueva estructura
 			HASH_ADD_INT(funcionesNew->parametros, numeroParametro, parametrosNew);
