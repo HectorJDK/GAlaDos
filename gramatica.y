@@ -1471,6 +1471,30 @@ opcionalFuncion:
 		//apagamos la bandera
 		esObjeto = 0;
 	}
+	| ACORCHETE 
+	{
+		//Inicializacion parametros
+		esMatriz = 1;
+		strncpy(nombreMatrizActual, nombreVariable, tamanioIdentificadores);
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual, nombreMatrizActual);
+		if (variable == NULL) {
+			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
+		}
+		if(variable->dimensionada == 0){
+			printf("Error: la variable no es dimensionada \n");
+			exit(1);
+		}
+	} serexpresion2 
+	{
+		variable = buscarVariablesLocales(objetos, nombreObjetoActual, nombreProcedimientoActual, nombreMatrizActual);
+		if (variable == NULL) {
+			variable = buscarVariablesGlobales(objetos, nombreObjetoActual, nombreMatrizActual);
+		} 
+		generarVerifica(1);
+		generarDesplazamiento(1);
+	}
+	CCORCHETE dimensiones2
+	;
 	;
 
 
