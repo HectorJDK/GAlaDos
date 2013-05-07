@@ -49,6 +49,10 @@ blanks					([ \t\n\r]+)
 	["][^"]*["]					{
 								yylval.sval = malloc(strlen(yytext));
 								strncpy(yylval.sval, yytext, strlen(yytext));
+								if (strlen(yytext) > 25){
+									printf("Error no se puede crear un texto mayor a 25 caracteres\n%s\n", yytext);
+									exit(1);
+								}
 								return CTETEXTO;}
 	"->" 						{return FLECHA;}
 	"<<"						{return CONCATENA;}
@@ -137,6 +141,10 @@ blanks					([ \t\n\r]+)
 
 	{identificador}				{
 								yylval.sval = malloc(strlen(yytext));
+								if (strlen(yytext) > 25){
+									printf("Error no se puede definir un identificador mayor a 25 caracteres\n%s\n", yytext);
+									exit(1);
+								}
 								yylval.sval[strlen(yytext)] = '\0';
 								strncpy(yylval.sval, yytext, strlen(yytext));
 								return IDENTIFICADOR;
