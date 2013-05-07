@@ -1,26 +1,22 @@
+/*
+*Hector Jesus De La Garza Ponce 	619971
+*Oziel Alonzo Garza Lopez 			805074
+
+*Libreria cuadruplos.h
+*/
+
 #ifndef CUADRUPLOS_H
 #define CUADRUPLOS_H
 #include "uthash.h"
 #include "pilas.h"
 
-/*
-Hector Jesus De La Garza Ponce 	619971
-Oziel Alonzo Garza Lopez 		805074
-
-Libreria cuadruplos.c
-Esta estructura almacenara dos nodos operandos en una estructura hash la cual le permitira poder realizar los chequeos
-sintacticos asi como checar cual sera el resultado de la operacion que realizara
-
-*/
-
-//Estructura Nodo Operadores---------------------------------------------------------------------------------------------
+//Estructura Nodo Operadores
 typedef struct nodoOperador
 {	
 	int operador;
 }nodoOperador;
-//--------------------------------------------------------------------------------------------------------------------
 
-//Estructura Nodo Operandos---------------------------------------------------------------------------------------------
+//Estructura Nodo Operandos
 typedef struct nodoOperando
 {	
 	/*Key*/
@@ -30,9 +26,8 @@ typedef struct nodoOperando
 	int reciclada;
 	int direccion;
 }nodoOperando;
-//--------------------------------------------------------------------------------------------------------------------
 
-//Estructura Cuadruplos---------------------------------------------------------------------------------------------
+//Estructura Cuadruplos
 typedef struct cuadruplos
 {
 	/*Key*/

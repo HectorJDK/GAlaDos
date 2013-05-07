@@ -35,6 +35,7 @@
 #define OP_ACCESS			30
 #define OP_ENDACCESS		31
 
+//Codigo de error o NULL
 #define OP_ERROR			-1
 
 #endif

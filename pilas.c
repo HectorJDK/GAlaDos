@@ -1,13 +1,19 @@
+/*
+*Hector Jesus De La Garza Ponce 	619971
+*Oziel Alonzo Garza Lopez 			805074
+
+*Libreria pila.c
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "pilas.h"
-/*
-*Clase que implementa una estructura de pila en C
-*/
 
 /*
-*Metodo push
-*Ingresa un valor entero a la pila
+* Función: push
+* Parámetros: pila *x, void* dato
+* Descripción: Funcion encargada de agregar un valor desconocido a una pila, el valor desconocido solo sera un pointer a este
+* Salida: ninguna
 */
 void push(pila *x, void* dato){
 	//Si la pila tiene elementos, crear un nuevo nodo y ponerlo como la cabeza
@@ -29,8 +35,10 @@ void push(pila *x, void* dato){
 }
 
 /*
-*Metodo pop
-*Saca un elemento de la pila
+* Función: pop
+* Parámetros: pila *x
+* Descripción: Saca de la pila el nodo con el apuntador al dato desconocido, al realizar esto el nodo ya se le hizo free
+* Salida: Regresa un apuntador a una variable tipo nodo donde se encuentra un apuntador al dato
 */
 nodo* pop(pila *x){
 	//Si la pila no esta vacia 
@@ -65,11 +73,14 @@ nodo* pop(pila *x){
 }
 
 /*
-*Metodo pilaVacia
-*Verifica si la pila tiene uno o mas elementos.
+* Función: pilaVacia
+* Parámetros: pila *x
+* Descripción: Verifica que la pila no este vacia, regresa un 1 si tiene uno o mas elementos, 0 de lo contrario
+* Salida: Regresa un entero con valor 0 o 1
 */
 int pilaVacia(pila *x){	
-	if(x->tamanio == 0){
+	if(x->tamanio == 0)
 		return 0;
-	} else return 1;
+	else 
+		return 1;
 }

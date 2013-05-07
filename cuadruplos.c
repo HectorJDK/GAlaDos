@@ -1,7 +1,9 @@
 /*
-Funciones que controlan la operacion y control de la generacion de cuadruplos en las estructuras
-*/
+*Hector Jesus De La Garza Ponce 	619971
+*Oziel Alonzo Garza Lopez 			805074
 
+*Libreria cuadruplos.c
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,20 +11,23 @@ Funciones que controlan la operacion y control de la generacion de cuadruplos en
 #include "uthash.h"
 #include "codigosOperaciones.h"
 
-
 /*
-*Funcion encargada de imprimir todos los datos en orden de la lista de cuadruplos
-*Se tiene 3 modos:
-	0: imprimira los cuadruplos en formato de lectura de personas
-	1: imprimira los cuadruplos en formato de lectura extendida para personas
-	2: imprimira los cuadruplos en formato de codigos de operaciones y direcciones
-*/	
+* Función: imprimeCuadruplo
+* Parámetros: cuadruplos *listaCuadruplos, int mode
+* Descripción: Funcion encargada de imprimir los cuadruplos que se hayan creado hasta el momento
+				esta funcion permite desplegar de diferentes formas los cuadruplos para una lectura sencilla
+* Salida: ninguna
+*/
 void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode) {
 	//Variable pivote para cargar y desplegar los datos
 	cuadruplos *temporal;
 
+	//Modo para el despliege de los cuadruplo
 	if (mode == 0){
+
+		//Recorrido por los cuadruplos
 		for(temporal = listaCuadruplos; temporal != NULL; temporal=(cuadruplos*)(temporal->hh.next)) {
+
 			char operacion[10];
 
 			//Switch para renombramiento de operaciones
@@ -175,6 +180,7 @@ void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode) {
 		}
 	} else if (mode == 2) {
 		for(temporal = listaCuadruplos; temporal != NULL; temporal=(cuadruplos*)(temporal->hh.next)) {
+			
 			char operacion[10];
 
 			//Switch para renombramiento de operaciones
@@ -309,10 +315,14 @@ void imprimeCuadruplos(cuadruplos *listaCuadruplos, int mode) {
 }
 
 /*
-Funcion encargada de regresar al avail correspondiente la variable temporal, al momento de meterla en el avail 
-la marca como reciclada para que solo se tome una vez en el conteo de variables
+* Función: ReciclarVariable
+* Parámetros: nodo *variable, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean
+* Descripción: Funcion encargada de regresar al avail correspondiente la variable temporal, al momento de meterla en el avail 
+			   la marca como reciclada para que solo se tome una vez en el conteo de variables
+* Salida: ninguna
 */
 void reciclarVariable(nodo *variable, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean){
+	//Variable auxiliar para reinsercion en la pila
 	nodoOperando *variableReciclada;
 
 	//Reinsercion del nodo en la memoria porque con el pop se habia liberado de memoria
@@ -325,18 +335,20 @@ void reciclarVariable(nodo *variable, pila *availEntero, pila *availDecimal, pil
 
 	//Seleccion de la pila adecuada para su reinsercion
 	switch(variableReciclada->tipo){
+
+		//Variable Entero
 		case 0:
 		push(availEntero, variableReciclada);
 		break;
-
+		//Variable Decimal
 		case 1:
 		push(availDecimal, variableReciclada);
 		break;
-
+		//Variable Texto
 		case 2:
 		push(availTexto, variableReciclada);
 		break;
-
+		//Variable Boolean
 		case 3:
 		push(availBoolean, variableReciclada);
 		break;
@@ -344,8 +356,10 @@ void reciclarVariable(nodo *variable, pila *availEntero, pila *availDecimal, pil
 }
 
 /*
-Funcion encargada de crear un cruadruplo y guardarlo en la lista de cuadruplos que se le mande
-Recibe datos de tipo nodo o NULL si se desea dejar algun cuadruplo vacio
+* Función: generaCuadruplo
+* Parámetros: cuadruplos *listaCuadruplos, nodo *operando1, nodo *operando2, int operador, nodo *resultado, int indice
+* Descripción: Funcion encargada de crear un cruadruplo y guardarlo en la lista de cuadruplos que se le mande
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *operando1, nodo *operando2, int operador, nodo *resultado, int indice){
 	//Variable auxiliar que servira como needle para la busqueda e insercion en el hash
@@ -396,7 +410,7 @@ cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *operando1, nodo *
 		}
 
 		if (resultado == NULL) {
-			//Genera el nodo resultado y lo asigna como temporal
+			//Datos NULL
 			tempResultado->temp = -1;
 			tempResultado->tipo = -1;
 			strcpy(tempResultado->nombre, "__");
@@ -426,8 +440,12 @@ cuadruplos* generaCuadruplo(cuadruplos *listaCuadruplos, nodo *operando1, nodo *
 }
 
 /*
-Funcion encargada de generar el cuadruplo de cualquier expresion simple 
-(Esta funcion no incluye el los pasos para realizar un cuadruplo de llama a funcion)
+* Función: generarCuadruploExpresion
+* Parámetros: cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[5][5][14], 
+			  int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean
+* Descripción: Funcion encargada de generar el cuadruplo de cualquier expresion aritmetica 
+		       del compilador y verificar su valides en el cuboSemantico
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploExpresion(cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[5][5][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean){
 	//Variables para facilitar el manjeo de datos
@@ -497,8 +515,8 @@ cuadruplos* generarCuadruploExpresion(cuadruplos *listaCuadruplos, pila *operand
 			push(operandos, accederCuadruplo->resultado);
 
 			//Si alguno de los operandos correspondia a un temporal ENTONCES lo regresamos al avail correspondiente
-			//Verificamos si el operando1 es temporal
-			
+
+			//Verificamos si el operando1 es temporal y si es un temporal de acceso se le regresa su estatus
 			if (operando1Temp == 1) {
 				if(((nodoOperando*)(operando1->dato))->direccion > 100000){
 					((nodoOperando*)(operando1->dato))->direccion = ((nodoOperando*)(operando1->dato))->direccion - 100000;
@@ -508,7 +526,7 @@ cuadruplos* generarCuadruploExpresion(cuadruplos *listaCuadruplos, pila *operand
 				reciclarVariable(operando1, availEntero, availDecimal, availTexto, availBoolean);
 			}
 
-			//Verificamos si el operando2 es temporal
+			//Verificamos si el operando2 es temporal y si es un temporal de acceso se le regresa su estatus
 			if (operando2Temp == 1) {
 				if(((nodoOperando*)(operando2->dato))->direccion > 100000){
 					((nodoOperando*)(operando2->dato))->direccion = ((nodoOperando*)(operando2->dato))->direccion - 100000;
@@ -535,7 +553,11 @@ cuadruplos* generarCuadruploExpresion(cuadruplos *listaCuadruplos, pila *operand
 }
 
 /*
-Funcion encargada de generar el cuadruplo de la asignacion, ademas de reciclar la variable temporal para su uso posterior
+* Función: generarCuadruploAsignacion
+* Parámetros: cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[5][5][14], 
+			  int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean
+* Descripción: Funcion encargada de generar el cuadruplo de la asignacion, ademas de reciclar la variable temporal para su uso posterior
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploAsignacion(cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[5][5][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean){
 	//Variables auxiliares Enteras
@@ -573,7 +595,6 @@ cuadruplos* generarCuadruploAsignacion(cuadruplos *listaCuadruplos, pila *operan
 		//Checamos si no hubo algun error en la generacion de los cuadruplos
 		if (listaCuadruplos != NULL) {
 
-
 			//Obtenemos si el operando1 es un temporal
 			operando1Temp = ((nodoOperando*)(operando1->dato))->temp;
 
@@ -604,8 +625,11 @@ cuadruplos* generarCuadruploAsignacion(cuadruplos *listaCuadruplos, pila *operan
 }
 
 /*
-Funcion encargada de generar el cuadruplo de lectura
-Consideraciones: Falta ver si es necesario reciclar la variable
+* Función: generarCuadruploLectura
+* Parámetros: cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int *contadorIndice
+* Descripción: Funcion encargada de generar el cuadruplo de lectura
+* Consideraciones: Falta ver si es necesario reciclar la variable
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploLectura(cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int *contadorIndice){
 	//Variables auxiliares Enteras
@@ -640,8 +664,11 @@ cuadruplos* generarCuadruploLectura(cuadruplos *listaCuadruplos, pila *operandos
 }
 
 /*
-Funcion encargada de generar el cuadruplo de la asignacion
-Consideraciones: Falta ver si es necesario reciclar la variable
+* Función: generarCuadruploEscritura
+* Parámetros: cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int *contadorIndice
+* Descripción: Funcion encargada de generar el cuadruplo de la asignacion
+* Consideraciones: Falta ver si es necesario reciclar la variable
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploEscritura(cuadruplos *listaCuadruplos,  pila *operandos, pila *operadores,  int *contadorIndice){
 	//Variables auxiliares Enteras
@@ -651,7 +678,6 @@ cuadruplos* generarCuadruploEscritura(cuadruplos *listaCuadruplos,  pila *operan
 	//Variables auxiliares Apuntadores
 	nodo *operador;
 	nodo *resultado;
-
 	
 	//Sacamos los operandos de pila operandos
 	resultado = pop(operandos);
@@ -684,7 +710,11 @@ cuadruplos* generarCuadruploEscritura(cuadruplos *listaCuadruplos,  pila *operan
 }
 
 /*
-Funcion encargada de generar el cuadruplo de gotoF, verifica que el cuadruplo se haya creado y mete el indeCuadruplo en la pila de saltos
+* Función: generarCuadruploAccion1
+* Parámetros: cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice
+* Descripción: Funcion encargada de generar el cuadruplo de gotoF, verifica que el cuadruplo se haya creado 
+			   y mete el indeCuadruplo en la pila de saltos
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploAccion1(cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice){
 	//Variables auxiliares Enteras
@@ -724,8 +754,11 @@ cuadruplos* generarCuadruploAccion1(cuadruplos *listaCuadruplos,  pila *operando
 }
 
 /*
-Funcion encargada de generar el Goto del ciclo y rellenarlo con el valor que se tenia en la pila
-ademas rellenar el gotoF que se tenia anteriormente en la pila de saltos
+* Función: generarCuadruploAccion2Ciclo
+* Parámetros: cuadruplos *listaCuadruplos, pila *pilaSaltos, int *contadorIndice
+* Descripción: Funcion encargada de generar el Goto del ciclo y rellenarlo con el valor que se tenia en la pila
+			   ademas rellenar el gotoF que se tenia anteriormente en la pila de saltos
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploAccion2Ciclo(cuadruplos *listaCuadruplos, pila *pilaSaltos, int *contadorIndice){
 	//Variables auxiliares Enteras
@@ -784,7 +817,11 @@ cuadruplos* generarCuadruploAccion2Ciclo(cuadruplos *listaCuadruplos, pila *pila
 }
 
 /*
-Funcion encargada de generar el segundo cuadruplo GOTO para el else, ademas de rellenar el GOTOF del if anterior y meterlo en la pila
+* Función: generarCuadruploAccion2Ciclo
+* Parámetros: cuadruplos *listaCuadruplos, pila *pilaSaltos, int *contadorIndice
+* Descripción: Funcion encargada de generar el segundo cuadruplo GOTO para el else, 
+			   ademas de rellenar el GOTOF del if anterior y meterlo en la pila
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploAccion2If(cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice){
 	//Variables auxiliares Enteras
@@ -833,7 +870,10 @@ cuadruplos* generarCuadruploAccion2If(cuadruplos *listaCuadruplos,  pila *operan
 }
 
 /*
-Funcion encargada de rellenar el GOTO en el caso de ser if else o rellenar el GOTOF del if
+* Función: generarCuadruploAccion3If
+* Parámetros: cuadruplos *listaCuadruplos, pila *pilaSaltos, int *contadorIndice
+* Descripción: Funcion encargada de rellenar el GOTO en el caso de ser if else o rellenar el GOTOF del if
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploAccion3If(cuadruplos *listaCuadruplos,  pila *operandos, pila *pilaSaltos, int *contadorIndice){
 	//Variables auxiliares Enteras
@@ -865,7 +905,10 @@ cuadruplos* generarCuadruploAccion3If(cuadruplos *listaCuadruplos,  pila *operan
 }
 
 /*
-Funcion encargada de generar el cuadruplo de GOTO y aumentar en 1 el contadorIndice
+* Función: generarCuadruploGoto
+* Parámetros: cuadruplos *listaCuadruplos, int *contadorIndice
+* Descripción: Funcion encargada de generar el cuadruplo de GOTO y aumentar en 1 el contadorIndice
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploGoto(cuadruplos *listaCuadruplos, int *contadorIndice){
 	//Todos los datos iran en NULL puesto solo se necesitara cambiar el resultado despues
@@ -887,7 +930,10 @@ cuadruplos* generarCuadruploGoto(cuadruplos *listaCuadruplos, int *contadorIndic
 }
 
 /*
-Funcion encargada de generar el cuadruplo de GOTOF y aumentar en 1 el contadorIndice
+* Función: generarCuadruploGotoFalso
+* Parámetros: cuadruplos *listaCuadruplos, nodo *operando1, int *contadorIndice
+* Descripción: Funcion encargada de generar el cuadruplo de GOTOF y aumentar en 1 el contadorIndice
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploGotoFalso(cuadruplos *listaCuadruplos, nodo *operando1, int *contadorIndice){
 	//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
@@ -908,7 +954,10 @@ cuadruplos* generarCuadruploGotoFalso(cuadruplos *listaCuadruplos, nodo *operand
 }
 
 /*
-Funcion encargada de generar el cuadruplo de ENDPROC y aumentar en 1 el contador de indices
+* Función: generarCuadruploEra
+* Parámetros: cuadruplos *listaCuadruplos, nodo *operando1, int *contadorIndice
+* Descripción: Funcion encargada de generar el cuadruplo de ERA
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploEra(cuadruplos *listaCuadruplos, char *nombreFuncion, char *nombreObjeto,int *contadorIndice){
 	//Variables auxiliares Apuntadores
@@ -944,7 +993,11 @@ cuadruplos* generarCuadruploEra(cuadruplos *listaCuadruplos, char *nombreFuncion
 }
 
 /*
-*Funcion encargada de generar el cuadruplo para la creacion de los datos de los objetos
+* Función: generarCuadruploOro
+* Parámetros: cuadruplos *listaCuadruplos, char *nombreVariable, char *nombreClase, char *nombreProcedimiento, 
+			  char *nombreObjetoActual, int *contadorIndice
+* Descripción: Funcion encargada de generar el cuadruplo para la creacion de los datos de los objetos en la maquina virtual
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploOro(cuadruplos *listaCuadruplos, char *nombreVariable, char *nombreClase, char *nombreProcedimiento, char *nombreObjetoActual, int *contadorIndice){
 	//Variables auxiliares Apuntadores
@@ -983,7 +1036,11 @@ cuadruplos* generarCuadruploOro(cuadruplos *listaCuadruplos, char *nombreVariabl
 }
 
 /*
-*Funcion encargada de generar el cuadruplo para la creacion de los datos de los objetos
+* Función: generarCuadruploAccess
+* Parámetros: cuadruplos *listaCuadruplos, char *nombreVariable, char *nombreClase, char *nombreProcedimiento, 
+			  char *nombreObjetoActual, int *contadorIndice
+* Descripción: Funcion encargada de generar el cuadruplo para el acceso a los datos de los objetos en la maquina virtual
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploAccess(cuadruplos *listaCuadruplos, char *nombreVariable, char *nombreClase, char *nombreProcedimiento, char *nombreObjetoActual, int *contadorIndice){
 	//Variables auxiliares Apuntadores
@@ -1001,10 +1058,10 @@ cuadruplos* generarCuadruploAccess(cuadruplos *listaCuadruplos, char *nombreVari
 		//Buscamos el cuadruplo que acabamos de crear
 		HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
 
-		//Rellenamos los datos del Goto para que apunte de nuevo a la evaluacion
+		//Checamos que el cuadruplo exista
 		if(accederCuadruplo != NULL){
 
-			//Modificacion de los datos de
+			//Modificacion de los datos del cuadruplo
 			sprintf(accederCuadruplo->operando1->nombre, "%s", nombreVariable);
 			sprintf(accederCuadruplo->operando2->nombre, "%s", nombreClase);
 			sprintf(accederCuadruplo->resultado->nombre, "%s%s", nombreProcedimiento, nombreObjetoActual);
@@ -1022,7 +1079,10 @@ cuadruplos* generarCuadruploAccess(cuadruplos *listaCuadruplos, char *nombreVari
 }
 
 /*
-Funcion encargada de generar el cuadruplo de ENDPROC y aumentar en 1 el contador de indices
+* Función: generarCuadruploEndAccess
+* Parámetros: cuadruplos *listaCuadruplos, int *contadorIndice
+* Descripción: Funcion encargada de generar el cuadruplo para el terminar acceso a los datos de los objetos en la maquina virtual
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploEndAccess(cuadruplos *listaCuadruplos, int *contadorIndice){
 	//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
@@ -1043,7 +1103,10 @@ cuadruplos* generarCuadruploEndAccess(cuadruplos *listaCuadruplos, int *contador
 }
 
 /*
-Funcion encargada de generar el cuadruplo de ENDPROC y aumentar en 1 el contador de indices
+* Función: generarCuadruploEndProc
+* Parámetros: cuadruplos *listaCuadruplos, int *contadorIndice
+* Descripción: Funcion encargada de generar el cuadruplo de ENDPROC y aumentar en 1 el contador de indices
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploEndProc(cuadruplos *listaCuadruplos, int *contadorIndice){
 	//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
@@ -1064,7 +1127,10 @@ cuadruplos* generarCuadruploEndProc(cuadruplos *listaCuadruplos, int *contadorIn
 }
 
 /*
-Funcion encargada de generar el cuadruplo de ENDPROC y aumentar en 1 el contador de indices
+* Función: generarCuadruploEndProc
+* Parámetros: cuadruplos *listaCuadruplos, int *cantidadParametros, pila *operandos, int *contadorIndice
+* Descripción: Funcion encargada de generar el cuadruplo de param
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploParam(cuadruplos *listaCuadruplos, int *cantidadParametros, pila *operandos, int *contadorIndice){
 	//Variables auxiliares Apuntadores
@@ -1086,7 +1152,7 @@ cuadruplos* generarCuadruploParam(cuadruplos *listaCuadruplos, int *cantidadPara
 		//Buscamos el cuadruplo que acabamos de crear
 		HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
 
-		//Rellenamos los datos del Goto para que apunte de nuevo a la evaluacion
+		//Rellenamos los datos de las direcciones y nombres para visualizar los datos
 		if(accederCuadruplo != NULL){
 			accederCuadruplo->resultado->direccion = *(int*)(cantidadParametros);
 			sprintf(accederCuadruplo->resultado->nombre, "param%d", *(int*)(cantidadParametros));
@@ -1104,7 +1170,10 @@ cuadruplos* generarCuadruploParam(cuadruplos *listaCuadruplos, int *cantidadPara
 }
 
 /*
-Funcion encargada de generar el cuadruplo de ENDPROC y aumentar en 1 el contador de indices
+* Función: generarCuadruploGosub
+* Parámetros: cuadruplos *listaCuadruplos, int direccionFuncion, int *contadorIndice
+* Descripción: Funcion encargada de generar el cuadruplo Gosub para una funcion apuntando al cuadruplo donde empieza esta
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploGosub(cuadruplos *listaCuadruplos, int direccionFuncion, int *contadorIndice){
 	//Variables auxiliares Apuntadores
@@ -1122,7 +1191,7 @@ cuadruplos* generarCuadruploGosub(cuadruplos *listaCuadruplos, int direccionFunc
 		//Buscamos el cuadruplo que acabamos de crear
 		HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
 
-		//Rellenamos los datos del Goto para que apunte de nuevo a la evaluacion
+		//Modificamos los datos del operando 1 para que apunten a la direccion deseada
 		if(accederCuadruplo != NULL){
 			accederCuadruplo->operando1->direccion =  direccionFuncion;
 			sprintf(accederCuadruplo->operando1->nombre, "%d", direccionFuncion);
@@ -1140,7 +1209,11 @@ cuadruplos* generarCuadruploGosub(cuadruplos *listaCuadruplos, int direccionFunc
 }
 
 /*
-Funcion encargada de generar el cuadruplo de ENDPROC y aumentar en 1 el contador de indices
+* Función: generarCuadruploReturn
+* Parámetros: cuadruplos *listaCuadruplos, pila *operandos, int tipo, long direccion, char *nombre, int *contadorIndice
+* Descripción: Funcion encargada de generar los cuadruplos correspondientes para la accion de regresar en una funcion
+				generara un cuadruplo de asignacion donde guardara en una variable temporal el dato y el cuadruplo ENDPROC
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploReturn(cuadruplos *listaCuadruplos, pila *operandos, int tipo, long direccion, char *nombre, int *contadorIndice){
 	//Variables auxiliares Apuntadores
@@ -1169,7 +1242,7 @@ cuadruplos* generarCuadruploReturn(cuadruplos *listaCuadruplos, pila *operandos,
 			//Buscamos el cuadruplo que acabamos de crear para darle los valores correspondientes
 			HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
 
-			//Rellenamos los datos del Goto para que apunte de nuevo a la evaluacion
+			//Modificamos los datos del cuadruplo
 			if(accederCuadruplo != NULL){
 				accederCuadruplo->resultado->tipo = tipo;
 				accederCuadruplo->resultado->direccion =  direccion;
@@ -1192,7 +1265,11 @@ cuadruplos* generarCuadruploReturn(cuadruplos *listaCuadruplos, pila *operandos,
 }
 
 /*
-Funcion encargada de generar el cuadruplo temporal para las llamadas a funciones en expresiones y aumentar en 1 el contador de indices
+* Función: generarCuadruploTemporalFuncion
+* Parámetros: cuadruplos *listaCuadruplos, pila *operandos, int tipo, long direccion, char *nombre,
+			  pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean, int *contadorIndice
+* Descripción: Funcion encargada de generar el cuadruplo temporal para las llamadas a funciones en expresiones
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploTemporalFuncion(cuadruplos *listaCuadruplos, pila *operandos, int tipo, long direccion, char *nombre, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean, int *contadorIndice){
 	//Apuntadores para el manejo del avail
@@ -1236,7 +1313,7 @@ cuadruplos* generarCuadruploTemporalFuncion(cuadruplos *listaCuadruplos, pila *o
 		//Buscamos el cuadruplo que acabamos de crear
 		HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
 
-		//Rellenamos los datos del Goto para que apunte de nuevo a la evaluacion
+		//Modificamos los datos del cuadruplo recien creado
 		if(accederCuadruplo != NULL){
 			accederCuadruplo->operando1->tipo =  tipo;
 			accederCuadruplo->operando1->direccion =  direccion;
@@ -1258,7 +1335,10 @@ cuadruplos* generarCuadruploTemporalFuncion(cuadruplos *listaCuadruplos, pila *o
 }
 
 /*
-Funcion encargada de generar el cuadruplo de ENDPROC y aumentar en 1 el contador de indices
+* Función: generarCuadruploEndProgram
+* Parámetros: cuadruplos *listaCuadruplos, int *contadorIndice
+* Descripción: Funcion encargada de generar el cuadruplo de fin de programa
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploEndProgram(cuadruplos *listaCuadruplos, int *contadorIndice){
 	//Generamos el cuadruplo y lo guardamos en la lista de cuadruplos actuales
@@ -1275,24 +1355,33 @@ cuadruplos* generarCuadruploEndProgram(cuadruplos *listaCuadruplos, int *contado
 	}
 }
 
-cuadruplos* generaCuadruploVerifica(cuadruplos *listaCuadruplos, pila *operandos,  int lsuperior, int *contadorIndice ){
-
+/*
+* Función: generaCuadruploVerifica
+* Parámetros: cuadruplos *listaCuadruplos, pila *operandos,  int lsuperior, int *contadorIndice
+* Descripción: Funcion encargada de generar el cuadruplo verifica desde la posicion 0 hasta el limite superior
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
+*/
+cuadruplos* generaCuadruploVerifica(cuadruplos *listaCuadruplos, pila *operandos,  int lsuperior, int *contadorIndice){
 	//Apuntadores para el manejo del avail
 	nodo *operando;
 	cuadruplos *accederCuadruplo;
 
+	//Sacamos el operando de su pila
 	operando = pop(operandos);
 
+	//Si el operando tiene tipo difernete a entero marcar error
 	if(((nodoOperando*)operando->dato)->tipo != 0){
 		printf("Error: el indice debe ser entero");
 		exit(1);
 	} else {
 
+		//Generar el cuadruplo de verificar y agregarlo a la lista
 		listaCuadruplos = generaCuadruplo(listaCuadruplos, operando, NULL, OP_VERIFICA, NULL , *contadorIndice);
+
 		//Buscamos el cuadruplo que acabamos de crear para darle los valores correspondientes
 		HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
 
-		//Rellenamos los datos del Goto para que apunte de nuevo a la evaluacion
+		//Checamos que se haya creado y modificamos los datos pertinentes
 		if(accederCuadruplo != NULL){
 			
 			accederCuadruplo->operando2->direccion = 0;
@@ -1305,7 +1394,10 @@ cuadruplos* generaCuadruploVerifica(cuadruplos *listaCuadruplos, pila *operandos
 			printf("Error en el acceso al cuadruplo\n");
 			exit(1);
 		}	
+
+		//Metemos el operando a la pila para usarlo en los despalzamientos del arreglo o matriz
 		push(operandos, ((nodoOperando*)(operando->dato)));
+
 		//Tuvo exito la creacion del cuadruplo
 		*contadorIndice = *contadorIndice+1;
 
@@ -1314,7 +1406,12 @@ cuadruplos* generaCuadruploVerifica(cuadruplos *listaCuadruplos, pila *operandos
 	}
 }
 
-
+/*
+* Función: generaCuadruploSUMAarreglo
+* Parámetros: cuadruplos *listaCuadruplos, pila *operandos, int direccionBase, pila *availEntero, int *contadorIndice
+* Descripción: Funcion encargada de generar el cuadruplo SUMAMAT, el cual hacer un desplazamiento al sumar una variable con una direccion
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
+*/
 cuadruplos* generaCuadruploSUMAarreglo(cuadruplos *listaCuadruplos, pila *operandos, int direccionBase, pila *availEntero, int *contadorIndice){
 
 	//Apuntadores para el manejo del avail
@@ -1322,6 +1419,7 @@ cuadruplos* generaCuadruploSUMAarreglo(cuadruplos *listaCuadruplos, pila *operan
 	cuadruplos *accederCuadruplo;
 	nodo *resultadoAvail;
 
+	//Obtenemos los datos de operandos y del avail de temporales
 	resultadoAvail =  pop(availEntero);
 	operando = pop(operandos);
 
@@ -1331,13 +1429,16 @@ cuadruplos* generaCuadruploSUMAarreglo(cuadruplos *listaCuadruplos, pila *operan
 		exit(1);
 	}
 
+	//Generamos el cuadruplo de SUMAMAT y lo agregamos a la lista de cuadruplos
 	listaCuadruplos = generaCuadruplo(listaCuadruplos, operando, NULL, OP_SUMAMAT, resultadoAvail , *contadorIndice);
+
 	//Buscamos el cuadruplo que acabamos de crear para darle los valores correspondientes
 	HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
 
-	//Rellenamos los datos del Goto para que apunte de nuevo a la evaluacion
+	//Verificamos que el cuadruplo se haya creado correctamente
 	if(accederCuadruplo != NULL){
-				
+		
+		//Modificamos los datos necesarios
 		accederCuadruplo->operando2->direccion = direccionBase;
 
 		sprintf(accederCuadruplo->operando2->nombre, "%d", direccionBase);		
@@ -1345,18 +1446,25 @@ cuadruplos* generaCuadruploSUMAarreglo(cuadruplos *listaCuadruplos, pila *operan
 	} else {
 		printf("Error en el acceso al cuadruplo\n");
 		exit(1);
-	}	
+	}
+
+	//Como el resultado tendra que marcarse como especial se le agrega una direccion falsa y se agrega a la pila de operandos
 	((nodoOperando*)resultadoAvail->dato)->direccion = ((nodoOperando*)resultadoAvail->dato)->direccion + 100000;
 	push(operandos, ((nodoOperando*)resultadoAvail->dato));
+
 	//Tuvo exito la creacion del cuadruplo
 	*contadorIndice = *contadorIndice+1;
 
 	//Regresamos la lista
 	return listaCuadruplos;	
-	
 }
 
-
+/*
+* Función: generarCuadruploMULTIarreglo
+* Parámetros: cuadruplos *listaCuadruplos, pila *operandos, int direccionBase, pila *availEntero, int *contadorIndice
+* Descripción: Funcion encargada de generar el cuadruplo MULTIMAT, el cual hace un desplazamiento al multiplcar una variable con una direccion
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
+*/
 cuadruplos* generarCuadruploMULTIarreglo(cuadruplos *listaCuadruplos, pila *operandos, int m1, pila *availEntero, int *contadorIndice){
 
 	//Apuntadores para el manejo del avail
@@ -1364,6 +1472,7 @@ cuadruplos* generarCuadruploMULTIarreglo(cuadruplos *listaCuadruplos, pila *oper
 	cuadruplos *accederCuadruplo;
 	nodo *resultadoAvail;
 
+	//Obtenemos los datos de operandos y del avail de temporales
 	resultadoAvail =  pop(availEntero);
 	operando = pop(operandos);
 
@@ -1372,14 +1481,16 @@ cuadruplos* generarCuadruploMULTIarreglo(cuadruplos *listaCuadruplos, pila *oper
 		printf("Error no hay memoria disponible\n");
 		exit(1);
 	}
-
+	//Generamos el cuadruplo de SUMAMAT y lo agregamos a la lista de cuadruplos
 	listaCuadruplos = generaCuadruplo(listaCuadruplos, operando, NULL, OP_MULTIMAT, resultadoAvail, *contadorIndice);
+
 	//Buscamos el cuadruplo que acabamos de crear para darle los valores correspondientes
 	HASH_FIND_INT(listaCuadruplos, contadorIndice, accederCuadruplo);
 
-	//Rellenamos los datos del Goto para que apunte de nuevo a la evaluacion
+	//Verificamos que el cuadruplo se haya creado correctamente
 	if(accederCuadruplo != NULL){
-				
+		
+		//Modificamos los datos necesarios
 		accederCuadruplo->operando2->direccion = m1;
 
 		sprintf(accederCuadruplo->operando2->nombre, "%d", m1);
@@ -1396,13 +1507,16 @@ cuadruplos* generarCuadruploMULTIarreglo(cuadruplos *listaCuadruplos, pila *oper
 	*contadorIndice = *contadorIndice+1;
 
 	//Regresamos la lista
-	return listaCuadruplos;	
-	
+	return listaCuadruplos;		
 }
 
 /*
-Funcion encargada de seleccionar que funcion se debera usar para generar cuadruplos secuenciales
-Util para control y para no confundir que parametros se deben usar
+* Función: generarCuadruploSequencial
+* Parámetros: nt prioridad, cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[5][5][14], 
+			  int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean
+* Descripción: Funcion encargada de seleccionar que funcion se debera usar para generar cuadruplos secuenciales
+			    Util para control y para no confundir que parametros se deben usar
+* Salida: la lista de cuadruplos con el nuevo cuadruplo insertado en esta
 */
 cuadruplos* generarCuadruploSequencial(int prioridad, cuadruplos *listaCuadruplos, pila *operandos, pila *operadores, int cuboSemantico[5][5][14], int *contadorIndice, pila *availEntero, pila *availDecimal, pila *availTexto, pila *availBoolean){
 	//Variables auxiliares Enteras
@@ -1486,8 +1600,10 @@ cuadruplos* generarCuadruploSequencial(int prioridad, cuadruplos *listaCuadruplo
 }
 
 /*
-*generarObj
-*Crea el archivo obj de traduccion del lenguaje
+* Función: generarObj
+* Parámetros: cuadruplos *listaCuadruplos
+* Descripción: Funcion encargada de crear el archivo obj de traduccion del lenguaje
+* Salida: Generara un archivo de texto en donde se tendra los cuadruplos necesarios para que los interprete la maquina virtual
 */
 void generarObj(cuadruplos *listaCuadruplos) {
 	
@@ -1495,8 +1611,10 @@ void generarObj(cuadruplos *listaCuadruplos) {
 	FILE *fp;
 	fp = fopen("GAlaDos-MaqVirtual/obj/codigoObjeto.txt", "w");
 	
+	//Variable pivote
 	cuadruplos *temporal;
 
+	//Barrido de los cuadruplos imprimiendolos directamente en el archivo
 	for(temporal = listaCuadruplos; temporal != NULL; temporal=(cuadruplos*)(temporal->hh.next)) {
 		char operacion[10];					
 		if(temporal->operador == 21){

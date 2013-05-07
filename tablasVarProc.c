@@ -1,14 +1,21 @@
+/*
+*Hector Jesus De La Garza Ponce 	619971
+*Oziel Alonzo Garza Lopez 			805074
+
+*Libreria tablasVarProc.c
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "tablasVarProc.h"
 #include "uthash.h"
 
-//Hector Jesus De La Garza Ponce
-//Oziel Alonso Garza Lopez
-
 /*
-* Funcion para agregar las variables locales al directorio de funciones.
+* Función: agregarVariablesLocales
+* Parámetros: directorioObjetos *objetos, char *objeto, char *funcion, char *nombre, unsigned short tipo, unsigned long direccion
+* Descripción: Funcion encargada de agregar al directorio de variables globales de una funcion una nueva variable,
+			   y si esta ya esta declarada marcar el error correspondiente
+* Salida: Regresa un directorioObjetos actualizado con la nueva variable insertada
 */
 directorioObjetos* agregarVariablesLocales(directorioObjetos *objetos, char *objeto, char *funcion, char *nombre, unsigned short tipo, unsigned long direccion) {
 		
@@ -18,10 +25,10 @@ directorioObjetos* agregarVariablesLocales(directorioObjetos *objetos, char *obj
 		directorio *temp;
 
 		//Buscar el objeto en el directorio
-		HASH_FIND_STR(objetos, objeto, exiteObjeto);  /* existe el objeto? */
+		HASH_FIND_STR(objetos, objeto, exiteObjeto);
 		if (exiteObjeto) {
 				//Buscar la funcion en el directorio
-				HASH_FIND_STR(exiteObjeto->procedimientos, funcion, existeProcedimiento);  /* existe el procedimiento? */
+				HASH_FIND_STR(exiteObjeto->procedimientos, funcion, existeProcedimiento);
 				if (existeProcedimiento) {
 					//Checar si la variable ya existe
 					HASH_FIND_STR(existeProcedimiento->variablesLocales, nombre, temp);
@@ -47,9 +54,12 @@ directorioObjetos* agregarVariablesLocales(directorioObjetos *objetos, char *obj
 		}
 }
 
-
 /*
-* Funcion para buscar en la tabla de variables de una funcion, solo regresa el directorio de la variable para ser usada
+* Función: buscarVariablesLocales
+* Parámetros: directorioObjetos *objetos, char *objeto, char *funcion, char *nombre
+* Descripción: Funcion encargada de buscar en la tabla de variables de una funcion, y regresa solo
+			   el directorio de la variable de la variable solicitada, si no se encuentra marcar un error
+* Salida: Regresa un directorio el cual contiene la variable buscada
 */
 directorio* buscarVariablesLocales(directorioObjetos *objetos, char *objeto, char *funcion, char *nombre) {
 		
@@ -59,10 +69,10 @@ directorio* buscarVariablesLocales(directorioObjetos *objetos, char *objeto, cha
 		directorio *temp;
 
 		//Buscar el objeto en el directorio
-		HASH_FIND_STR(objetos, objeto, exiteObjeto);  /* existe el objeto? */
+		HASH_FIND_STR(objetos, objeto, exiteObjeto);
 		if (exiteObjeto) {
 				//Buscar la funcion en el directorio
-				HASH_FIND_STR(exiteObjeto->procedimientos, funcion, existeProcedimiento);  /* existe el procedimiento? */
+				HASH_FIND_STR(exiteObjeto->procedimientos, funcion, existeProcedimiento);
 				if (existeProcedimiento) {
 					//Checar si la variable ya existe
 					HASH_FIND_STR(existeProcedimiento->variablesLocales, nombre, temp);
@@ -83,7 +93,11 @@ directorio* buscarVariablesLocales(directorioObjetos *objetos, char *objeto, cha
 }
 
 /*
-* Funcion para agregar los objetos locales al directorio de funciones.
+* Función: agregarVariablesObjeto
+* Parámetros: directorioObjetos *objetos, char *objeto, char *funcion, char *nombre
+* Descripción: Funcion para agregar los objetos locales al directorio de funciones especificado
+			   marcando con un error si la variable ya fue declarada
+* Salida: Regresa un directorioObjetos con los nuevos datos actualizados
 */
 directorioObjetos* agregarVariablesObjeto(directorioObjetos *objetos, char *objetoActual, char *funcionActual, char *nombreVariable, char *nombreClase) {
 		
@@ -93,10 +107,10 @@ directorioObjetos* agregarVariablesObjeto(directorioObjetos *objetos, char *obje
 		directorioProcedimientos *existeProcedimiento;
 
 		//Buscar el objeto en el directorio
-		HASH_FIND_STR(objetos, objetoActual, exiteObjeto);  /* existe el objeto? */
+		HASH_FIND_STR(objetos, objetoActual, exiteObjeto);
 		if (exiteObjeto) {
 				//Buscar la funcion en el directorio
-				HASH_FIND_STR(exiteObjeto->procedimientos, funcionActual, existeProcedimiento);  /* existe el procedimiento? */
+				HASH_FIND_STR(exiteObjeto->procedimientos, funcionActual, existeProcedimiento);
 				if (existeProcedimiento) {
 					//Checar si la variable ya existe
 					HASH_FIND_STR(existeProcedimiento->variablesLocales, nombreVariable, temp);
@@ -123,9 +137,11 @@ directorioObjetos* agregarVariablesObjeto(directorioObjetos *objetos, char *obje
 		}
 }
 
-
 /*
-* Funcion para agregar los parametros al directorio de funciones.
+* Función: agregarParametros
+* Parámetros: directorioObjetos *objetos, char *objeto, char *funcion, int tipo, int cantidadParametros, int direccionParametros
+* Descripción: Funcion encargada de agregar los parametros a una funcion dentro del objeto seleccionado
+* Salida: Regresa un directorioObjetos con los nuevos datos actualizados
 */
 directorioObjetos* agregarParametros(directorioObjetos *objetos, char *objeto, char *funcion, int tipo, int cantidadParametros, int direccionParametros) {
 		
@@ -135,10 +151,10 @@ directorioObjetos* agregarParametros(directorioObjetos *objetos, char *objeto, c
 		directorioParametros *temp;
 
 		//Buscar el objeto en el directorio
-		HASH_FIND_STR(objetos, objeto, exiteObjeto);  /* existe el objeto? */
+		HASH_FIND_STR(objetos, objeto, exiteObjeto);
 		if (exiteObjeto) {
 				//Buscar la funcion en el directorio
-				HASH_FIND_STR(exiteObjeto->procedimientos, funcion, existeProcedimiento);  /* existe el procedimiento? */
+				HASH_FIND_STR(exiteObjeto->procedimientos, funcion, existeProcedimiento);
 				if (existeProcedimiento) {
 					//Checar si la variable ya existe
 					HASH_FIND_INT(existeProcedimiento->parametros, &cantidadParametros, temp);
@@ -165,7 +181,11 @@ directorioObjetos* agregarParametros(directorioObjetos *objetos, char *objeto, c
 }
 
 /*
-* Funcion para buscar en la tabla de variables de una funcion, solo regresa el directorio de la variable para ser usada
+* Función: checarParametro
+* Parámetros: directorioObjetos *objetos, char *objeto, char *funcion, int tipo, int cantidadParametros, int direccionParametros
+* Descripción: Funcion encargada de verificar que una variable o dato corresponda con el tipo de parametro de una funcion
+			   de coincidir regresara la direccion del parametro para ser igualado a la variable o dato
+* Salida: Regresa la direccion de parametro, si no son del mismo tipo marcara error
 */
 int checarParametro(directorioObjetos *objetos, char *objeto, char *funcion, int numeroParametro, int tipo) {
 		
@@ -175,15 +195,15 @@ int checarParametro(directorioObjetos *objetos, char *objeto, char *funcion, int
 		directorioParametros *temp;
 
 		//Buscar el objeto en el directorio
-		HASH_FIND_STR(objetos, objeto, exiteObjeto);  /* existe el objeto? */
+		HASH_FIND_STR(objetos, objeto, exiteObjeto);
 		if (exiteObjeto) {
 				//Buscar la funcion en el directorio
-				HASH_FIND_STR(exiteObjeto->procedimientos, funcion, existeProcedimiento);  /* existe el procedimiento? */
+				HASH_FIND_STR(exiteObjeto->procedimientos, funcion, existeProcedimiento);
 				if (existeProcedimiento) {
 					//Checar si la variable ya existe
 					HASH_FIND_INT(existeProcedimiento->parametros, &numeroParametro, temp);
 					if (temp == NULL) {
-												
+						//Marcar error si la variable no tiene ninguna relacion con el parametro
 						printf("Error Funcion: %s no contiene el parametro numero %i \n", funcion, numeroParametro);
 						exit(1);
 					} else {
@@ -208,7 +228,10 @@ int checarParametro(directorioObjetos *objetos, char *objeto, char *funcion, int
 }
 
 /*
-* Funcion para agregar las variables globales al directorio de objetos.
+* Función: agregarVariablesGlobales
+* Parámetros: directorioObjetos *objetos, char *objeto, char *nombre, unsigned short tipo, unsigned long direccion
+* Descripción: Funcion para agregar las variables globales al objeto que se le llamo.
+* Salida: Regresa el directorioObjetos con la nueva variable global ya insertada en el directorio
 */
 directorioObjetos* agregarVariablesGlobales(directorioObjetos *objetos, char *objeto, char *nombre, unsigned short tipo, unsigned long direccion) {
 	   
@@ -240,7 +263,10 @@ directorioObjetos* agregarVariablesGlobales(directorioObjetos *objetos, char *ob
 }
 
 /*
-* Funcion para buscar en la tabla de variables globales de funcion, solo regresa el directorio de la variable para ser usada
+* Función: buscarVariablesGlobales
+* Parámetros: directorioObjetos *objetos, char *objeto, char *nombre
+* Descripción: Funcion para buscar en la tabla de variables globales de funcion, solo regresa el directorio de la variable para ser usada
+* Salida: Regresa el directorio de la variable para poder tener acceso a todos sus atributos
 */
 directorio* buscarVariablesGlobales(directorioObjetos *objetos, char *objeto, char *nombre) {
 		
@@ -268,7 +294,10 @@ directorio* buscarVariablesGlobales(directorioObjetos *objetos, char *objeto, ch
 }
 
 /*
-* Funcion para agregar las variables globales (retorno) al directorio de retornos
+* Función: agregarVariablesRetorno
+* Parámetros: directorio *retornos, char *nombre, unsigned short tipo, int direccion
+* Descripción: Funcion para agregar las variables globales (retorno) al directorio de retornos, si esta ya estaba ignora la insercion
+* Salida: Regresa el directorio de retornos con la nueva variable ya agregada
 */
 directorio* agregarVariablesRetorno(directorio *retornos, char *nombre, unsigned short tipo, int direccion){
 		
@@ -292,7 +321,10 @@ directorio* agregarVariablesRetorno(directorio *retornos, char *nombre, unsigned
 }
 
 /*
-* Funcion para buscar en la tabla de retorno globales de funcion, solo regresa el directorio de la variable para ser usada
+* Función: buscarVariablesRetorno
+* Parámetros: directorio *retornos, char *nombre
+* Descripción: Funcion para buscar en la tabla de retorno globales de funcion, solo regresa el directorio de la variable para ser usada
+* Salida: Regresa el directorio de retornos de la variable para poder accesar todos sus atributos
 */
 directorio* buscarVariablesRetorno(directorio *retornos, char *nombre){	
 		//Variable auxiliar
@@ -310,7 +342,10 @@ directorio* buscarVariablesRetorno(directorio *retornos, char *nombre){
 }
 
 /*
-* Funcion para agregar las funciones al directorio de objetos.
+* Función: agregarFuncion
+* Parámetros: directorioObjetos *objetos, char *objeto, char *nombre
+* Descripción: Funcion para agregar las funciones al directorio de objetos.
+* Salida: Regresa el directorioObjetos con la nueva funcion del objeto
 */
 directorioObjetos* agregarFuncion(directorioObjetos *objetos, char *objeto, char *nombre) {
 		
@@ -341,7 +376,10 @@ directorioObjetos* agregarFuncion(directorioObjetos *objetos, char *objeto, char
 }
 
 /*
-* Funcion para buscar una funcione en el directorio del objeto
+* Función: buscarFuncion
+* Parámetros: directorioObjetos *objetos, char *objeto, char *nombre
+* Descripción: Funcion para buscar una funcion en el directorio del objeto
+* Salida: Regresa el directorioProcedimientos de la funcion encontrada
 */
 directorioProcedimientos* buscarFuncion(directorioObjetos *objetos, char *objeto, char *nombre) {
 		
@@ -370,7 +408,10 @@ directorioProcedimientos* buscarFuncion(directorioObjetos *objetos, char *objeto
 }
 
 /*
-* Funcion para heredar la estructura y variables de objetos
+* Función: herenciaObjetos
+* Parámetros: directorioObjetos *objetos, char *nombreHijo, char *nombrePadre
+* Descripción: Funcion para heredar la estructura y variables de objetos
+* Salida: Regresa una copia de directorioObjetos del padre y la asocia a un hijo
 */
 directorioObjetos* herenciaObjetos(directorioObjetos *objetos, char *nombreHijo, char *nombrePadre){
 	//Variable auxiliar
@@ -404,6 +445,7 @@ directorioObjetos* herenciaObjetos(directorioObjetos *objetos, char *nombreHijo,
 		//Agregar la nueva variable al directorio
 		variablesNew = (directorio*)malloc(sizeof(directorio));
 
+		//Copiado de datos
 		strcpy(variablesNew->nombre, variablesTemp->nombre);
 		variablesNew->tipo = variablesTemp->tipo;
 		variablesNew->direccion = variablesTemp->direccion;
@@ -416,6 +458,7 @@ directorioObjetos* herenciaObjetos(directorioObjetos *objetos, char *nombreHijo,
 			variablesNew->lsuperior2 = variablesTemp->lsuperior2;
 		}
 
+		//Agregamos el apuntador
 		HASH_ADD_STR(objetoHijo->variablesGlobales, nombre, variablesNew);
 	}
 
@@ -457,6 +500,7 @@ directorioObjetos* herenciaObjetos(directorioObjetos *objetos, char *nombreHijo,
 			//Copiado de datos
 			parametrosNew->numeroParametro = parametrosTemp->numeroParametro;
 			parametrosNew->tipo = parametrosTemp->tipo;
+			parametrosNew->direccion = parametrosTemp->direccion;
 
 			//Agregarlo a la nueva estructura
 			HASH_ADD_INT(funcionesNew->parametros, numeroParametro, parametrosNew);
@@ -482,9 +526,11 @@ directorioObjetos* herenciaObjetos(directorioObjetos *objetos, char *nombreHijo,
 	return objetos;
 }
 
-
 /*
-* Funcion para agregar objetos (main y clases) al directorio de objetos.
+* Función: agregarObjeto
+* Parámetros: directorioObjetos *objetos, char *nombre
+* Descripción: Funcion para agregar objetos al directorioObjetos (clases)
+* Salida: Regresa el directorioObjetos con el nuevo objeto asociado a ella
 */
 directorioObjetos* agregarObjeto(directorioObjetos *objetos, char *nombre){
 		//Variable auxiliar
@@ -503,13 +549,14 @@ directorioObjetos* agregarObjeto(directorioObjetos *objetos, char *nombre){
 		} else {		
 			printf("Error Clase %s ya se encuentra declarada \n", nombre);
 			exit(1);
-
 		}       
-
 }
 
 /*
-* Funcion para agregar objetos (main y clases) al directorio de objetos.
+* Función: buscarObjeto
+* Parámetros: directorioObjetos *objetos, char *nombre
+* Descripción: Funcion para agregar objetos al directorio de variablesLocales de una funcion
+* Salida: Regresa el directorioObjetos del objeto solicitado 
 */
 directorioObjetos* buscarObjeto(directorioObjetos *objetos, char *nombre){
 		

@@ -1,4 +1,4 @@
-	%{
+%{
 	//Hector Jesus De La Garza Ponce
 	//Oziel Alonso Garza Lopez
 	extern char * yytext;
