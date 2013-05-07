@@ -555,7 +555,7 @@ directorioObjetos* agregarObjeto(directorioObjetos *objetos, char *nombre){
 /*
 * Función: buscarObjeto
 * Parámetros: directorioObjetos *objetos, char *nombre
-* Descripción: Funcion para agregar objetos al directorio de variablesLocales de una funcion
+* Descripción: Funcion encargada de buscar el objeto seleccionado, si no marcar error
 * Salida: Regresa el directorioObjetos del objeto solicitado 
 */
 directorioObjetos* buscarObjeto(directorioObjetos *objetos, char *nombre){
@@ -576,7 +576,10 @@ directorioObjetos* buscarObjeto(directorioObjetos *objetos, char *nombre){
 }
 
 /*
-* Funcion para agregar objetos (main y clases) al directorio de objetos.
+* Función: agregarConstante
+* Parámetros: directorio *constantes, char *nombre, unsigned short tipo, int direccion
+* Descripción: Funcion para agregar una constante a la tabla de constantes y asignarle una direccion si ya esta en la tabla la ignora
+* Salida: Regresa el directorio de constantes ya actualizado
 */
 directorio* agregarConstante(directorio *constantes, char *nombre, unsigned short tipo, int direccion){
 		
@@ -600,7 +603,10 @@ directorio* agregarConstante(directorio *constantes, char *nombre, unsigned shor
 }
 
 /*
-* Funcion para agregar objetos (main y clases) al directorio de objetos.
+* Función: buscarConstante
+* Parámetros: directorio *constantes, char *nombre
+* Descripción: Funcion encargada de buscar una constante en el directorio de constantes, si no la encuentra regresa NULL
+* Salida: Regresa el directorio de la variable con todos sus atributos
 */
 directorio* buscarConstante(directorio *constantes, char *nombre){
 		
@@ -619,8 +625,11 @@ directorio* buscarConstante(directorio *constantes, char *nombre){
 }
 
 /*
-* Funcion para desplegar los elementos del directorio de objetos asi como los 
-* elementos del directorio de funciones y variables que esten asociados
+* Función: imprimirObjetos
+* Parámetros: directorioObjetos *objetos, directorio *constantes, directorio *retornos
+* Descripción: Funcion encargada de desplegar los elementos del directorio de objetos asi como los elementos
+			   del directorio de funciones y variables que esten asociados
+* Salida: ninguna
 */
 void imprimirObjetos(directorioObjetos *objetos, directorio *constantes, directorio *retornos) {
 			
@@ -666,12 +675,15 @@ void imprimirObjetos(directorioObjetos *objetos, directorio *constantes, directo
 						}
 				}
 			}
-	}
+}
 
 /*
-* Funcion para escribir en un archivo los elementos del directorio de objetos asi como los 
-* elementos del directorio de funciones y variables que esten asociados.
-* El archivo se almacenará en disco.
+* Función: generarDatos
+* Parámetros: directorioObjetos *objetos, directorio *constantes, directorio *retornos
+* Descripción: Funcion para escribir en un archivo los elementos del directorio de objetos
+			   asi como los elementos del directorio de funciones y variables que esten asociados. 
+			   El archivo se almacenará en disco.
+* Salida: ninguna
 */
 void generarDatos(directorioObjetos *objetos, directorio *constantes, directorio *retornos) {
 	
@@ -765,5 +777,4 @@ void generarDatos(directorioObjetos *objetos, directorio *constantes, directorio
 			fprintf(fp,  "</variablesRetornos>\n");
 
 		fprintf(fp,  "</GALaDos>\n");
-	}
-	
+}	
