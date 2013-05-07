@@ -1,7 +1,7 @@
 /**
  * Clase cuadruplos
  * 
- * Estructura especial para manipulacion de los cuadruplos
+ * Estructura especial para manipulación de los cuadruplos
  * 
  * @author Oziel Garza, Hector De la Garza
  *
@@ -9,13 +9,13 @@
 public class cuadruplos {
 	
 	//Elementos de cuadruplos
-	public int operacion;
-	public String operando1S;
-	public int operando1;
-	public int operando2;
-	public String operando2S;
-	public int resultado;
-	public String resultadoS;
+	public int operacion;							//Operacion a ejecutar
+	public int operando1;							//Elemento del operando 1 en formato entero	
+	public String operando1S;						//Elemento del operando 1 en formato string
+	public int operando2;							//Elemento del operando 2 en formato entero
+	public String operando2S;						//Elemento del operando 2 en formato string
+	public int resultado;							//Elemento del resultado en formato entero
+	public String resultadoS;						//Elemento del resultado en formato string
 	
 	//Constructor
 	public cuadruplos(){
@@ -54,17 +54,19 @@ public class cuadruplos {
 		return this.operando1;
 	}
 	
-	public void setOperando1S(String operando1S){
-		this.operando1S = operando1S;
+	public void setOperando1(int operando1){
+		this.operando1 = operando1;
 	}
+	
 	
 	public String getOperando1S(){
 		return this.operando1S;
 	}
 	
-	public void setOperando1(int operando1){
-		this.operando1 = operando1;
+	public void setOperando1S(String operando1S){
+		this.operando1S = operando1S;
 	}
+			
 	
 	public int getOperando2(){
 		return this.operando2;
@@ -73,13 +75,13 @@ public class cuadruplos {
 	public void setOperando2(int operando2){
 		this.operando2 = operando2;
 	}
+			
+	public String getOperando2S(){
+		return this.operando2S;
+	}
 	
 	public void setOperando2S(String operando2S){
 		this.operando2S = operando2S;
-	}
-	
-	public String getOperando2S(){
-		return this.operando2S;
 	}
 	
 	public int getResultado(){

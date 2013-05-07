@@ -1,17 +1,17 @@
 /**
  * Clase objetos
  * 
- * Clase que almacena los objetos del programa y sus estructuras
- * de variables globales y retornos.
+ * Clase que almacena los datos de objetos del programa y su estructura
+ * de variables globales.
+ * 
  * @author Oziel Garza, Hector De la Garza
  */
-import java.util.*;
 
 public class objetos {
 	
 	//Atributos de objetos
-	String nombre;
-	bloque globales;
+	String nombre;					//Nombre del objeto	
+	bloque globales;				//Estructura de variables globales
 	
 	//Constructor
 	public objetos(){
