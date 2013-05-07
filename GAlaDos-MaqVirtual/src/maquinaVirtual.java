@@ -82,7 +82,7 @@ public class maquinaVirtual {
 	        //Retornos
 	        retornos = new HashMap<Integer,retorno>();
 	        retornos = datos.cargarRetornos(retornos);
-	      
+	     
 	        //Variables de Ejecucion
 	        line = br.readLine();
 	        indice = 0;
@@ -406,9 +406,11 @@ public class maquinaVirtual {
 				/*
 				 * Realizar la operacion solicitada
 				 */
+				
     			switch (operacion){    		
     			case (0):
-    			//Suma    				    		
+    			//Suma        		
+    				
     				if(tipoOperando1 == 0){
     					if(tipoOperando2 == 0){
     						//Suma de dos enteros
@@ -449,14 +451,14 @@ public class maquinaVirtual {
     							almacenaDecimal(constantes, workspaceActual, funcion, bloque, direccionResultado, operando1D + operando2D);	    					     	    								        						
     						}
     					}
-    				}	 
+    				}	    			
     				//Continuar con el siguiente cuadruplo
     				indice++;
     				cuadruplo = cuadruplos.get(indice);       				
     			break;    				
     			//Resta
     			case (1): 
-    				
+    				try{
     				if(tipoOperando1 == 0){
     					if(tipoOperando2 == 0){
     						//Resta de dos enteros
@@ -498,21 +500,32 @@ public class maquinaVirtual {
     						}
     					}
     				}
+    				} catch(ArithmeticException e){
+    					System.exit(1);
+    					System.out.println("Error: Operacion invalida");
+    					finEjecucion = true;
+    					break;
+    				}
     				//Continuar con el siguiente cuadruplo
     				indice++;
     				cuadruplo = cuadruplos.get(indice);     		  			
     				break;  			
     			//Division
 				case (2):  
+					
     				if(tipoOperando1 == 0){
     					if(tipoOperando2 == 0){
     						//Division de dos enteros
     						if(tipoResultado==0){ 
     							//Asignarlo a un entero
-    	    					almacenaEntero(constantes, workspaceActual, funcion, bloque, direccionResultado, operando1E / operando2E);	    					     	    								
+    	    					try{
+    							almacenaEntero(constantes, workspaceActual, funcion, bloque, direccionResultado, operando1E / operando2E);
+    	    					} catch(ArithmeticException e){
+    	    						System.out.println("Error: Operacion invalida");
+    	    					}
     						} else {
-    							//Asignarlo a un decimal
-    							almacenaDecimal(constantes, workspaceActual, funcion, bloque, direccionResultado, operando1E / operando2E);	    					     	    								        						
+    							//Asignarlo a un decimal    							
+    							almacenaDecimal(constantes, workspaceActual, funcion, bloque, direccionResultado, operando1E / operando2E);    							
     						}
     					}else{
     						//Division de entero mas decimal
@@ -544,13 +557,14 @@ public class maquinaVirtual {
     							almacenaDecimal(constantes, workspaceActual, funcion, bloque, direccionResultado, operando1D / operando2D);	    					     	    								        						
     						}
     					}
-    				} 
+    				} 					
 					//Continuar con el siguiente cuadruplo
     				indice++;
     				cuadruplo = cuadruplos.get(indice);   
     				break;  		
 	    			//Multiplicacion
-					case (3):  
+					case (3): 
+						
 						if(tipoOperando1 == 0){
 	    					if(tipoOperando2 == 0){
 	    						//Multiplicacion de dos enteros
@@ -592,6 +606,7 @@ public class maquinaVirtual {
 	    						}
 	    					}
 	    				} 
+					
 					//Continuar con el siguiente cuadruplo
     				indice++;
     				cuadruplo = cuadruplos.get(indice);   
@@ -914,7 +929,7 @@ public class maquinaVirtual {
     				cuadruplo = cuadruplos.get(indice);					
 					break;
 				case 12:
-					//Asignacion						   				
+					//Asignacion										
 				switch(tipoOperando1){				
 					case 0:					
 						//Operando1 Entero
@@ -1095,7 +1110,7 @@ public class maquinaVirtual {
 						break;
 						case 2:
 							//Leer entrada y asignarlo a un dato tipo texto
-							almacenaTexto(constantes, workspaceActual, funcion, bloque, direccionResultado,	brT.readLine());
+							almacenaTexto(constantes, workspaceActual, funcion, bloque, direccionResultado,	entrada);
 						break;
 					} 													
 					indice++;
@@ -1300,13 +1315,13 @@ public class maquinaVirtual {
 					//Continuar con el siguiente cuadruplo
 					indice++;
     				cuadruplo = cuadruplos.get(indice);
-					break;
-					
+					break;    			    		
     			}
+    		
     		}
 	    } finally {
 	        br.close();
-	    }
+	    }	   
 	}    			    		    
 	
 	/**
@@ -1389,7 +1404,7 @@ public class maquinaVirtual {
 	//Agregar un registro nuevo  
 	if(direccionResultado>=0 && direccionResultado<1000){ 
 		//Espacio de Retornos  
-		retornos.get(direccionResultado).decimal=  valor;      		    					  					    						
+		retornos.get(direccionResultado).decimal =  valor;      		    					  					    						
 	}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
 	//Espacio de globales    
 		bloque.inicializarBase(1000);
@@ -1490,7 +1505,7 @@ public class maquinaVirtual {
 		
 		if(direccionResultado>=0 && direccionResultado<1000){ 
 			//Espacio de retornos 
-			retornos.get(direccionResultado).entero =  valor;       					  					    						
+			valor = retornos.get(direccionResultado).entero;       					  					    						
 		}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
 		//Espacio de globales    
 			bloque.inicializarBase(1000);
@@ -1526,7 +1541,7 @@ public class maquinaVirtual {
 		
 		if(direccionResultado>=0 && direccionResultado<1000){ 
 			//Espacio de retornos 
-			retornos.get(direccionResultado).decimal =  valor;       					  					    						
+			valor = retornos.get(direccionResultado).decimal;       					  					    						
 		}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
 		//Espacio de globales    
 			bloque.inicializarBase(1000);
@@ -1562,7 +1577,7 @@ public class maquinaVirtual {
 		
 		if(direccionResultado>=0 && direccionResultado<1000){ 
 			//Espacio de retornos 
-			retornos.get(direccionResultado).texto =  valor;      					  					    						
+			valor = retornos.get(direccionResultado).texto;      					  					    						
 		}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
 		//Espacio de globales    
 			bloque.inicializarBase(1000);
@@ -1597,7 +1612,7 @@ public class maquinaVirtual {
 		
 		if(direccionResultado>=0 && direccionResultado<1000){ 
 			//Espacio de retornos 
-			retornos.get(direccionResultado).booleano =  valor;       					  					    						
+			valor = retornos.get(direccionResultado).booleano;       					  					    						
 		}  else if(direccionResultado>=1000 && direccionResultado<5000){      					    			
 		//Espacio de globales    
 			bloque.inicializarBase(1000);

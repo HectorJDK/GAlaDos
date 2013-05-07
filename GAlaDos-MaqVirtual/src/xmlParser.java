@@ -548,13 +548,14 @@ public class xmlParser {
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					// Objeto elemento con los subnodos
 					Element eElement = (Element) nNode;				
-					// Cargar variables locales
-					
+					// Cargar retorno
+					if(eElement.getElementsByTagName("direccion").item(0)!=null){
 					if (eElement.getElementsByTagName("direccion").item(0)
 							.getTextContent() == direccion) {
 						tipo = Integer.parseInt(eElement
 								.getElementsByTagName("tipo").item(0)
 								.getTextContent());
+					}
 					}
 				}
 			}

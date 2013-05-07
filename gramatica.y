@@ -2094,7 +2094,8 @@ lectura:
 	;
 
 lectura_matriz:
-	ACORCHETE 
+	/*Empty*/
+	|ACORCHETE 
 	{
 		//Inicializacion parametros
 		esMatriz = 1;
@@ -2376,7 +2377,7 @@ var_cte2:
 
 		//Obtenemos el valor de la constante
 		strncpy(nombreVariable, $1, tamanioIdentificadores);
-
+		
 		//Limpia el string de cualquir caracter no deseado
 		limpiarString();
 
